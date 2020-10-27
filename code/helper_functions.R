@@ -144,3 +144,106 @@ get_sim_weight_evol <- function(data_folder,
   return(plot_weights)
   
 }
+
+#' Summarise Kleptomove output.
+#' 
+#' A function to get the per-generation
+#'
+#' @param data_folder Which data folder to summarise. Data folders should
+#' contain the results of ONE replicate of ONE parameter combination.
+#' @param which_gen Which generations to look for. Defaults to 991 -- 998.
+#' @param layers Which layers to read in. Defaults to all layers.
+#' @param n_time The timesteps per generation.
+#' @param capacity_matrix The capacity matrix.
+#'
+#' @return A data.table of the per-capacity, per-timestep, per-generation
+#' values (mean, median, standard deviation) of each layer.
+#' @export
+#'
+get_sim_summary <- function(data_folder,
+                    which_gen = seq(991, 998, 1),
+                    n_time = 400,
+                    capacity_matrix,
+                    layers = c("items", "foragers", "klepts", 
+                               "klepts_intake", "foragers_intake")) {
+  # list files
+  data_files <- data.table::CJ(
+    which_gen,
+    layers
+  )
+  data_files$filepath <- glue::glue_data(.x = data_files,
+                          '{data_folder}/{which_gen}{layers}.txt')
+  
+  # split by layer
+  data_files <- split(data_files, data_files$layers)
+  
+  # get only filepaths
+  data_files <- lapply(data_files, `[[`, "filepath")
+  
+  # now read in all files as matrices
+  data_in <- rapply(object = data_files, function(file_list) {
+    matrices <- lapply(as.list(file_list), function(fl) {
+      tseries::read.matrix(fl)
+    })
+    
+    # sum the agents over the generations 991 -- 998
+    matrices <- Reduce(f = `+`, x = matrices)
+  }, how = "list")
+  
+  # convert to dataframe for capacity wise mean
+  data_proc <- rapply(data_in, function(matrix_) {
+    vals <- as.vector(matrix_) / length(which_gen) # for N gen mean
+    vals <- vals / n_time # for timestep mean
+    
+    # convert the capacity matrix into a vector
+    cap <- as.vector(capacity_matrix)
+    
+    # for the capacity, get the per-time per-gen mean layer value
+    val_by_cap <- data.table::data.table(value = vals, cap = cap)
+    
+    return(val_by_cap)
+  }, how = "list")
+  
+  # get per capita forager intake
+  pc_intake_forager <- data_proc[["foragers_intake"]]$value / 
+    data_proc[["foragers"]]$value
+  
+  pc_intake_forager <- data.table::data.table(
+    value = pc_intake_forager,
+    cap = data_proc[["foragers"]]$cap
+  )
+  
+  # get per capita klepto intake
+  pc_intake_klepts <- data_proc[["klepts_intake"]]$value / 
+    data_proc[["klepts"]]$value
+  pc_intake_klepts <- data.table::data.table(
+    value = pc_intake_klepts,
+    cap = data_proc[["klepts"]]$cap
+  )
+  
+  # add pc intake to list
+  data_proc <- append(data_proc, list(pc_intake_forager = pc_intake_forager,
+                                      pc_intake_klepts = pc_intake_klepts))
+  
+  # within layer get capacity wise mean and sd
+  data_proc <- lapply(data_proc, function(dt) {
+    dt[, .(mean_val = mean(value, na.rm = TRUE),
+           sd_val = sd(value, na.rm = TRUE),
+           median_val = median(value, na.rm = TRUE)),
+       by = "cap"]
+  })
+  
+  # assign layer name
+  data_proc <- mapply(function(le, le_name) {
+    le$layer <- le_name
+    
+    return(le)
+  }, 
+  data_proc, names(data_proc),
+  SIMPLIFY = FALSE)
+  
+  # bind the list
+  data_proc <- data.table::rbindlist(data_proc)
+  
+  return(data_proc)
+}
