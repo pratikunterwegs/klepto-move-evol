@@ -109,3 +109,11 @@ get_functional_response <-
 
     return(data_fun_response)
   }
+
+
+#### function for functional response of X in relation to levels of Y and Z
+
+# need to select which layers are drivers, options are
+# klepts, foragers, all agents (already covered), and items
+# two of 4 possible per time
+# response is always 3 vars -- pc intake of foragers, klepts and all
