@@ -70,57 +70,26 @@ data <- split(data, by = c("regrowth", "sim_type"))
 data_reg <- data[!stri_detect(names(data), fixed = "0.001")]
 ```
 
-```{r echo=FALSE, eval=FALSE}
-ggplot(df)+
-  geom_tile(aes(items, total_agents, 
-                fill = value + 1e-6))+
-  facet_grid(sim_type~variable)+
-  scico::scale_fill_scico(palette = "buda",
-                          direction = -1
-                          # breaks = c(1e-2, 1e0),
-                          # labels = c("lower", "higher")
-                          )+
-  # scale_fill_viridis_c(na.value = "grey",
-  #                      option = "B", direction = -1,
-  #                      limits = c(0, 1))+
-  # coord_equal(xlim = c(0, 0.25),
-  #             ylim = c(0, 0.25))+
-  coord_fixed(xlim = c(0, 2.5),
-                  ylim = c(0, 0.15),
-              ratio = 15)+
-  theme_grey()+
-  theme(legend.position = "top",
-        # panel.grid = element_blank(),
-        legend.key.height = unit(2, units = "mm"),
-        axis.title = element_text(face = "bold"),
-        legend.title = element_text(face = "bold"))+
-  labs(fill = "p.c.in.",
-       x = "items",
-       y = "agents")
-```
-
 Make list of plots.
 
 ```{r}
 fig_fun_response <- 
   lapply(data_reg, function(df) {
     ggplot(df)+
+      geom_hline(yintercept = 0.05, col = "blue")+
       geom_tile(aes(items, total_agents, 
                     fill = value + 1e-6))+
       facet_grid(replicate~variable)+
-      scico::scale_fill_scico(palette = "lajolla",
+      scico::scale_fill_scico(palette = "batlow",
                               direction = -1,
                               limits = c(0, 0.33)
                               # breaks = c(1e-2, 1e0),
                               # labels = c("lower", "higher")
       )+
-      scale_fill_viridis_c(direction = -1,
-                           option = "A",
-                           limits = c(0, 0.25))+
       # coord_cartesian(xlim = c(0, 2.5),
       #             ylim = c(0, 0.15))+
       # coord_equal()+
-      theme_minimal()+
+      theme_minimal(base_size = 4)+
       theme(legend.position = "top",
             # panel.grid = element_blank(),
             plot.background = element_rect(fill = NA, colour = "grey"),
@@ -137,7 +106,7 @@ fig_fun_response <-
 
 ```{r}
 # wrap and save
-fig_fun_response <- patchwork::wrap_plots(fig_fun_response)
+fig_fun_response <- patchwork::wrap_plots(fig_fun_response, ncol = 3, nrow = 4)
 
 ggsave(fig_fun_response,
        filename = "figures/fig_fun_response.png")
@@ -164,7 +133,7 @@ fig_fun_response <-
       geom_tile(aes(items, total_agents, 
                     fill = value + 1e-6))+
       facet_grid(regrowth~variable)+
-      scico::scale_fill_scico(palette = "lajolla",
+      scico::scale_fill_scico(palette = "batlow",
                               direction = -1,
                               limits = c(0, 0.33)
                               # breaks = c(1e-2, 1e0),
