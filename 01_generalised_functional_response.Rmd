@@ -1,6 +1,0 @@
-
-```{r}
-# load libs
-library(data.table)
-```
-
