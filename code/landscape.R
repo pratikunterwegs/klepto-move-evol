@@ -130,7 +130,7 @@ plot_dist <- patchwork::wrap_plots(plot_list[c("strategy count",
                                    "items", "per_capita_intake")])
 
 ggsave(plot_dist,
-       filename = "figures/fig_agent_item_distribution.pdf",
+       filename = "figures/fig_agent_item_distribution.png",
        dpi = 300, height = 10, width = 12)
 
 #### figure agent strategy distributions ####
