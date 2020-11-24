@@ -1,3 +1,9 @@
+
+#### a helper function to floor values ####
+floor_any <- function(x, v) {
+  floor(x / v) * v
+}
+
 #### functions to get the functional response in kleptomove ####
 
 #' Get generalised functional response data.
@@ -81,9 +87,13 @@ get_functional_response <-
     # first make data.table
     data_proc <- as.data.table(data_proc)
 
-    # count total agents, items, total intake and round to 2 decimal places
+    # get total agents
     data_proc[, `:=`(total_agents = foragers + klepts)]
 
+    # floor agents and items to the nearest 0.01
+    data_proc[, `:=`(total_agents = floor_any(total_agents, 0.005),
+                     items = floor_any(items, 0.005))]
+    
     # melt here before NANs appear
     data_fun_response <- melt(data_proc, id.vars = setdiff(
       colnames(data_proc),
