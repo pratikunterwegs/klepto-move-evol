@@ -6,6 +6,8 @@ editor_options:
 
 # Plotting functional responses
 
+## Plotting replicates separately
+
 ```{r}
 #### Code for functional response
 
@@ -62,16 +64,18 @@ Prepare the data for plotting.
 ```{r}
 # set dt
 setDT(data)
-data <- split(data, by = "regrowth")
+data <- split(data, by = c("regrowth", "sim_type"))
+
+# data_reg
+data_reg <- data[!stri_detect(names(data), fixed = "0.001")]
 ```
 
 ```{r echo=FALSE, eval=FALSE}
 ggplot(df)+
   geom_tile(aes(items, total_agents, 
                 fill = value + 1e-6))+
-  facet_grid(~variable)+
-  geom_abline(slope = 1)+
-  scico::scale_fill_scico(palette = "oslo",
+  facet_grid(sim_type~variable)+
+  scico::scale_fill_scico(palette = "buda",
                           direction = -1
                           # breaks = c(1e-2, 1e0),
                           # labels = c("lower", "higher")
@@ -81,7 +85,10 @@ ggplot(df)+
   #                      limits = c(0, 1))+
   # coord_equal(xlim = c(0, 0.25),
   #             ylim = c(0, 0.25))+
-  theme_minimal()+
+  coord_fixed(xlim = c(0, 2.5),
+                  ylim = c(0, 0.15),
+              ratio = 15)+
+  theme_grey()+
   theme(legend.position = "top",
         # panel.grid = element_blank(),
         legend.key.height = unit(2, units = "mm"),
@@ -91,45 +98,105 @@ ggplot(df)+
        x = "items",
        y = "agents")
 ```
-
 
 Make list of plots.
 
 ```{r}
 fig_fun_response <- 
-  lapply(data, function(df) {
+  lapply(data_reg, function(df) {
     ggplot(df)+
-  geom_abline(slope = 1)+
-  geom_tile(aes(items, total_agents, 
-                fill = value + 1e-6))+
-  facet_grid(replicate~variable)+
-  # scico::scale_fill_scico(palette = "oslo",
-  #                         direction = -1
-  #                         # breaks = c(1e-2, 1e0),
-  #                         # labels = c("lower", "higher")
-  #                         )+
-  scale_fill_viridis_c(na.value = "grey",
-                       option = "B", direction = -1,
-                       limits = c(0, 1))+
-  # coord_equal(xlim = c(0, 0.25),
-  #             ylim = c(0, 0.25))+
-  theme_minimal()+
-  theme(legend.position = "top",
-        # panel.grid = element_blank(),
-        legend.key.height = unit(2, units = "mm"),
-        axis.title = element_text(face = "bold"),
-        legend.title = element_text(face = "bold"))+
-  labs(fill = "p.c.in.",
-       x = "items",
-       y = "agents")
+      geom_tile(aes(items, total_agents, 
+                    fill = value + 1e-6))+
+      facet_grid(replicate~variable)+
+      scico::scale_fill_scico(palette = "buda",
+                              direction = -1,
+                              limits = c(0, 0.33)
+                              # breaks = c(1e-2, 1e0),
+                              # labels = c("lower", "higher")
+      )+
+      # scale_fill_viridis_c(na.value = "grey",
+      #                      option = "B", direction = -1,
+      #                      limits = c(0, 1))+
+      # coord_cartesian(xlim = c(0, 2.5),
+      #             ylim = c(0, 0.15))+
+      # coord_equal()+
+      theme_minimal()+
+      theme(legend.position = "top",
+            # panel.grid = element_blank(),
+            plot.background = element_rect(fill = NA, colour = "grey"),
+            legend.key.height = unit(2, units = "mm"),
+            axis.title = element_text(face = "bold"),
+            legend.title = element_text(face = "bold"))+
+      labs(fill = "p.c.in.",
+           x = "items",
+           y = "agents",
+           title = sprintf("sim_type = %s | regrowth = %f",
+                           unique(df$sim_type), round(unique(df$regrowth), 2)))
   })
 ```
 
 ```{r}
-patchwork::wrap_plots(fig_fun_response)
+# wrap and save
+fig_fun_response <- patchwork::wrap_plots(fig_fun_response)
+
+ggsave(fig_fun_response,
+       filename = "figures/fig_fun_response.png")
 ```
 
+## Averaging over replicates
 
 ```{r}
+# bind data
+data <- rbindlist(data)
 
+# average over replicates
+data_summary <- data[regrowth > 0.01, list(value = mean(value)),
+     by = c("sim_type", "regrowth", "items", "total_agents", "variable")]
+
+# split by sim type
+data_summary <- split(data_summary, by = c("sim_type"))
+```
+
+```{r}
+fig_fun_response <- 
+  lapply(data_summary, function(df) {
+    ggplot(df)+
+      geom_tile(aes(items, total_agents, 
+                    fill = value + 1e-6))+
+      facet_grid(regrowth~variable)+
+      scico::scale_fill_scico(palette = "oslo",
+                              direction = -1,
+                              limits = c(0, 0.33)
+                              # breaks = c(1e-2, 1e0),
+                              # labels = c("lower", "higher")
+      )+
+      # scale_fill_viridis_c(na.value = "grey",
+      #                      option = "B", direction = -1,
+      #                      limits = c(0, 0.33))+
+      coord_cartesian(
+        # xlim = c(0, 2.5),
+                      ylim = c(0, 0.15))+
+      # coord_equal()+
+      theme_minimal()+
+      theme(legend.position = "top",
+            # panel.grid = element_blank(),
+            plot.background = element_rect(fill = NA, colour = "grey"),
+            legend.key.height = unit(2, units = "mm"),
+            axis.title = element_text(face = "bold"),
+            legend.title = element_text(face = "bold"))+
+      labs(fill = "p.c.in.",
+           x = "items",
+           y = "agents",
+           title = sprintf("sim_type = %s",
+                           unique(df$sim_type)))
+  })
+```
+
+```{r}
+# wrap and save
+fig_fun_response <- patchwork::wrap_plots(fig_fun_response)
+
+fig_fun_response
+ggsave(fig_fun_response,
+       filename = "figures/fig_fun_response.png")
 ```
