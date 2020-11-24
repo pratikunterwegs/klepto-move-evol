@@ -65,6 +65,34 @@ setDT(data)
 data <- split(data, by = "regrowth")
 ```
 
+```{r echo=FALSE, eval=FALSE}
+ggplot(df)+
+  geom_tile(aes(items, total_agents, 
+                fill = value + 1e-6))+
+  facet_grid(~variable)+
+  geom_abline(slope = 1)+
+  scico::scale_fill_scico(palette = "oslo",
+                          direction = -1
+                          # breaks = c(1e-2, 1e0),
+                          # labels = c("lower", "higher")
+                          )+
+  # scale_fill_viridis_c(na.value = "grey",
+  #                      option = "B", direction = -1,
+  #                      limits = c(0, 1))+
+  # coord_equal(xlim = c(0, 0.25),
+  #             ylim = c(0, 0.25))+
+  theme_minimal()+
+  theme(legend.position = "top",
+        # panel.grid = element_blank(),
+        legend.key.height = unit(2, units = "mm"),
+        axis.title = element_text(face = "bold"),
+        legend.title = element_text(face = "bold"))+
+  labs(fill = "p.c.in.",
+       x = "items",
+       y = "agents")
+```
+
+
 Make list of plots.
 
 ```{r}
@@ -97,6 +125,9 @@ fig_fun_response <-
   })
 ```
 
+```{r}
+patchwork::wrap_plots(fig_fun_response)
+```
 
 
 ```{r}
