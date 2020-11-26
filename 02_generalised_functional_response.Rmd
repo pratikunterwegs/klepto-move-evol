@@ -76,13 +76,12 @@ Make list of plots.
 fig_fun_response <- 
   lapply(data_reg, function(df) {
     ggplot(df)+
-      geom_hline(yintercept = 0.05, col = "blue")+
       geom_tile(aes(items, total_agents, 
                     fill = value + 1e-6))+
       facet_grid(replicate~variable)+
-      scico::scale_fill_scico(palette = "batlow",
+      scico::scale_fill_scico(palette = "berlin",
                               direction = -1,
-                              limits = c(0, 0.33)
+                              limits = c(0, 0.25)
                               # breaks = c(1e-2, 1e0),
                               # labels = c("lower", "higher")
       )+
@@ -107,7 +106,7 @@ fig_fun_response <-
 ```{r}
 # wrap and save
 fig_fun_response <- patchwork::wrap_plots(fig_fun_response, ncol = 3, nrow = 4)
-
+fig_fun_response
 ggsave(fig_fun_response,
        filename = "figures/fig_fun_response.png")
 ```
