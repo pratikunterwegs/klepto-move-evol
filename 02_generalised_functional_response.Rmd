@@ -54,6 +54,7 @@ Summarise the data and read it in, using the helper functions.
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
+    round_value = 0.001,
     drivers = c("items", "total_agents")
   )
 })
@@ -69,10 +70,6 @@ Prepare the data for plotting.
 # set dt
 setDT(data_plot)
 data_plot <- split(data_plot, by = c("regrowth", "sim_type"))
-
-# data_reg
-data_reg <- data_plot[!stri_detect(names(data_plot), 
-                                   fixed = "0.001")]
 ```
 
 ## Overall functional response
@@ -82,7 +79,7 @@ fig_fun_response_total <-
   lapply(data_reg, function(df) {
     ggplot(df)+
       geom_tile(aes(items, total_agents, 
-                    fill = value + 1e-6))+
+                    fill = value))+
       facet_grid(replicate~variable)+
       # scico::scale_fill_scico(palette = "lajolla",
       #                         direction = -1,
@@ -90,10 +87,7 @@ fig_fun_response_total <-
       #                         # breaks = c(1e-2, 1e0),
       #                         # labels = c("lower", "higher")
       # )+
-      scale_fill_viridis_c(
-        option = "B",
-        limits = c(0.0001, 0.25)
-      )+
+      scale_fill_gradientn(colours = pals::kovesi.cyclic_mrybm_35_75_c68(30))+
       # coord_cartesian(xlim = c(0, 2.5),
       #             ylim = c(0, 0.15))+
       # coord_equal()+
@@ -151,13 +145,10 @@ fig_fun_response <-
       #                         # breaks = c(1e-2, 1e0),
       #                         # labels = c("lower", "higher")
       # )+
-      scale_fill_viridis_c(
-        option = "B",
-        limits = c(0.0001, 0.25)
-      )+
+      scale_fill_gradientn(colours= pals::kovesi.cyclic_mrybm_35_75_c68(30))+
       coord_cartesian(
         # xlim = c(0, 2.5),
-                      ylim = c(0.00001, 0.15))+
+                      ylim = c(0.0, 0.15))+
       theme_minimal(base_size = 4)+
       theme(legend.position = "top",
             # panel.grid = element_blank(),
@@ -189,6 +180,7 @@ ggsave(fig_fun_response,
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
+    round_value = 0.0005,
     drivers = c("klepts", "foragers")
   )
 })
@@ -211,17 +203,25 @@ data_summary <- data_plot[regrowth == max(regrowth),
 # remove simulation type foragers and random
 data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
 
+# # make factor
+data_summary$value_cut <- cut(data_summary$value, seq(0, 0.3, 0.01))
+
 # split by sim type
 data_summary <- split(data_summary, by = c("sim_type"))
+df = data_summary[[1]]
 ```
 
 ```{r}
+# plot
 fig_fun_response <- 
   lapply(data_summary, function(df) {
     ggplot(df)+
       geom_tile(aes(foragers, klepts, 
-                    fill = value + 1e-6))+
-      geom_abline(slope = 1, lwd = 0.2)+
+                    fill = value_cut),
+                show.legend = F)+
+      geom_abline(slope = seq(0, 2, 0.5),
+                  intercept = -0.005, lwd = 0.1,
+                  col = "black")+
       facet_grid(~variable)+
       # scico::scale_fill_scico(palette = "lajolla",
       #                         direction = -1,
@@ -229,37 +229,37 @@ fig_fun_response <-
       #                         # breaks = c(1e-2, 1e0),
       #                         # labels = c("lower", "higher")
       # )+
-      scale_fill_viridis_c(
-        option = "A",
-        limits = c(0.0001, 0.33)
-      )+
-      coord_cartesian(
+      # scale_fill_viridis_c(
+      #   option = "A",
+      #   limits = c(0.0001, 0.33)
+      # )+
+      scale_fill_manual(values= pals::kovesi.cyclic_mrybm_35_75_c68(30))+
+      coord_equal(
         xlim = c(0, 0.06),
         ylim = c(0, 0.06))+
       theme_minimal(
-        base_size = 4
+        base_size = 8
         )+
-      theme(legend.position = "top",
+      theme(legend.position = "right",
             # panel.grid = element_blank(),
             plot.background = element_rect(fill = NA, colour = "grey"),
-            legend.key.height = unit(2, units = "mm"),
+            legend.key.height = unit(1, units = "mm"),
+            legend.key.width = unit(1, units = "mm"),
             axis.title = element_text(face = "bold"),
             legend.title = element_text(face = "bold"))+
       labs(fill = "p.c.in.",
-           # x = "items",
-           # y = "agents",
+           x = "# foragers",
+           y = "# kleptoparasites",
            title = sprintf("sim_type = %s",
                            unique(df$sim_type)))
   })
-```
 
-```{r}
 # wrap and save
-fig_fun_response <- patchwork::wrap_plots(fig_fun_response)
+fig_fun_response <- patchwork::wrap_plots(fig_fun_response, ncol = 1)
 fig_fun_response
 ggsave(fig_fun_response,
        filename = "figures/fig_fun_response_strategy.png",
-       width = 12, height = 3)
+       dpi = 150)
 ```
 
 ## Functional response: Foragers ~ items
@@ -269,6 +269,7 @@ ggsave(fig_fun_response,
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
+    round_value = 0.001,
     drivers = c("items", "foragers")
   )
 })
@@ -309,10 +310,8 @@ fig_fun_response <-
       #                         # breaks = c(1e-2, 1e0),
       #                         # labels = c("lower", "higher")
       # )+
-      scale_fill_viridis_c(
-        option = "A",
-        limits = c(0.0001, 0.33)
-      )+
+      scale_fill_gradientn(colours = pals::kovesi.cyclic_mrybm_35_75_c68(7))+
+      
       # coord_cartesian(
       #   xlim = c(0, 0.06),
       #   ylim = c(0, 0.06))+
