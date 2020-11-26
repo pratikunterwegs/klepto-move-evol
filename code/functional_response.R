@@ -109,6 +109,7 @@ get_functional_response <-
                        "foragers",
                        "total_agents",
                        "items"),
+           round_value = 0.005,
            data_folder,
            which_gen = seq(991, 998, 1),
            n_time = 400,
@@ -118,9 +119,10 @@ get_functional_response <-
            )
   ) {
   
-    # assert that drivers are only two
-    assertthat::assert_that(length(drivers) == 2,
-                            msg = "only two drivers allowed")
+    # warn for more than two drivers
+    if (length(drivers) > 2) {
+      warning("more than 2 drivers")
+    }
     
     data_proc <- do_read_data(
       data_folder,
@@ -130,9 +132,9 @@ get_functional_response <-
     )
     
 
-    # floor agents and items to the nearest 0.01
-    data_proc[, `:=`(total_agents = floor_any(total_agents, 0.005),
-                     items = floor_any(items, 0.005))]
+    # floor drivers to the nearest floor value
+    data_proc[, (drivers) := lapply(.SD, floor_any, v = round_value),
+              .SD = drivers]
     
     # subset data for driver and response columnsd
     cols <- c(response, drivers)
