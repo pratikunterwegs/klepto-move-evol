@@ -9,13 +9,18 @@ floor_any <- function(x, v) {
 #' @param data_folder Folder to read from.
 #' @param which_gen Generations to read. Numeric sequence.
 #' @param n_time Number of timesteps. Single numeric.
+#' @param layers Which layers to add.
 #'
 #' @return A data.table with per capita intake.
 #' @export
 do_read_data <- function(
   data_folder,
   which_gen = seq(991, 998, 1),
-  n_time = 400
+  n_time = 400,
+  layers = c(
+    "items", "foragers", "klepts",
+    "klepts_intake", "foragers_intake"
+  )
 ) {
   # list files
   data_files <- data.table::CJ(
@@ -97,11 +102,7 @@ do_read_data <- function(
 #' @export
 #' 
 get_functional_response <-
-  function(layers = c(
-             "items", "foragers", "klepts",
-             "klepts_intake", "foragers_intake"
-           ),
-           response = c("pc_intake_forager",
+  function(response = c("pc_intake_forager",
                         "pc_intake_klepts",
                         "pc_intake_total"),
            drivers = c("klepts",
@@ -110,7 +111,12 @@ get_functional_response <-
                        "items"),
            data_folder,
            which_gen = seq(991, 998, 1),
-           n_time = 400) {
+           n_time = 400,
+           layers = c(
+             "items", "foragers", "klepts",
+             "klepts_intake", "foragers_intake"
+           )
+  ) {
   
     # assert that drivers are only two
     assertthat::assert_that(length(drivers) == 2,
@@ -119,7 +125,8 @@ get_functional_response <-
     data_proc <- do_read_data(
       data_folder,
       which_gen = seq(991, 998, 1),
-      n_time = 400
+      n_time = 400,
+      layers = layers
     )
     
 
