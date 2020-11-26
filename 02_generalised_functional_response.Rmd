@@ -64,56 +64,20 @@ data_plot <- unnest(data,
                cols = "data_summary")
 ```
 
-Prepare the data for plotting.
-
 ```{r}
-# set dt
-setDT(data_plot)
-data_plot <- split(data_plot, by = c("regrowth", "sim_type"))
-```
+# average over replicates and select only the highest growth rate
+data_summary <- data_plot[regrowth == max(regrowth), 
+                     list(value = mean(value)),
+                     by = c("sim_type", 
+                            "items", "foragers", "variable")]
 
-## Overall functional response
+# remove simulation type foragers and random
+# data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
+data_summary$value_cut <- cut(data_summary$value, seq(0, 0.3, 0.02))
 
-```{r}
-fig_fun_response_total <- 
-  lapply(data_reg, function(df) {
-    ggplot(df)+
-      geom_tile(aes(items, total_agents, 
-                    fill = value))+
-      facet_grid(replicate~variable)+
-      # scico::scale_fill_scico(palette = "lajolla",
-      #                         direction = -1,
-      #                         limits = c(0, 0.25)
-      #                         # breaks = c(1e-2, 1e0),
-      #                         # labels = c("lower", "higher")
-      # )+
-      scale_fill_gradientn(colours = pals::kovesi.cyclic_mrybm_35_75_c68(30))+
-      # coord_cartesian(xlim = c(0, 2.5),
-      #             ylim = c(0, 0.15))+
-      # coord_equal()+
-      theme_minimal(base_size = 4)+
-      theme(legend.position = "top",
-            # panel.grid = element_blank(),
-            plot.background = element_rect(fill = NA, colour = "grey"),
-            legend.key.height = unit(2, units = "mm"),
-            axis.title = element_text(face = "bold"),
-            legend.title = element_text(face = "bold"))+
-      labs(fill = "p.c.in.",
-           x = "items",
-           y = "agents",
-           title = sprintf("sim_type = %s | regrowth = %f",
-                           unique(df$sim_type), round(unique(df$regrowth), 2)))
-  })
-```
-
-```{r}
-# wrap and save
-fig_fun_response_total <- patchwork::wrap_plots(fig_fun_response_total, 
-                                          ncol = 3, nrow = 4)
-fig_fun_response_total
-ggsave(fig_fun_response,
-       filename = "figures/fig_fun_response_overall.png",
-       width = 12, height = 11)
+# split by sim type
+data_summary <- split(data_summary, by = c("sim_type"))
+df = data_summary[[1]]
 ```
 
 ### Averaging over replicates
@@ -291,9 +255,11 @@ data_summary <- data_plot[regrowth == max(regrowth),
 
 # remove simulation type foragers and random
 # data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
+data_summary$value_cut <- cut(data_summary$value, seq(0, 0.3, 0.02))
 
 # split by sim type
 data_summary <- split(data_summary, by = c("sim_type"))
+df = data_summary[[1]]
 ```
 
 ```{r}
@@ -301,7 +267,8 @@ fig_fun_response <-
   lapply(data_summary, function(df) {
     ggplot(df)+
       geom_tile(aes(items, foragers,
-                    fill = value + 1e-6))+
+                    fill = value_cut),
+                show.legend = F)+
       # geom_abline(slope = 1, lwd = 0.2)+
       facet_grid(~variable)+
       # scico::scale_fill_scico(palette = "lajolla",
@@ -310,9 +277,9 @@ fig_fun_response <-
       #                         # breaks = c(1e-2, 1e0),
       #                         # labels = c("lower", "higher")
       # )+
-      scale_fill_gradientn(colours = pals::kovesi.cyclic_mrybm_35_75_c68(7))+
+      scale_fill_manual(values = pals::kovesi.cyclic_mrybm_35_75_c68(15))+
       
-      # coord_cartesian(
+      # coord_equal(
       #   xlim = c(0, 0.06),
       #   ylim = c(0, 0.06))+
       theme_minimal(
