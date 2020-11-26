@@ -74,8 +74,8 @@ data_summary <- data_plot[regrowth == max(regrowth),
                             "items", "total_agents", "variable")]
 
 # remove simulation type foragers and random
-# data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
-data_summary$value_cut <- cut(data_summary$value, seq(0, 0.3, 0.02))
+data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
+# data_summary$value_cut <- cut(data_summary$value, seq(0, 0.3, 0.02))
 
 # split by sim type
 data_summary <- split(data_summary, by = c("sim_type"))
@@ -88,8 +88,9 @@ fig_fun_response <-
   lapply(data_summary, function(df) {
     ggplot(df)+
       geom_tile(aes(items, total_agents, 
-                    fill = value_cut),
-                show.legend = F)+
+                    fill = value),
+                show.legend = T)+
+      geom_vline(size = 0.1, xintercept = 0.2)+
       facet_grid(~variable)+
       # scico::scale_fill_scico(palette = "lajolla",
       #                         direction = -1,
@@ -97,11 +98,12 @@ fig_fun_response <-
       #                         # breaks = c(1e-2, 1e0),
       #                         # labels = c("lower", "higher")
       # )+
-      scale_fill_manual(values = pals::kovesi.cyclic_mrybm_35_75_c68(15))+
+      scale_fill_gradientn(colours = pals::kovesi.cyclic_mrybm_35_75_c68(10),
+                           limits = c(0, 0.3))+
       coord_cartesian(
         # xlim = c(0, 2.5),
                       ylim = c(0.0, 0.1))+
-      theme_minimal(base_size = 4)+
+      theme_minimal(base_size = 8)+
       theme(legend.position = "top",
             # panel.grid = element_blank(),
             plot.background = element_rect(fill = NA, colour = "grey"),
@@ -118,11 +120,10 @@ fig_fun_response <-
 
 ```{r}
 # wrap and save
-fig_fun_response <- patchwork::wrap_plots(fig_fun_response)
-fig_fun_response
+fig_fun_response <- patchwork::wrap_plots(fig_fun_response, ncol = 1)
 ggsave(fig_fun_response,
        filename = "figures/fig_fun_response_avg.png",
-       width = 12, height = 6)
+       width = 12, height = 10)
 ```
 
 ## Functional response: Klepts ~ foragers
@@ -132,7 +133,7 @@ ggsave(fig_fun_response,
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
-    round_value = 0.0005,
+    round_value = 0.001,
     drivers = c("klepts", "foragers")
   )
 })
