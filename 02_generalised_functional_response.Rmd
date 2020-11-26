@@ -65,11 +65,13 @@ data_plot <- unnest(data,
 ```
 
 ```{r}
+# set dt
+setDT(data_plot)
 # average over replicates and select only the highest growth rate
 data_summary <- data_plot[regrowth == max(regrowth), 
                      list(value = mean(value)),
                      by = c("sim_type", 
-                            "items", "foragers", "variable")]
+                            "items", "total_agents", "variable")]
 
 # remove simulation type foragers and random
 # data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
@@ -80,39 +82,25 @@ data_summary <- split(data_summary, by = c("sim_type"))
 df = data_summary[[1]]
 ```
 
-### Averaging over replicates
-
-```{r}
-# bind data
-data_reg <- rbindlist(data_reg)
-
-# average over replicates and select only the highest growth rate
-data_summary <- data_reg[regrowth == max(regrowth), 
-                     list(value = mean(value)),
-                     by = c("sim_type", "regrowth", 
-                            "items", "total_agents", "variable")]
-
-# split by sim type
-data_summary <- split(data_summary, by = c("sim_type"))
-```
 
 ```{r}
 fig_fun_response <- 
   lapply(data_summary, function(df) {
     ggplot(df)+
       geom_tile(aes(items, total_agents, 
-                    fill = value + 1e-6))+
-      facet_grid(regrowth~variable)+
+                    fill = value_cut),
+                show.legend = F)+
+      facet_grid(~variable)+
       # scico::scale_fill_scico(palette = "lajolla",
       #                         direction = -1,
       #                         limits = c(0, 0.33)
       #                         # breaks = c(1e-2, 1e0),
       #                         # labels = c("lower", "higher")
       # )+
-      scale_fill_gradientn(colours= pals::kovesi.cyclic_mrybm_35_75_c68(30))+
+      scale_fill_manual(values = pals::kovesi.cyclic_mrybm_35_75_c68(15))+
       coord_cartesian(
         # xlim = c(0, 2.5),
-                      ylim = c(0.0, 0.15))+
+                      ylim = c(0.0, 0.1))+
       theme_minimal(base_size = 4)+
       theme(legend.position = "top",
             # panel.grid = element_blank(),
