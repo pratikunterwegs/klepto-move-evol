@@ -39,12 +39,6 @@ fig_fun_response <-
   geom_tile(aes(items_round, total_agents, 
                 fill = value),
             show.legend = T)+
-  
-  annotate(geom = "rect",
-           xmin = 0, ymin = 0,
-           xmax = 0.5, ymax = 0.05,
-           fill = NA, lwd = 0.25,
-           colour = "black")+
   facet_grid(sim_type~variable)+
   # scico::scale_fill_scico(palette = "lajolla",
   #                         direction = -1,
@@ -55,11 +49,6 @@ fig_fun_response <-
   scale_fill_gradientn(colours = (pals::cubehelix(10)),
                        limits = c(0, 0.3),
                        breaks = seq(0, 0.3, 0.1))+
-  # scale_fill_gradientn(colours = (scico(10, palette = "batlow")),
-  #                      limits = c(0, 0.3))+
-  # coord_fixed(ratio = 10,
-  #             xlim = c(0, 0.5),
-  #             ylim = c(0.0, 0.06))+
   theme_grey(base_size = 6, base_family = "sans")+
   theme(legend.position = c(0.95, 0.75),
         # panel.grid = element_blank(),
@@ -86,23 +75,23 @@ ggsave(fig_fun_response,
 
 ```{r}
 # gather data, first select items
-df_summary <- df[items_round %in% c(item_levels),]
+df_summary <- df[items_round %in% c(item_levels) &
+                   variable != "pc_intake_total",]
 
 # make scatterplot
-fig_fun_response_agents <- 
+fig_fun_response_agents <-
   ggplot(df_summary)+
   geom_point(aes(total_agents, value, 
                  colour = variable),
-             alpha = 0.2)+
-  geom_smooth(aes(total_agents, value, 
-                 colour = variable),
-              method = "glm",
-              se = F, lwd = 0.4)+
-  scale_colour_manual(values = c("blue", "red", "grey30"),
+             alpha = 1, size = 1)+
+  scale_colour_manual(values = pals::coolwarm(2),
                       labels = c("foragers", "klepts", "total"))+
-  facet_grid(sim_type ~ items_round, scales = "free_x",
+  facet_grid(sim_type ~ items_round, scales = "free",
              labeller = label_both)+
   theme_grey(base_size = 6, base_family = "sans")+
+    coord_cartesian(
+      ylim = c(0, 0.2)
+    )+
   theme(legend.position = "top",
         legend.key.height = unit(1, units = "mm"),
         legend.background = element_blank())+
@@ -111,111 +100,113 @@ fig_fun_response_agents <-
        y = "per-capita intake",
        colour = "strategy",
        title = "functional response: intake rate ~ items + agents")
+
+fig_fun_response_agents
 ```
 
 ```{r}
 ggsave(fig_fun_response_agents,
        filename = "figures/fig_fun_response_general_agents.png",
-       width = 7, height = 4)
+       width = 7, height = 3.5)
 ```
 
 # Foragers and kleptoparasites
 
 ```{r}
-# plot
-fig_fun_response <- 
-  lapply(data_summary, function(df) {
-    ggplot(df)+
-      geom_tile(aes(foragers, klepts, 
-                    fill = value_cut),
-                show.legend = F)+
-      geom_abline(slope = seq(0, 2, 0.5),
-                  intercept = -0.005, lwd = 0.1,
-                  col = "black")+
-      facet_grid(~variable)+
-      # scico::scale_fill_scico(palette = "lajolla",
-      #                         direction = -1,
-      #                         limits = c(0, 0.33)
-      #                         # breaks = c(1e-2, 1e0),
-      #                         # labels = c("lower", "higher")
-      # )+
-      # scale_fill_viridis_c(
-      #   option = "A",
-      #   limits = c(0.0001, 0.33)
-      # )+
-      scale_fill_manual(values= pals::kovesi.cyclic_mrybm_35_75_c68(30))+
-      coord_equal(
-        xlim = c(0, 0.06),
-        ylim = c(0, 0.06))+
-      theme_minimal(
-        base_size = 8
-        )+
-      theme(legend.position = "right",
-            # panel.grid = element_blank(),
-            plot.background = element_rect(fill = NA, colour = "grey"),
-            legend.key.height = unit(1, units = "mm"),
-            legend.key.width = unit(1, units = "mm"),
-            axis.title = element_text(face = "bold"),
-            legend.title = element_text(face = "bold"))+
-      labs(fill = "p.c.in.",
-           x = "# foragers",
-           y = "# kleptoparasites",
-           title = sprintf("sim_type = %s",
-                           unique(df$sim_type)))
-  })
+# read general fun response and split by sim type
+data <- fread("data/data_funresp_strategy.csv")
+```
 
-# wrap and save
-fig_fun_response <- patchwork::wrap_plots(fig_fun_response, ncol = 1)
-fig_fun_response
-ggsave(fig_fun_response,
+```{r}
+# plot
+fig_fun_response_strategy <- 
+  # lapply(data_summary, function(df) {
+  ggplot(data)+
+  geom_abline(slope = seq(0, 3, 0.5),
+                  intercept = -0.005, lwd = 0.3,
+              lty = 2,
+              col = "black")+
+  geom_tile(aes(foragers, klepts, 
+                fill = value),
+            show.legend = T)+
+  
+  facet_grid(sim_type ~ variable)+
+  scale_fill_gradientn(colours = (pals::cubehelix(10)),
+                       limits = c(0, 0.3),
+                       breaks = seq(0, 0.3, 0.1))+
+  # scale_fill_gradientn(colours = (scico(10, palette = "batlow")),
+  #                      limits = c(0, 0.3))+
+  coord_cartesian(
+    xlim = c(0, 0.06),
+    ylim = c(0, 0.06)
+  )+
+  theme_grey(base_size = 6, base_family = "sans")+
+  theme(legend.position = c(0.95, 0.25),
+        # panel.grid = element_blank(),
+        legend.key.width = unit(1, units = "mm"),
+        legend.background = element_blank())+
+  labs(fill = "p.c.in.",
+       x = "# foragers",
+       y = "# kleptoparasites",
+       title = "functional response: intake rate ~ foragers + kleptoparasites")
+  # })
+
+fig_fun_response_strategy
+```
+
+```{r}
+ggsave(fig_fun_response_strategy,
        filename = "figures/fig_fun_response_strategy.png",
-       dpi = 150)
+       width = 7, height = 4)
 ```
 
 ## Foragers and items
 
 ```{r}
-fig_fun_response <- 
-  lapply(data_summary, function(df) {
-    ggplot(df)+
-      geom_tile(aes(items, foragers,
-                    fill = value_cut),
-                show.legend = F)+
-      # geom_abline(slope = 1, lwd = 0.2)+
-      facet_grid(~variable)+
-      # scico::scale_fill_scico(palette = "lajolla",
-      #                         direction = -1,
-      #                         limits = c(0, 0.33)
-      #                         # breaks = c(1e-2, 1e0),
-      #                         # labels = c("lower", "higher")
-      # )+
-      scale_fill_manual(values = pals::kovesi.cyclic_mrybm_35_75_c68(15))+
-      
-      # coord_equal(
-      #   xlim = c(0, 0.06),
-      #   ylim = c(0, 0.06))+
-      theme_minimal(
-        base_size = 4
-        )+
-      theme(legend.position = "top",
-            # panel.grid = element_blank(),
-            plot.background = element_rect(fill = NA, colour = "grey"),
-            legend.key.height = unit(2, units = "mm"),
-            axis.title = element_text(face = "bold"),
-            legend.title = element_text(face = "bold"))+
-      labs(fill = "p.c.in.",
-           # x = "items",
-           # y = "agents",
-           title = sprintf("sim_type = %s",
-                           unique(df$sim_type)))
-  })
+# read general fun response and split by sim type
+data <- fread("data/data_funresp_foragers.csv")
+
+# round over more items
+data[, items_round := floor_any(items, 0.01)]
+
+# get summary
+df <- data[, list(value = mean(value)),
+            by = c("sim_type", 
+                   "items_round", "foragers", "variable")]
+```
+
+
+```{r}
+fig_fun_response <-
+  ggplot(df)+
+  geom_vline(xintercept = item_levels,
+             lty = 2, lwd = 0.25)+
+  geom_tile(aes(items_round, foragers,
+                fill = value),
+            show.legend = T)+
+  # geom_abline(slope = 1, lwd = 0.2)+
+  facet_grid(sim_type ~ variable)+
+  scale_fill_gradientn(colours = (pals::cubehelix(10)),
+                       limits = c(0, 0.3),
+                       breaks = seq(0, 0.3, 0.1))+
+  theme_grey(
+    base_size = 6
+  )+
+  theme(legend.position = c(0.95, 0.75),
+        # panel.grid = element_blank(),
+        legend.key.width = unit(1, units = "mm"),
+        legend.background = element_blank())+
+  labs(fill = "p.c.in.",
+       x = "# food items",
+       y = "# foragers",
+       title = "functional response: intake rate ~ items + foragers")
+# })
+fig_fun_response
 ```
 
 ```{r}
 # wrap and save
-fig_fun_response <- patchwork::wrap_plots(fig_fun_response)
-fig_fun_response
 ggsave(fig_fun_response,
        filename = "figures/fig_fun_response_foragers.png",
-       width = 12, height = 6)
+       width = 7, height = 4)
 ```
