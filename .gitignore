@@ -44,3 +44,4 @@ git c
 data/*
 !data/00_data_exists.txt
 !data/data_parameters/
+!data/data_*.csv
