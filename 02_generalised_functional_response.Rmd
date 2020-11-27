@@ -26,13 +26,13 @@ Prepare to read data.
 
 ```{r}
 # simulation type
-sim_type <- c("obligate", "facultative", "foragers", "random")
+sim_type <- c("obligate", "facultative")
 
 # get the replicates
 replicate <- stringr::str_pad(seq_len(3), pad = "0", width = 3)
 
-# growth rates
-regrowth <- c(0.001, 0.01, 0.03, 0.05)
+# growth rates -- read only 0.05
+regrowth <- c(0.05)
 
 # glue data folder names together
 data <- crossing(
@@ -62,11 +62,11 @@ data$data_summary <- lapply(data$folder_path, function(x) {
 # unnest the data
 data_plot <- unnest(data,
                cols = "data_summary")
+# set dt
+setDT(data_plot)
 ```
 
 ```{r}
-# set dt
-setDT(data_plot)
 # average over replicates and select only the highest growth rate
 data_summary <- data_plot[regrowth == max(regrowth), 
                      list(value = mean(value)),
@@ -75,55 +75,12 @@ data_summary <- data_plot[regrowth == max(regrowth),
 
 # remove simulation type foragers and random
 data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
-# data_summary$value_cut <- cut(data_summary$value, seq(0, 0.3, 0.02))
 
-# split by sim type
-data_summary <- split(data_summary, by = c("sim_type"))
-df = data_summary[[1]]
-```
+# # make factor
+data_summary$value_cut <- cut(data_summary$value, seq(0, 1, 0.01))
 
-
-```{r}
-fig_fun_response <- 
-  lapply(data_summary, function(df) {
-    ggplot(df)+
-      geom_tile(aes(items, total_agents, 
-                    fill = value),
-                show.legend = T)+
-      geom_vline(size = 0.1, xintercept = 0.2)+
-      facet_grid(~variable)+
-      # scico::scale_fill_scico(palette = "lajolla",
-      #                         direction = -1,
-      #                         limits = c(0, 0.33)
-      #                         # breaks = c(1e-2, 1e0),
-      #                         # labels = c("lower", "higher")
-      # )+
-      scale_fill_gradientn(colours = pals::kovesi.cyclic_mrybm_35_75_c68(10),
-                           limits = c(0, 0.3))+
-      coord_cartesian(
-        # xlim = c(0, 2.5),
-                      ylim = c(0.0, 0.1))+
-      theme_minimal(base_size = 8)+
-      theme(legend.position = "top",
-            # panel.grid = element_blank(),
-            plot.background = element_rect(fill = NA, colour = "grey"),
-            legend.key.height = unit(2, units = "mm"),
-            axis.title = element_text(face = "bold"),
-            legend.title = element_text(face = "bold"))+
-      labs(fill = "p.c.in.",
-           x = "items",
-           y = "agents",
-           title = sprintf("sim_type = %s",
-                           unique(df$sim_type)))
-  })
-```
-
-```{r}
-# wrap and save
-fig_fun_response <- patchwork::wrap_plots(fig_fun_response, ncol = 1)
-ggsave(fig_fun_response,
-       filename = "figures/fig_fun_response_avg.png",
-       width = 12, height = 10)
+# write file
+fwrite(data_summary, file = "data/data_funresp_general.csv")
 ```
 
 ## Functional response: Klepts ~ foragers
@@ -157,62 +114,10 @@ data_summary <- data_plot[regrowth == max(regrowth),
 data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
 
 # # make factor
-data_summary$value_cut <- cut(data_summary$value, seq(0, 0.3, 0.01))
+data_summary$value_cut <- cut(data_summary$value, seq(0, 1, 0.01))
 
-# split by sim type
-data_summary <- split(data_summary, by = c("sim_type"))
-df = data_summary[[1]]
-```
-
-```{r}
-# plot
-fig_fun_response <- 
-  lapply(data_summary, function(df) {
-    ggplot(df)+
-      geom_tile(aes(foragers, klepts, 
-                    fill = value_cut),
-                show.legend = F)+
-      geom_abline(slope = seq(0, 2, 0.5),
-                  intercept = -0.005, lwd = 0.1,
-                  col = "black")+
-      facet_grid(~variable)+
-      # scico::scale_fill_scico(palette = "lajolla",
-      #                         direction = -1,
-      #                         limits = c(0, 0.33)
-      #                         # breaks = c(1e-2, 1e0),
-      #                         # labels = c("lower", "higher")
-      # )+
-      # scale_fill_viridis_c(
-      #   option = "A",
-      #   limits = c(0.0001, 0.33)
-      # )+
-      scale_fill_manual(values= pals::kovesi.cyclic_mrybm_35_75_c68(30))+
-      coord_equal(
-        xlim = c(0, 0.06),
-        ylim = c(0, 0.06))+
-      theme_minimal(
-        base_size = 8
-        )+
-      theme(legend.position = "right",
-            # panel.grid = element_blank(),
-            plot.background = element_rect(fill = NA, colour = "grey"),
-            legend.key.height = unit(1, units = "mm"),
-            legend.key.width = unit(1, units = "mm"),
-            axis.title = element_text(face = "bold"),
-            legend.title = element_text(face = "bold"))+
-      labs(fill = "p.c.in.",
-           x = "# foragers",
-           y = "# kleptoparasites",
-           title = sprintf("sim_type = %s",
-                           unique(df$sim_type)))
-  })
-
-# wrap and save
-fig_fun_response <- patchwork::wrap_plots(fig_fun_response, ncol = 1)
-fig_fun_response
-ggsave(fig_fun_response,
-       filename = "figures/fig_fun_response_strategy.png",
-       dpi = 150)
+# write file
+fwrite(data_summary, file = "data/data_funresp_strategy.csv")
 ```
 
 ## Functional response: Foragers ~ items
@@ -243,56 +148,11 @@ data_summary <- data_plot[regrowth == max(regrowth),
                             "items", "foragers", "variable")]
 
 # remove simulation type foragers and random
-# data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
-data_summary$value_cut <- cut(data_summary$value, seq(0, 0.3, 0.02))
+data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
 
-# split by sim type
-data_summary <- split(data_summary, by = c("sim_type"))
-df = data_summary[[1]]
-```
+# # make factor
+data_summary$value_cut <- cut(data_summary$value, seq(0, 1, 0.01))
 
-```{r}
-fig_fun_response <- 
-  lapply(data_summary, function(df) {
-    ggplot(df)+
-      geom_tile(aes(items, foragers,
-                    fill = value_cut),
-                show.legend = F)+
-      # geom_abline(slope = 1, lwd = 0.2)+
-      facet_grid(~variable)+
-      # scico::scale_fill_scico(palette = "lajolla",
-      #                         direction = -1,
-      #                         limits = c(0, 0.33)
-      #                         # breaks = c(1e-2, 1e0),
-      #                         # labels = c("lower", "higher")
-      # )+
-      scale_fill_manual(values = pals::kovesi.cyclic_mrybm_35_75_c68(15))+
-      
-      # coord_equal(
-      #   xlim = c(0, 0.06),
-      #   ylim = c(0, 0.06))+
-      theme_minimal(
-        base_size = 4
-        )+
-      theme(legend.position = "top",
-            # panel.grid = element_blank(),
-            plot.background = element_rect(fill = NA, colour = "grey"),
-            legend.key.height = unit(2, units = "mm"),
-            axis.title = element_text(face = "bold"),
-            legend.title = element_text(face = "bold"))+
-      labs(fill = "p.c.in.",
-           # x = "items",
-           # y = "agents",
-           title = sprintf("sim_type = %s",
-                           unique(df$sim_type)))
-  })
-```
-
-```{r}
-# wrap and save
-fig_fun_response <- patchwork::wrap_plots(fig_fun_response)
-fig_fun_response
-ggsave(fig_fun_response,
-       filename = "figures/fig_fun_response_foragers.png",
-       width = 12, height = 6)
+# write file
+fwrite(data_summary, file = "data/data_funresp_foragers.csv")
 ```
