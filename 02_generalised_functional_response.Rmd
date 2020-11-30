@@ -26,13 +26,13 @@ Prepare to read data.
 
 ```{r}
 # simulation type
-sim_type <- c("obligate", "facultative")
+sim_type <- c("obligate", "facultative", "foragers", "random")
 
 # get the replicates
 replicate <- stringr::str_pad(seq_len(3), pad = "0", width = 3)
 
 # growth rates -- read only 0.05
-regrowth <- c(0.05)
+regrowth <- c(0.001, 0.01, 0.03, 0.05)
 
 # glue data folder names together
 data <- crossing(
@@ -46,6 +46,13 @@ data$folder_path <- glue_data(.x = data,
                               'data/sim_{sim_type}_rep_{replicate}_\\
                                       gro_{regrowth}')
 ```
+
+Write param combinations.
+
+```{r}
+fwrite(data, "data/data_param_combinations.csv")
+```
+
 
 Summarise the data and read it in, using the helper functions.
 
@@ -68,13 +75,13 @@ setDT(data_plot)
 
 ```{r}
 # average over replicates and select only the highest growth rate
-data_summary <- data_plot[regrowth == max(regrowth), 
+data_summary <- data_plot[, 
                      list(value = mean(value)),
-                     by = c("sim_type", 
+                     by = c("sim_type", "regrowth",
                             "items", "total_agents", "variable")]
 
 # remove simulation type foragers and random
-data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
+# data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
 
 # # make factor
 data_summary$value_cut <- cut(data_summary$value, seq(0, 1, 0.01))
@@ -105,13 +112,13 @@ setDT(data_plot)
 
 ```{r}
 # average over replicates and select only the highest growth rate
-data_summary <- data_plot[regrowth == max(regrowth), 
+data_summary <- data_plot[, 
                      list(value = mean(value)),
-                     by = c("sim_type", 
+                     by = c("sim_type", "regrowth",
                             "klepts", "foragers", "variable")]
 
 # remove simulation type foragers and random
-data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
+# data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
 
 # # make factor
 data_summary$value_cut <- cut(data_summary$value, seq(0, 1, 0.01))
@@ -142,13 +149,13 @@ setDT(data_plot)
 
 ```{r}
 # average over replicates and select only the highest growth rate
-data_summary <- data_plot[regrowth == max(regrowth), 
+data_summary <- data_plot[, 
                      list(value = mean(value)),
-                     by = c("sim_type", 
+                     by = c("sim_type", "regrowth",
                             "items", "foragers", "variable")]
 
 # remove simulation type foragers and random
-data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
+# data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
 
 # # make factor
 data_summary$value_cut <- cut(data_summary$value, seq(0, 1, 0.01))
