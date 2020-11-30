@@ -1,5 +1,5 @@
 
-# Plot generalised functional response
+# Generalised Response: Items and all Individuals
 
 ```{r}
 library(data.table)
@@ -11,7 +11,7 @@ source("code/functional_response.R")
 ```
 
 
-## Items and all individuals
+## Get data
 
 ```{r}
 # read general fun response and split by sim type
