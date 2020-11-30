@@ -5,7 +5,9 @@
 library(data.table)
 library(ggplot2)
 library(pals)
-library(scico)
+
+# custom functions
+source("code/functional_response.R")
 ```
 
 
@@ -15,198 +17,184 @@ library(scico)
 # read general fun response and split by sim type
 data <- fread("data/data_funresp_general.csv")
 
-# round over more items
-data[, items_round := floor_any(items, 0.01)]
-
-# get summary
-df <- data[, list(value = mean(value)),
-            by = c("sim_type", 
-                   "items_round", "total_agents", "variable")]
-```
-
-```{r}
-# choose some item levels
-item_levels <- c(0.1, 0.25, 0.5, 1.0, 2.0)
-```
-
-
-```{r}
-fig_fun_response <- 
-  # lapply(data, function(df) {
-  ggplot(df)+
-  geom_vline(xintercept = item_levels,
-             lty = 2, lwd = 0.25)+
-  geom_tile(aes(items_round, total_agents, 
-                fill = value),
-            show.legend = T)+
-  facet_grid(sim_type~variable)+
-  # scico::scale_fill_scico(palette = "lajolla",
-  #                         direction = -1,
-  #                         limits = c(0, 0.33)
-  #                         # breaks = c(1e-2, 1e0),
-  #                         # labels = c("lower", "higher")
-  # )+
-  scale_fill_gradientn(colours = (pals::cubehelix(10)),
-                       limits = c(0, 0.3),
-                       breaks = seq(0, 0.3, 0.1))+
-  theme_grey(base_size = 6, base_family = "sans")+
-  theme(legend.position = c(0.95, 0.75),
-        # panel.grid = element_blank(),
-        legend.key.width = unit(1, units = "mm"),
-        legend.background = element_blank())+
-  labs(fill = "p.c.in.",
-       x = "# food items",
-       y = "# individuals",
-       title = "functional response: intake rate ~ items + agents")
-# }
-# )
-
-# fig_fun_response <- patchwork::wrap_plots(fig_fun_response, ncol = 1)
-fig_fun_response
-```
-
-```{r}
-ggsave(fig_fun_response,
-       filename = "figures/fig_fun_response_general.png",
-       width = 7, height = 4)
-```
-
-## Intake ~ agents controlling for items
-
-```{r}
-# gather data, first select items
-df_summary <- df[items_round %in% c(item_levels) &
-                   variable != "pc_intake_total",]
-
-# make scatterplot
-fig_fun_response_agents <-
-  ggplot(df_summary)+
-  geom_point(aes(total_agents, value, 
-                 colour = variable),
-             alpha = 1, size = 1)+
-  scale_colour_manual(values = pals::coolwarm(2),
-                      labels = c("foragers", "klepts", "total"))+
-  facet_grid(sim_type ~ items_round, scales = "free",
-             labeller = label_both)+
-  theme_grey(base_size = 6, base_family = "sans")+
-    coord_cartesian(
-      ylim = c(0, 0.2)
-    )+
-  theme(legend.position = "top",
-        legend.key.height = unit(1, units = "mm"),
-        legend.background = element_blank())+
-  labs(fill = "p.c.in.",
-       x = "# individuals",
-       y = "per-capita intake",
-       colour = "strategy",
-       title = "functional response: intake rate ~ items + agents")
-
-fig_fun_response_agents
-```
-
-```{r}
-ggsave(fig_fun_response_agents,
-       filename = "figures/fig_fun_response_general_agents.png",
-       width = 7, height = 3.5)
-```
-
-# Foragers and kleptoparasites
-
-```{r}
-# read general fun response and split by sim type
-data <- fread("data/data_funresp_strategy.csv")
-```
-
-```{r}
-# plot
-fig_fun_response_strategy <- 
-  # lapply(data_summary, function(df) {
-  ggplot(data)+
-  geom_abline(slope = seq(0, 3, 0.5),
-                  intercept = -0.005, lwd = 0.3,
-              lty = 2,
-              col = "black")+
-  geom_tile(aes(foragers, klepts, 
-                fill = value),
-            show.legend = T)+
-  
-  facet_grid(sim_type ~ variable)+
-  scale_fill_gradientn(colours = (pals::cubehelix(10)),
-                       limits = c(0, 0.3),
-                       breaks = seq(0, 0.3, 0.1))+
-  # scale_fill_gradientn(colours = (scico(10, palette = "batlow")),
-  #                      limits = c(0, 0.3))+
-  coord_cartesian(
-    xlim = c(0, 0.06),
-    ylim = c(0, 0.06)
-  )+
-  theme_grey(base_size = 6, base_family = "sans")+
-  theme(legend.position = c(0.95, 0.25),
-        # panel.grid = element_blank(),
-        legend.key.width = unit(1, units = "mm"),
-        legend.background = element_blank())+
-  labs(fill = "p.c.in.",
-       x = "# foragers",
-       y = "# kleptoparasites",
-       title = "functional response: intake rate ~ foragers + kleptoparasites")
-  # })
-
-fig_fun_response_strategy
-```
-
-```{r}
-ggsave(fig_fun_response_strategy,
-       filename = "figures/fig_fun_response_strategy.png",
-       width = 7, height = 4)
-```
-
-## Foragers and items
-
-```{r}
-# read general fun response and split by sim type
-data <- fread("data/data_funresp_foragers.csv")
+# subset for max regrowth
+data <- data[regrowth == max(regrowth)]
 
 # round over more items
 data[, items_round := floor_any(items, 0.01)]
 
 # get summary
 df <- data[, list(value = mean(value)),
-            by = c("sim_type", 
-                   "items_round", "foragers", "variable")]
+  by = c(
+    "sim_type",
+    "items_round", "total_agents", "variable"
+  )
+]
+```
+
+```{r}
+# split by sim type
+df <- split(df, by = "sim_type")
 ```
 
 
 ```{r}
 fig_fun_response <-
-  ggplot(df)+
-  geom_vline(xintercept = item_levels,
-             lty = 2, lwd = 0.25)+
-  geom_tile(aes(items_round, foragers,
-                fill = value),
-            show.legend = T)+
-  # geom_abline(slope = 1, lwd = 0.2)+
-  facet_grid(sim_type ~ variable)+
-  scale_fill_gradientn(colours = (pals::cubehelix(10)),
-                       limits = c(0, 0.3),
-                       breaks = seq(0, 0.3, 0.1))+
-  theme_grey(
-    base_size = 6
-  )+
-  theme(legend.position = c(0.95, 0.75),
+  lapply(df, function(df) {
+    ggplot(df) +
+      # geom_vline(xintercept = item_levels,
+      #            lty = 2, lwd = 0.25)+
+      geom_tile(aes(items_round, total_agents,
+        fill = value
+      ),
+      show.legend = T
+      ) +
+      facet_grid(sim_type ~ variable) +
+      # coord_fixed(ratio = 20)+
+      scale_fill_gradientn(
+        colours = (pals::cubehelix(10, r = -2.5)),
+        limits = c(1e-6, 0.3),
+        breaks = seq(0, 0.3, 0.1),
+        na.value = NA
+      ) +
+      theme_bw(base_size = 8, base_family = "sans") +
+      theme(
+        legend.position = "top",
         # panel.grid = element_blank(),
-        legend.key.width = unit(1, units = "mm"),
-        legend.background = element_blank())+
-  labs(fill = "p.c.in.",
-       x = "# food items",
-       y = "# foragers",
-       title = "functional response: intake rate ~ items + foragers")
-# })
+        legend.key.height = unit(1, units = "mm"),
+        legend.background = element_blank()
+      ) +
+      labs(
+        fill = "per-captia\nintake",
+        x = "# food items",
+        y = "# individuals"
+      )
+  })
+
+fig_fun_response <- patchwork::wrap_plots(fig_fun_response[c(
+  "foragers",
+  "obligate",
+  "facultative",
+  "random"
+)],
+ncol = 1,
+guides = "collect"
+) &
+  theme(legend.position = "top")
 fig_fun_response
+# fig_fun_response[[3]]
 ```
 
 ```{r}
-# wrap and save
 ggsave(fig_fun_response,
-       filename = "figures/fig_fun_response_foragers.png",
-       width = 7, height = 4)
+  filename = "figures/fig_fun_response_general.png",
+  dpi = 150
+)
 ```
+
+## Coefficient of resources and competition
+
+We fit a GLM with per-capita intake rate as the response, and items and individuals as the predictors, and extract the coefficients (and p-values) of each for every regrowth rate and simulation type.
+
+First we access all regrowth levels.
+
+```{r}
+# read general fun response and split by sim type
+data <- fread("data/data_funresp_general.csv")
+```
+
+### Separate data by Scenario and Regrowth
+
+```{r}
+# split the data
+data_model <- split(data, by = c("sim_type", "regrowth", "variable"))
+```
+
+```{r}
+# define a function to collect coefficients
+do_model <- function(df, ...) {
+  mod <- glm(..., data = df)
+
+  cf <- coefficients(mod)
+
+  data.table(cf = cf, vbl = names(cf))
+}
+```
+
+```{r}
+# gather coefficients
+model_cf <- Map(function(df) {
+  do_model(df = df, "value ~ items + total_agents")
+}, df = data_model)
+```
+
+```{r}
+# read in parameters
+params <- fread("data/data_param_combinations.csv")
+
+# get unique values
+params[, folder_path := NULL]
+params <- unique(params, by = c("sim_type", "regrowth"))
+
+# add strategy
+params <- tidyr::crossing(params, 
+                          strategy = unique(data$variable))
+setDT(params)
+# add list column of coefficients
+params[, mod_cf := model_cf]
+
+# unlist as data
+sim_coefs <- params[, unlist(mod_cf, recursive = F), 
+                    by = list(sim_type, regrowth, strategy)]
+```
+
+### Handle variable names
+
+```{r}
+# subset columns
+sim_coefs <- sim_coefs[stringi::stri_detect(vbl,
+  regex = "(items)|(agents)"
+), ]
+
+# rename vbl
+sim_coefs[, vbl := dplyr::case_when(
+  stringi::stri_detect(vbl,
+    fixed = "items:total_agents"
+  ) ~
+  "items * individuals",
+  stringi::stri_detect(vbl, fixed = "items") ~ "items",
+  # stringi::stri_detect(vbl, fixed = "klepts") ~ "kleptoparasite",
+  T ~ "individuals"
+)]
+
+# relevel simulation type
+sim_coefs[, sim_type := factor(sim_type,
+                               levels = c("foragers", "obligate", 
+                                          "facultative", "random"))]
+```
+
+### Plot variable values
+
+```{r}
+ggplot(sim_coefs[strategy != "pc_intake_total"])+
+  geom_hline(yintercept = 0, col = "grey",
+             lwd = 0.1, lty = 2)+
+  geom_line(aes((regrowth),
+                 cf,
+                col = c(strategy)))+
+  geom_point(aes((regrowth), 
+                 cf,
+                 col = strategy), 
+             size = 2)+
+  
+  facet_grid(sim_type~vbl, scales = "fixed")+
+  scale_colour_manual(
+    values = pals::coolwarm(2)
+  )+
+  theme_test()+
+  theme(legend.position = "top")+
+  labs(x = "growth rate",
+       y = "coefficient",
+       col = "scenario")
+```
+
