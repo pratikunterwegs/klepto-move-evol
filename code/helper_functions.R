@@ -1,5 +1,21 @@
 #### helper functions for kleptomove ####
 
+get_generation_data <- function(filepath,
+  generation = 991) {
+  
+  # get filepath of the function sourceME.r
+  toSource <- list.files(path = filepath,
+                         pattern = "sourceMe.R",
+                         full.names = TRUE)
+  
+  # source it
+  source(toSource)
+  # get summary data
+  temp_gen_data <- generation(991) # who decided to name this after a common R func?
+  
+  return(temp_gen_data)
+}
+
 # a generalised function
 
 #' Get weight data from \code{generation} output.
@@ -92,13 +108,13 @@ get_weights_timeline <- function(generations,
   
 }
 
-#' Get weight evolution plot for a simulation replicate.
+#' Get weight evolution data for a simulation replicate.
 #'
 #' @param data_folder Where the \code{sourceMe.R} file should be sourced from.
 #' @param weight_names The weight names.
 #' @param ... Argumentns pass to \code{get_weights_timeline}.
 #'
-#' @return A \code{ggplot} of weight evolution
+#' @return A data.table of weight evolution
 #' @export
 #'
 get_sim_weight_evol <- function(data_folder, 
@@ -122,32 +138,32 @@ get_sim_weight_evol <- function(data_folder,
   names(weight_names) <- seq(length(weight_names) + 1)[-1]
 
   # plot weights data
-  plot_weights <-
-    ggplot2::ggplot()+
-    ggplot2::geom_tile(data = weight_data_gen,
-                       ggplot2::aes(gen, weight_value,
-                                    fill = weight_prop),
-                       show.legend = FALSE) +
-    ggplot2::facet_grid(~ weight_id,
-                        labeller = ggplot2::labeller(
-                          weight_id = weight_names
-                        )
-    ) +
-    ggplot2::scale_fill_distiller(palette = "YlOrRd") +
-    ggplot2::geom_hline(yintercept = 0) +
-    ggplot2::theme(axis.text = ggplot2::element_blank(),
-                   axis.ticks = ggplot2::element_blank())+
-    ggplot2::labs(x = "generation",
-                  y = "weight value")
+  # plot_weights <-
+  #   ggplot2::ggplot()+
+  #   ggplot2::geom_tile(data = weight_data_gen,
+  #                      ggplot2::aes(gen, weight_value,
+  #                                   fill = weight_prop),
+  #                      show.legend = FALSE) +
+  #   ggplot2::facet_grid(~ weight_id,
+  #                       labeller = ggplot2::labeller(
+  #                         weight_id = weight_names
+  #                       )
+  #   ) +
+  #   ggplot2::scale_fill_distiller(palette = "YlOrRd") +
+  #   ggplot2::geom_hline(yintercept = 0) +
+  #   ggplot2::theme(axis.text = ggplot2::element_blank(),
+  #                  axis.ticks = ggplot2::element_blank())+
+  #   ggplot2::labs(x = "generation",
+  #                 y = "weight value")
 
   # return the ggplot
-  return(plot_weights)
+  return(weight_data_gen)
   
 }
 
 #' Summarise Kleptomove output.
 #' 
-#' A function to get the per-generation
+#' A function to get the per-generation per-timestep occupancy per cell.
 #'
 #' @param data_folder Which data folder to summarise. Data folders should
 #' contain the results of ONE replicate of ONE parameter combination.
