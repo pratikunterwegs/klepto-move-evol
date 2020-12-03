@@ -140,6 +140,7 @@ params <- unique(params, by = c("sim_type", "regrowth"))
 params <- tidyr::crossing(params, 
                           strategy = unique(data$variable))
 setDT(params)
+
 # add list column of coefficients
 params[, mod_cf := model_cf]
 
@@ -185,7 +186,7 @@ ggplot(sim_coefs[strategy != "pc_intake_total"])+
   geom_point(aes((regrowth), 
                  cf,
                  col = strategy), 
-             size = 2)+
+             size = 3)+
   
   facet_grid(sim_type~vbl, scales = "fixed")+
   scale_colour_manual(
