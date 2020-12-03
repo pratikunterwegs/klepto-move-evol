@@ -32,7 +32,8 @@ sim_type <- c("obligate", "facultative", "foragers", "random")
 replicate <- stringr::str_pad(seq_len(3), pad = "0", width = 3)
 
 # growth rates -- read only 0.05
-regrowth <- c(0.001, 0.01, 0.03, 0.05)
+regrowth <- c(0.001, 0.01, 0.03, 0.05,
+              0.02, 0.04, 0.075, 0.25, 0.005)
 
 # glue data folder names together
 data <- crossing(
@@ -61,7 +62,7 @@ Summarise the data and read it in, using the helper functions.
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
-    round_value = 0.001,
+    round_value = 0.005,
     drivers = c("items", "total_agents")
   )
 })
