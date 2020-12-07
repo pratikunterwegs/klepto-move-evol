@@ -1,4 +1,5 @@
 
+# Plot node weight evolution
 
 ```{r}
 # load libs
@@ -18,17 +19,86 @@ param_combinations <- fread("data/data_param_combinations.csv")
 temp_gen_data <- lapply(param_combinations$folder_path, 
                         function(x) {
                           get_sim_weight_evol(data_folder = x,
-                                              generations = seq(1, 999, 50))
+                                              generations = seq(1, 999, 25))
                         }
 )
 ```
 
 ```{r}
+# bind with parameters
+data <- param_combinations
+data[, wt_data := temp_gen_data]
+
+# unnest
+data <- data[, unlist(wt_data, recursive = F),
+             by = list(sim_type, replicate, regrowth)]
+fwrite(data, file = "data/data_weight_evolution.csv")
+```
+
+## Prepare plots
+
+```{r}
+data2 <- data[regrowth == 0.05 & sim_type == "obligate", ]
+
+# get label weights
+label_wt <- c(
+  sprintf("weight: %i", 2:8)
+)
+names(label_wt) <- c(2:8)
+
+# split the data
+data2 <- split(data, by = c("sim_type"))
+
 # plot the timeline
-ggplot(temp_gen_data)+
-  geom_tile(aes(gen, weight_value, fill = weight_prop))+
-  facet_grid(~weight_id)+
-  scale_fill_gradientn(colours = rev(pals::cubehelix(10)))+
-  theme(axis.text = element_blank())
+plots <- Map(function(le) {
+  
+  # split by regrowth
+  le <- split(le, by = "regrowth")
+  
+  subfigures <- lapply(le, function(df) {
+    # get plot title
+    title <- sprintf("scenario: %s\nregrowth: %.*f",
+                     unique(df$sim_type),
+                     3,
+                     unique(df$regrowth)) 
+    
+    # get plot
+    ggplot(df)+
+      geom_tile(aes(gen, weight_value, 
+                    fill = weight_prop),
+                show.legend = FALSE)+
+      geom_hline(yintercept = 25,
+                 lwd = 0.1, col = "grey")+
+      facet_grid(weight_id ~ replicate, 
+                 labeller = labeller(weight_id = label_wt,
+                                     replicate = label_both))+
+      scale_fill_gradientn(colours = rev(pals::kovesi.linear_bmy_10_95_c78(10)),
+                           limits = c(1e-2, 1),
+                           na.value = NA)+
+      theme_bw(base_size = 8)+
+      theme(axis.text = element_blank(),
+            panel.grid = element_blank())+
+      labs(x = "generation", y = "value",
+           title = title)
+  })
+  
+  figure <- patchwork::wrap_plots(subfigures, ncol = 10)
+  
+  # figure filename
+  fig_name <- unique(le[[1]]$sim_type)
+  filename = sprintf("figures/fig_node_weight_%s.png",
+                     fig_name)
+  message(fig_name)
+  ggsave(figure,
+         filename = filename,
+         height = 11,
+         width = 20,
+         units = "in")
+  
+  return(figure)
+  
+}, data2)
+
+
 ```
 
