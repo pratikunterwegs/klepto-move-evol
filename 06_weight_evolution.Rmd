@@ -3,28 +3,24 @@
 ```{r}
 # load libs
 library(data.table)
-```
+library(ggplot2)
 
-```{r}
-# get data sources
-# get full names of data containing directories
-data_dirs <- list.dirs(path = "data",
-                       full.names = TRUE,
-                       recursive = FALSE)
-
-
-# exclude nonsense directories
-data_dirs <- data_dirs[stringr::str_detect(data_dirs, "sim")]
-```
-
-```{r}
 # get helper functions
 source("code/helper_functions.R")
+```
 
-# get weight evol plot
+```{r}
+# read parameter combinations
+param_combinations <- fread("data/data_param_combinations.csv")
 
-temp_gen_data <- get_sim_weight_evol(data_folder = filepath,
-                                     generations = seq(1, 999, 50))
+# get weight evolution every 10 generation
+# from each simulation
+temp_gen_data <- lapply(param_combinations$folder_path, 
+                        function(x) {
+                          get_sim_weight_evol(data_folder = x,
+                                              generations = seq(1, 999, 50))
+                        }
+)
 ```
 
 ```{r}
@@ -33,6 +29,6 @@ ggplot(temp_gen_data)+
   geom_tile(aes(gen, weight_value, fill = weight_prop))+
   facet_grid(~weight_id)+
   scale_fill_gradientn(colours = rev(pals::cubehelix(10)))+
-  theme_bw()
+  theme(axis.text = element_blank())
 ```
 
