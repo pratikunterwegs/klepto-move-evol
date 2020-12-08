@@ -26,13 +26,20 @@ data_num_phenotype <- data[weight_prop >= prop, .N,
 
 ```{r}
 # plot to examine
-fig_variation <- 
+# fig_variation <- 
   ggplot(data_num_phenotype)+
-  geom_jitter(aes(gen, N,
+  geom_path(aes(gen, N,
                 col = regrowth,
                 # shape = factor(replicate),
                 group = interaction(regrowth, replicate)),
-              size = 0.5)+
+              size = 0.5,
+            position = position_jitter(width = 0.01))+
+  # geom_jitter(aes(gen, N,
+  #               col = regrowth,
+  #               # shape = factor(replicate),
+  #               group = interaction(regrowth, replicate)),
+  #             size = 0.5,
+  #             alpha = 0.5)+
   facet_grid(weight_id ~ sim_type)+
   scale_colour_gradientn(colours = 
                            rev(pals::kovesi.diverging_bkr_55_10_c35(10)),
