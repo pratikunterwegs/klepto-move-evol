@@ -12,7 +12,7 @@ source("code/helper_functions.R")
 
 ```{r}
 # read parameter combinations
-param_combinations <- fread("data/data_param_combinations.csv")
+param_combinations <- fread("data/results/data_param_combinations.csv")
 
 # get weight evolution every 10 generation
 # from each simulation
@@ -32,7 +32,7 @@ data[, wt_data := temp_gen_data]
 # unnest
 data <- data[, unlist(wt_data, recursive = F),
              by = list(sim_type, replicate, regrowth)]
-fwrite(data, file = "data/data_weight_evolution.csv")
+fwrite(data, file = "data/results/data_weight_evolution.csv")
 ```
 
 ## Prepare plots
