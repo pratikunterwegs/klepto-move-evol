@@ -65,6 +65,39 @@ get_weights_prop <- function(gen_data, weight_w,
   return(weight_data)
 }
 
+# function to get overall behaviour weight
+get_overall_behaviour <- function(gen_data, which_weights,
+                                  min_w_val = -1.01,
+                                  max_w_val = 1.01,
+                                  steps = 50) {
+
+  # calculate stepsize
+  step_size <- (max_w_val - min_w_val) / steps
+
+  # get generation data and which weights rowsums times 20
+  weights <- rowSums(gen_data[["agents"]][["ann"]][, c(which_weights)]) * 20
+  # this is now a dt
+
+  weight_tanh <- tanh(weights)
+  weight_class <- cut(weight_tanh, 
+                      seq(min_w_val, max_w_val, step_size),
+                      right = TRUE)
+  # get proportions
+  weight_prop <- table(weight_class) / length(weights)
+  
+  # get the weight names
+  weight_value_names <- names(weight_prop)
+  
+  # make a data.table
+  weight_data <- data.table::data.table(
+    weight_id = 99,
+    weight_value = weight_value_names,
+    weight_prop = as.vector(weight_prop)
+  )
+  return(weight_data) 
+
+}
+
 #' Get weight proportions across generations.
 #'
 #' @param generations A sequence of generations.
@@ -92,13 +125,20 @@ get_weights_timeline <- function(generations,
       weight_dt <- get_weights_prop(gen_data = G,
                                     weight_w = w, ...)
     })
+
+    # get overall behaviour
+    # knowing LAST 4 WEIGHTS ARE STRATEGY
+    weight_behaviour <- get_overall_behaviour(gen_data = G, 
+                                          which_weights = last(seq_weights, 4))
+    # add gen
+    weight_behaviour[, gen := g]                                          
     
     # bind the list
     weight_data <- data.table::rbindlist(weight_data)
     # add generation
     weight_data[, gen := g]
     
-    return(weight_data)
+    return(rbind(weight_data, weight_behaviour))
   })
   
   # bind all generations
