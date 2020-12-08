@@ -1,0 +1,58 @@
+
+# Synthesize phenotype counts
+
+```{r}
+library(data.table)
+library(ggplot2)
+```
+
+## Get data
+
+```{r}
+data <- fread("data/results/data_weight_evolution.csv")
+```
+
+## How many phenotypes above 1%?
+
+```{r}
+# define a proportion rather than a percentage
+prop <- 1e-2
+
+# subset for numerous phenotypes and count per generation
+data_num_phenotype <- data[weight_prop >= prop, .N, 
+     by = list(sim_type, replicate, 
+               regrowth, gen, weight_id)]
+```
+
+```{r}
+# plot to examine
+fig_variation <- 
+  ggplot(data_num_phenotype)+
+  geom_jitter(aes(gen, N,
+                col = regrowth,
+                # shape = factor(replicate),
+                group = interaction(regrowth, replicate)),
+              size = 0.5)+
+  facet_grid(weight_id ~ sim_type)+
+  scale_colour_gradientn(colours = 
+                           rev(pals::kovesi.diverging_bkr_55_10_c35(10)),
+                         trans = "sqrt")+
+  coord_cartesian(ylim = c(2, NA))+
+  theme_grey(base_size = 8)+
+  theme(
+    # axis.text = element_blank(),
+    panel.grid = element_blank(),
+    legend.position = "top",
+    legend.key.height = unit(1, units = "mm")
+  )+
+  labs(x = "generations",
+       y = "# phenotypes (# weight values > 1% pop. size)")
+```
+
+```{r}
+ggsave(fig_variation,
+       filename = "figures/fig_weight_diversity.png",
+       height = 12,
+       width = 6)
+```
+
