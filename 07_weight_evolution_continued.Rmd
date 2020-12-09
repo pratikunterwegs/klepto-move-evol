@@ -22,6 +22,13 @@ prop <- 1e-2
 data_num_phenotype <- data[weight_prop >= prop, .N, 
      by = list(sim_type, replicate, 
                regrowth, gen, weight_id)]
+
+# arrange levels
+data_num_phenotype[, sim_type := factor(sim_type,
+                                        levels = c("foragers",
+                                                   "obligate",
+                                                   "facultative",
+                                                   "random"))]
 ```
 
 ```{r}
@@ -49,9 +56,9 @@ fig_variation <-
   #             alpha = 0.5)+
   facet_grid(sim_type ~ weight_id,
              labeller = labeller(weight_id = label_wt,
-                                     replicate = label_both))+
+                                 replicate = label_both))+
   scale_colour_gradientn(colours = 
-                           rev(pals::kovesi.linear_bgy_10_95_c74(10)),
+                           rev(pals::cubicyf(10)),
                          trans = "sqrt")+
   coord_cartesian(ylim = c(2, NA))+
   theme_test(base_size = 8)+
