@@ -25,8 +25,15 @@ data_num_phenotype <- data[weight_prop >= prop, .N,
 ```
 
 ```{r}
+# get label weights
+label_wt <- c(
+  # sprintf("weight: %s", c(2:8, 99))
+  c("m(non-h)", "m(hand)", "m(food)",
+    "f(bias)", "f(non-h)", "f(hand)", "f(food)", "f(total)")
+)
+names(label_wt) <- c(seq(2, 8), 99)
 # plot to examine
-# fig_variation <- 
+fig_variation <-
   ggplot(data_num_phenotype)+
   geom_path(aes(gen, N,
                 col = regrowth,
@@ -40,12 +47,14 @@ data_num_phenotype <- data[weight_prop >= prop, .N,
   #               group = interaction(regrowth, replicate)),
   #             size = 0.5,
   #             alpha = 0.5)+
-  facet_grid(weight_id ~ sim_type)+
+  facet_grid(sim_type ~ weight_id,
+             labeller = labeller(weight_id = label_wt,
+                                     replicate = label_both))+
   scale_colour_gradientn(colours = 
-                           rev(pals::kovesi.diverging_bkr_55_10_c35(10)),
+                           rev(pals::kovesi.linear_bgy_10_95_c74(10)),
                          trans = "sqrt")+
   coord_cartesian(ylim = c(2, NA))+
-  theme_grey(base_size = 8)+
+  theme_test(base_size = 8)+
   theme(
     # axis.text = element_blank(),
     panel.grid = element_blank(),
@@ -59,7 +68,7 @@ data_num_phenotype <- data[weight_prop >= prop, .N,
 ```{r}
 ggsave(fig_variation,
        filename = "figures/fig_weight_diversity.png",
-       height = 12,
-       width = 6)
+       height = 10,
+       width = 11)
 ```
 
