@@ -35,16 +35,40 @@ data <- data[, unlist(wt_data, recursive = F),
 fwrite(data, file = "data/results/data_weight_evolution.csv")
 ```
 
+```{r}
+# read back in
+data <- fread("data/results/data_weight_evolution.csv")
+
+# handle weight value ranges and use lower bound
+data[, weight_num := 
+       stringi::stri_extract(weight_value, 
+                             regex = "[-0-9]+\\.\\d{2}")]
+```
+
+```{r}
+# check single plot
+ggplot(data = data[regrowth == 0.05 & 
+                     sim_type == "obligate" &
+                     replicate == 1, ])+
+  geom_tile(aes(gen, 
+                reorder(weight_num, as.numeric(weight_num)), 
+                fill = weight_prop))+
+  scale_y_discrete(breaks = c(-1.01, 0.04, 0.97),
+                   labels = c("-1", "0", "+1"))+
+  facet_grid(~weight_id)
+```
+
+
 ## Prepare plots
 
 ```{r}
-data2 <- data[regrowth == 0.05 & sim_type == "obligate", ]
-
 # get label weights
 label_wt <- c(
-  sprintf("weight: %i", 2:8)
+  # sprintf("weight: %s", c(2:8, 99))
+  c("m(non-h)", "m(hand)", "m(food)",
+    "f(bias)", "f(non-h)", "f(hand)", "f(food)", "f(total)")
 )
-names(label_wt) <- c(2:8)
+names(label_wt) <- c(seq(2, 8), 99)
 
 # split the data
 data2 <- split(data, by = c("sim_type"))
@@ -64,7 +88,8 @@ plots <- Map(function(le) {
     
     # get plot
     ggplot(df)+
-      geom_tile(aes(gen, weight_value, 
+      geom_tile(aes(gen, 
+                    reorder(weight_num, as.numeric(weight_num)), 
                     fill = weight_prop),
                 show.legend = FALSE)+
       geom_hline(yintercept = 25,
@@ -72,11 +97,13 @@ plots <- Map(function(le) {
       facet_grid(weight_id ~ replicate, 
                  labeller = labeller(weight_id = label_wt,
                                      replicate = label_both))+
+      scale_y_discrete(breaks = c(-1.01, 0.04, 0.97),
+                       labels = c("-1", "0", "+1"))+
       scale_fill_gradientn(colours = rev(pals::kovesi.linear_bmy_10_95_c78(10)),
                            limits = c(1e-2, 1),
                            na.value = NA)+
       theme_bw(base_size = 8)+
-      theme(axis.text = element_blank(),
+      theme(axis.text.x = element_blank(),
             panel.grid = element_blank())+
       labs(x = "generation", y = "value",
            title = title)
