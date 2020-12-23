@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 
 # Generalised Response: Items and all Individuals
 
@@ -130,16 +135,9 @@ model_cf <- Map(function(df) {
 
 ```{r}
 # read in parameters
-params <- fread("data/data_param_combinations.csv")
+params <- unique(data, by = c("sim_type", "regrowth", "variable"))
 
-# get unique values
-params[, folder_path := NULL]
-params <- unique(params, by = c("sim_type", "regrowth"))
-
-# add strategy
-params <- tidyr::crossing(params, 
-                          strategy = unique(data$variable))
-setDT(params)
+setnames(params, old = "variable", new = "strategy")
 
 # add list column of coefficients
 params[, mod_cf := model_cf]
@@ -177,7 +175,8 @@ sim_coefs[, sim_type := factor(sim_type,
 ### Plot variable values
 
 ```{r}
-ggplot(sim_coefs[strategy != "pc_intake_total"])+
+fig_coef_intake <- 
+  ggplot(sim_coefs[strategy != "pc_intake_total"])+
   geom_hline(yintercept = 0, col = "grey",
              lwd = 0.1, lty = 2)+
   geom_line(aes((regrowth),
@@ -186,7 +185,8 @@ ggplot(sim_coefs[strategy != "pc_intake_total"])+
   geom_point(aes((regrowth), 
                  cf,
                  col = strategy), 
-             size = 3)+
+             size = 3,
+             shape = 1, stroke = 1)+
   
   facet_grid(sim_type~vbl, scales = "fixed")+
   scale_colour_manual(
@@ -197,5 +197,9 @@ ggplot(sim_coefs[strategy != "pc_intake_total"])+
   labs(x = "growth rate",
        y = "coefficient",
        col = "scenario")
+
+# save
+ggsave(fig_coef_intake,
+       filename = "figures/fig_coef_intake_general.png")
 ```
 
