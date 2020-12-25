@@ -10,6 +10,7 @@ editor_options:
 # load libs
 library(data.table)
 library(ggplot2)
+library(patchwork)
 
 # get helper functions
 source("code/helper_functions.R")
@@ -44,28 +45,20 @@ test <- na.omit(test)
 test[, p_pos_var := n_pos / (n_pos + n_neg)]
 test[, n_morphs := n_pos + n_neg]
 
-# test[, c("n_pos", "n_neg") := NULL]
-
-# test[, value := ifelse(variable == "n_neg", -value, value)]
-# 
-# test[, p_sum := ifelse(variable == "n_neg", -p_neg, p_pos)]
-
-# test[, `:=`(p_pos = NULL, p_neg = NULL)]
-
 ggplot(test, 
        aes(group = replicate))+
   geom_ribbon(
     aes(x = gen, 
         ymin = 1 - p_neg,
         ymax = (1 - p_neg) + (n_pos/50)),
-    fill = "dodgerblue",
+    fill = "darkgreen",
     alpha = 0.3
   )+
   geom_ribbon(
     aes(x = gen, 
         ymin = 1 - p_neg,
         ymax = (1 - p_neg) - (n_neg/50)),
-    fill = "indianred",
+    fill = "red",
     alpha = 0.3
   )+
   geom_line(aes(gen, 1 - p_neg),
@@ -139,32 +132,26 @@ plots <- Map(function(le) {
         aes(x = gen, 
             ymin = 1 - p_neg,
             ymax = (1 - p_neg) + (n_pos/50)),
-        fill = "dodgerblue",
+        fill = "darkgreen",
         alpha = 0.3
       )+
       geom_ribbon(
         aes(x = gen, 
             ymin = 1 - p_neg,
             ymax = (1 - p_neg) - (n_neg/50)),
-        fill = "indianred",
+        fill = "red",
         alpha = 0.3
       )+
       geom_line(aes(gen, 1 - p_neg),
                 lwd = 0.2)+
       facet_grid(~ weight_id,
                  labeller = labeller(weight_id = label_wt))+
-      # scale_fill_viridis_c(option = "B")+
-      scale_colour_gradientn(
-        colours = c(pals::kovesi.diverging_bkr_55_10_c35(3)),
-        # limits = c(-10, 10),
-        na.value = "grey90"
-      )+
       coord_cartesian(ylim = c(-0.5, 1.5))+
       scale_y_continuous(breaks = c(0, 1),
                          labels = c("0", "1"))+
-      ggthemes::theme_tufte(base_family = "sans")+
+      ggthemes::theme_tufte(base_family = "sans",
+                            base_size = 6)+
       theme(axis.text.x = element_blank(),
-            axis.title.x = element_text(size= 4),
             panel.grid = element_blank())+
       labs(x = "generation",
            y = "p(+ve weight)",
@@ -181,7 +168,7 @@ plots <- Map(function(le) {
   ggsave(figure,
          filename = filename,
          height = 10,
-         width = 20,
+         width = 6,
          units = "in")
   
   return(figure)
@@ -189,5 +176,121 @@ plots <- Map(function(le) {
 }, data2)
 
 
+```
+
+### Summarising final generation
+
+```{r}
+# summarise the final generation
+# read back in
+data <- fread("data/results/data_weight_evolution.csv")
+
+# handle weight value ranges and use UPPER bound
+data[, weight_num := 
+       stringi::stri_extract_last(weight_value, 
+                                  regex = "[-0-9]+\\.\\d{2}")]
+# assign numeric
+data[, weight_num := as.numeric(weight_num)]
+```
+
+```{r}
+# get max gen
+data <- data[gen == max(gen), ]
+
+weight_summary <- data[weight_prop >= 0.001, 
+                       list(p_pos = sum(weight_prop[weight_num > 0]),
+                            n_pos = length(unique(weight_num[weight_num > 0])),
+                            n_neg = length(unique(weight_num[weight_num < 0]))),
+                       by = c("sim_type", "replicate", "regrowth", "weight_id")]
+```
+
+```{r}
+label_wt <- c(
+  # sprintf("weight: %s", c(2:8, 99))
+  c("m(non-h)", "m(hand)", "m(food)",
+    "f(bias)", "f(non-h)", "f(hand)", "f(food)", "f(total)")
+)
+names(label_wt) <- c(seq(2, 8), 99)
+
+# remove random
+weight_summary <- weight_summary[sim_type != "random" &
+                                   weight_id < 5]
+
+# arrange order
+weight_summary[, sim_type := factor(sim_type,
+                                    levels = c("foragers",
+                                               "obligate",
+                                               "facultative"))]
+# split for better vis
+weight_summary <- split(weight_summary, by = "sim_type")
+
+# arrange in list
+weight_summary <- weight_summary[c("foragers", "obligate", "facultative")]
+
+plots <- Map(
+  function(df) {
+    ggplot(df)+
+  geom_linerange(aes((regrowth), 
+                      p_pos,
+                      ymin = p_pos,
+                      ymax = p_pos + 0.2,
+                      col = (n_pos / (n_neg + n_pos))),
+                 lwd = 2,
+                 alpha = 0.4)+
+  geom_linerange(aes((regrowth), 
+                      p_pos,
+                      ymax = p_pos,
+                      ymin = p_pos - 0.2,
+                      col = -(n_neg / (n_neg + n_pos))),
+                 lwd = 3,
+                 alpha = 0.4)+
+  geom_point(aes((regrowth),
+                 p_pos,
+                group = replicate),
+            # lwd = 0.5,
+             shape = 1)+
+  geom_hline(yintercept = 0,
+             colour = "grey",
+             lwd = 0.2)+
+  scale_colour_gradientn(
+    colours = rev(pals::kovesi.diverging_bwr_40_95_c42(5))
+  )+
+  facet_grid(~ weight_id, 
+             labeller = labeller(weight_id = label_wt),
+             scales = "fixed")+
+  coord_cartesian(ylim = c(-0.2, 1.2),
+                  xlim = c(0, 0.25),
+                  expand = T)+
+  scale_y_continuous(breaks = c(0, 1),
+                     labels = scales::percent)+
+  scale_x_continuous(
+    breaks = c(0, 0.1, 0.25),
+    labels = c("0", "0.1", "0.25")
+  )+
+  ggthemes::theme_few(base_family = "sans",
+                      base_size = 10)+
+  theme(panel.grid = element_blank(),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        strip.text = element_text(face = "italic"),
+        legend.position = "none",
+        plot.margin = unit(rep(0, 4), "mm"))+
+  labs(x = "regrowth rate",
+       y = "% positive")
+  },
+  weight_summary
+)
+
+# make patchwork
+fig_node_weight_end <- 
+  patchwork::wrap_plots(plots, ncol = 1)+
+  patchwork::plot_annotation(tag_levels = "a", 
+                             tag_prefix = "(",
+                             tag_suffix = ")") &
+  theme(plot.tag = element_text(face = "bold"))
+
+# save
+ggsave(fig_node_weight_end,
+       filename = "figures/fig_node_weight_end.png",
+       dpi = 300, height = 120, width = 90, units = "mm")
 ```
 
