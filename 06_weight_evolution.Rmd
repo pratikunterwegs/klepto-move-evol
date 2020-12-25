@@ -39,9 +39,9 @@ fwrite(data, file = "data/results/data_weight_evolution.csv")
 # read back in
 data <- fread("data/results/data_weight_evolution.csv")
 
-# handle weight value ranges and use lower bound
+# handle weight value ranges and use UPPER bound
 data[, weight_num := 
-       stringi::stri_extract(weight_value, 
+       stringi::stri_extract_last(weight_value, 
                              regex = "[-0-9]+\\.\\d{2}")]
 
 # make character
@@ -51,7 +51,7 @@ data[, weight_num := as.numeric(weight_num)]
 ```{r}
 # check single plot
 ggplot(data = data[regrowth == 0.05 & 
-                     sim_type == "obligate" &
+                     sim_type == "facultative" &
                      replicate == 1, ])+
   geom_tile(aes(gen, 
                 reorder(weight_num, as.numeric(weight_num)), 
