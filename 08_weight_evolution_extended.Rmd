@@ -1,0 +1,200 @@
+---
+  output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+  
+  # Plot node weight evolution
+  
+  ```{r}
+# load libs
+library(data.table)
+library(ggplot2)
+
+# get helper functions
+source("code/helper_functions.R")
+```
+
+```{r}
+# read parameter combinations
+param_combinations <- fread("data/results/data_param_combinations.csv")
+
+# get weight evolution every 10 generation
+# from each simulation
+temp_gen_data <- lapply(param_combinations$folder_path, 
+                        function(x) {
+                          get_sim_weight_evol(data_folder = x,
+                                              generations = seq(1, 999, 25))
+                        }
+)
+```
+
+```{r}
+# bind with parameters
+data <- param_combinations
+data[, wt_data := temp_gen_data]
+
+# unnest
+data <- data[, unlist(wt_data, recursive = F),
+             by = list(sim_type, replicate, regrowth)]
+fwrite(data, file = "data/results/data_weight_evolution.csv")
+```
+
+```{r}
+# read back in
+data <- fread("data/results/data_weight_evolution.csv")
+
+# handle weight value ranges and use UPPER bound
+data[, weight_num := 
+       stringi::stri_extract_last(weight_value, 
+                                  regex = "[-0-9]+\\.\\d{2}")]
+```
+
+```{r}
+test <- data[regrowth == 0.05 & 
+               sim_type == "obligate" &
+               replicate == 1, ]
+
+test <- test[weight_prop > 0.001, 
+             list(n_pos = as.double(sum(weight_num > 0)),
+                  n_neg = as.double(sum(weight_num < 0)),
+                  p_neg = sum(weight_prop[weight_num > 0]),
+                  p_pos = sum(weight_prop[weight_num < 0])),
+             by = c("sim_type", "replicate", 
+                    "regrowth", "weight_id", "gen")]
+
+test <- na.omit(test)
+
+test <- melt(test,
+             id.vars = c("sim_type", "replicate", "regrowth",
+                         "weight_id", "gen", "p_pos", "p_neg"))
+
+test[,value := ifelse(variable == "n_neg", -value, value)]
+
+test[, p_sum := ifelse(variable == "n_neg", -p_neg, p_pos)]
+
+test[, `:=`(p_pos = NULL, p_neg = NULL)]
+
+ggplot(test)+
+  geom_col(aes(gen, p_sum, 
+               # lwd = max_val,
+               fill = value),
+           col = NA,
+           width = 25)+
+  facet_grid(~ weight_id)+
+  # scale_fill_viridis_c(option = "B")+
+  scale_fill_gradientn(
+    colours = c("grey90", 
+                pals::kovesi.diverging_bkr_55_10_c35(3), 
+                "grey90"),
+    limits = c(-10, 10),
+    na.value = "grey90"
+  )+
+  scale_y_continuous(breaks = c(-1, 0, 1),
+                     labels = c("-tive", "0", "+tive"))+
+  ggthemes::theme_few(base_family = "sans")+
+  labs(x = "generation",
+       y = "p(population)",
+       fill = "diversity")
+
+ggsave(filename = "test.png")
+```
+
+
+## Prepare plots
+
+```{r}
+# get label weights
+label_wt <- c(
+  # sprintf("weight: %s", c(2:8, 99))
+  c("m(non-h)", "m(hand)", "m(food)",
+    "f(bias)", "f(non-h)", "f(hand)", "f(food)", "f(total)")
+)
+names(label_wt) <- c(seq(2, 8), 99)
+
+# subset
+data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25)]
+
+# split the data
+data2 <- split(data, by = c("sim_type"))
+
+# plot the timeline
+plots <- Map(function(le) {
+  
+  # split by regrowth
+  le <- split(le, by = "regrowth")
+  
+  subfigures <- lapply(le, function(df) {
+    # get plot title
+    title <- sprintf("scenario: %s\nregrowth: %.*f",
+                     unique(df$sim_type),
+                     3,
+                     unique(df$regrowth)) 
+    
+    
+    df <- df[weight_prop > 0.001, 
+             list(n_pos = as.double(sum(weight_num > 0)),
+                  n_neg = as.double(sum(weight_num < 0)),
+                  p_neg = sum(weight_prop[weight_num > 0]),
+                  p_pos = sum(weight_prop[weight_num < 0])),
+             by = c("sim_type", "replicate", 
+                    "regrowth", "weight_id", "gen")]
+    
+    
+    df <- melt(df,
+               id.vars = c("sim_type", "replicate", "regrowth",
+                           "weight_id", "gen", "p_pos", "p_neg"))
+    
+    df[, p_sum := ifelse(variable == "n_neg", -p_neg, p_pos)]
+    df[,value := ifelse(variable == "n_neg", -value, value)]
+    
+    df[, `:=`(p_pos = NULL, p_neg = NULL)]
+    
+    ggplot(df)+
+      geom_col(aes(gen, p_sum, 
+                   # lwd = max_val,
+                   fill = value),
+               col = NA,
+               width = 25,
+               show.legend = F)+
+      facet_grid(weight_id ~ replicate, 
+                 labeller = labeller(weight_id = label_wt,
+                                     replicate = label_both))+
+      scale_fill_gradientn(
+        colours = c("grey90", 
+                    pals::kovesi.diverging_bkr_55_10_c35(3), 
+                    "grey90"),
+        limits = c(-10, 10),
+        na.value = "grey90"
+      )+
+      scale_y_continuous(breaks = c(-1, 0, 1),
+                         labels = c("-ve", "0", "+ve"))+
+      ggthemes::theme_few(base_family = "sans")+
+      theme(axis.text.x = element_blank(),
+            axis.title.x = element_text(size= 4),
+            panel.grid = element_blank())+
+      labs(x = "generation",
+           y = "p(population)",
+           title = title)
+  })
+  
+  figure <- patchwork::wrap_plots(subfigures, ncol = 5)
+  
+  # figure filename
+  fig_name <- unique(le[[1]]$sim_type)
+  filename = sprintf("figures/fig_node_weight_%s.png",
+                     fig_name)
+  message(fig_name)
+  ggsave(figure,
+         filename = filename,
+         height = 9,
+         width = 25,
+         units = "in")
+  
+  return(figure)
+  
+}, data2)
+
+
+```
+
