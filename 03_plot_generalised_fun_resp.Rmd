@@ -112,7 +112,8 @@ data <- fread("data/data_funresp_general.csv")
 
 ```{r}
 # split the data
-data_model <- split(data, by = c("sim_type", "regrowth", "variable"))
+data_model <- split(data, by = c("sim_type", "regrowth", 
+                                 "variable"))
 ```
 
 ```{r}
@@ -152,7 +153,7 @@ sim_coefs <- params[, unlist(mod_cf, recursive = F),
 ```{r}
 # subset columns
 sim_coefs <- sim_coefs[stringi::stri_detect(vbl,
-  regex = "(items)|(agents)"
+  regex = "(items)|(agents)|(Intercept)"
 ), ]
 
 # rename vbl
@@ -162,6 +163,7 @@ sim_coefs[, vbl := dplyr::case_when(
   ) ~
   "items * individuals",
   stringi::stri_detect(vbl, fixed = "items") ~ "items",
+  stringi::stri_detect(vbl, fixed = "Intercept") ~ "intercept",
   # stringi::stri_detect(vbl, fixed = "klepts") ~ "kleptoparasite",
   T ~ "individuals"
 )]
@@ -172,26 +174,27 @@ sim_coefs[, sim_type := factor(sim_type,
                                           "facultative", "random"))]
 ```
 
-### Plot variable values
+### Plot coefficient values
 
 ```{r}
-fig_coef_intake <- 
+# fig_coef_intake <- 
   ggplot(sim_coefs[strategy != "pc_intake_total"])+
   geom_hline(yintercept = 0, col = "grey",
-             lwd = 0.1, lty = 2)+
+             lty = 2)+
   geom_line(aes((regrowth),
                  cf,
                 col = c(strategy)))+
   geom_point(aes((regrowth), 
                  cf,
-                 col = strategy), 
-             size = 3,
+                 col = strategy),
              shape = 1, stroke = 1)+
   
-  facet_grid(sim_type~vbl, scales = "fixed")+
+  facet_grid(sim_type~vbl, scales = "free")+
   scale_colour_manual(
     values = pals::coolwarm(2)
   )+
+  xlim(0, 0.075)+
+  # coord_cartesian(xlim = c(0, 0.2))+
   theme_test()+
   theme(legend.position = "top")+
   labs(x = "growth rate",
@@ -201,5 +204,33 @@ fig_coef_intake <-
 # save
 ggsave(fig_coef_intake,
        filename = "figures/fig_coef_intake_general.png")
+```
+
+### Relative effect of individuals and items
+
+```{r}
+# cast values
+sim_coefs_2 <- dcast(
+  sim_coefs,
+  formula = sim_type + regrowth + strategy ~ vbl, 
+  value.var = "cf"
+)
+
+# get relative importance
+sim_coefs_2[, rel_imp := abs(items) - abs(individuals)]
+```
+
+```{r}
+ggplot(sim_coefs_2)+
+  geom_point(aes(regrowth, rel_imp,
+                 col = strategy))+
+  geom_line(aes(regrowth, rel_imp,
+                 col = strategy))+
+  facet_grid(~ sim_type)+
+  xlim(NA, 0.075)+
+  labs(x = "r_base (regrowth rate)",
+       y = "rel. importance (coef. items - coef. indiv.)")
+
+ggsave(filename = "figures/fig_relative_importance.png")
 ```
 
