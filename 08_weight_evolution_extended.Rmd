@@ -178,7 +178,7 @@ plots <- Map(function(le) {
 
 ```
 
-### Summarising final generation
+## Summarise evolved movement weights
 
 ```{r}
 # summarise the final generation
@@ -204,6 +204,8 @@ weight_summary <- data[weight_prop >= 0.001,
                        by = c("sim_type", "replicate", "regrowth", "weight_id")]
 ```
 
+### Prepare figure
+
 ```{r}
 label_wt <- c(
   # sprintf("weight: %s", c(2:8, 99))
@@ -213,19 +215,19 @@ label_wt <- c(
 names(label_wt) <- c(seq(2, 8), 99)
 
 # remove random
-weight_summary <- weight_summary[sim_type != "random" &
+weight_summary_move <- weight_summary[sim_type != "random" &
                                    weight_id < 5]
 
 # arrange order
-weight_summary[, sim_type := factor(sim_type,
+weight_summary_move[, sim_type := factor(sim_type,
                                     levels = c("foragers",
                                                "obligate",
                                                "facultative"))]
 # split for better vis
-weight_summary <- split(weight_summary, by = "sim_type")
+weight_summary_move <- split(weight_summary_move, by = "sim_type")
 
 # arrange in list
-weight_summary <- weight_summary[c("foragers", "obligate", "facultative")]
+weight_summary_move <- weight_summary_move[c("foragers", "obligate", "facultative")]
 
 plots <- Map(
   function(df) {
@@ -277,7 +279,7 @@ plots <- Map(
   labs(x = "regrowth rate",
        y = "% positive")
   },
-  weight_summary
+  weight_summary_move
 )
 
 # make patchwork
@@ -290,7 +292,99 @@ fig_node_weight_end <-
 
 # save
 ggsave(fig_node_weight_end,
-       filename = "figures/fig_node_weight_end.png",
+       filename = "figures/fig_node_weight__move_end.png",
+       dpi = 300, height = 120, width = 90, units = "mm")
+```
+
+### Summarise evolved strategy weights
+
+```{r}
+label_wt <- c(
+  # sprintf("weight: %s", c(2:8, 99))
+  c("m(non-h)", "m(hand)", "m(food)",
+    "f(bias)", "f(non-h)", "f(hand)", "f(food)", "f(total)")
+)
+names(label_wt) <- c(seq(2, 8), 99)
+
+# remove random
+weight_summary_strategy <- weight_summary[sim_type != "random" &
+                                   weight_id > 5]
+
+# arrange order
+weight_summary_strategy[, sim_type := factor(sim_type,
+                                    levels = c("foragers",
+                                               "obligate",
+                                               "facultative"))]
+# split for better vis
+weight_summary_strategy <- split(weight_summary_strategy, by = "sim_type")
+
+# arrange in list
+weight_summary_strategy <- weight_summary_strategy[c("foragers", "obligate", "facultative")]
+
+plots <- Map(
+  function(df) {
+    ggplot(df)+
+  geom_linerange(aes((regrowth), 
+                      p_pos,
+                      ymin = p_pos,
+                      ymax = p_pos + 0.2,
+                      col = (n_pos / (n_neg + n_pos))),
+                 lwd = 2,
+                 alpha = 0.4)+
+  geom_linerange(aes((regrowth), 
+                      p_pos,
+                      ymax = p_pos,
+                      ymin = p_pos - 0.2,
+                      col = -(n_neg / (n_neg + n_pos))),
+                 lwd = 3,
+                 alpha = 0.4)+
+  geom_point(aes((regrowth),
+                 p_pos,
+                group = replicate),
+            # lwd = 0.5,
+             shape = 1)+
+  geom_hline(yintercept = 0,
+             colour = "grey",
+             lwd = 0.2)+
+  scale_colour_gradientn(
+    colours = rev(pals::kovesi.diverging_bwr_40_95_c42(5))
+  )+
+  facet_grid(~ weight_id, 
+             labeller = labeller(weight_id = label_wt),
+             scales = "fixed")+
+  coord_cartesian(ylim = c(-0.2, 1.2),
+                  xlim = c(0, 0.25),
+                  expand = T)+
+  scale_y_continuous(breaks = c(0, 1),
+                     labels = scales::percent)+
+  scale_x_continuous(
+    breaks = c(0, 0.1, 0.25),
+    labels = c("0", "0.1", "0.25")
+  )+
+  ggthemes::theme_few(base_family = "sans",
+                      base_size = 10)+
+  theme(panel.grid = element_blank(),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        strip.text = element_text(face = "italic"),
+        legend.position = "none",
+        plot.margin = unit(rep(0, 4), "mm"))+
+  labs(x = "regrowth rate",
+       y = "% positive")
+  },
+  weight_summary_strategy
+)
+
+# make patchwork
+fig_node_weight_strategy_end <- 
+  patchwork::wrap_plots(plots, ncol = 1)+
+  patchwork::plot_annotation(tag_levels = "a", 
+                             tag_prefix = "(",
+                             tag_suffix = ")") &
+  theme(plot.tag = element_text(face = "bold"))
+
+# save
+ggsave(fig_node_weight_strategy_end,
+       filename = "figures/fig_node_weight_strategy_end.png",
        dpi = 300, height = 120, width = 90, units = "mm")
 ```
 
