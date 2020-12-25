@@ -1,43 +1,18 @@
 ---
-  output: html_document
+output: html_document
 editor_options: 
   chunk_output_type: console
 ---
   
-  # Plot node weight evolution
+# Plot node weight evolution
   
-  ```{r}
+```{r}
 # load libs
 library(data.table)
 library(ggplot2)
 
 # get helper functions
 source("code/helper_functions.R")
-```
-
-```{r}
-# read parameter combinations
-param_combinations <- fread("data/results/data_param_combinations.csv")
-
-# get weight evolution every 10 generation
-# from each simulation
-temp_gen_data <- lapply(param_combinations$folder_path, 
-                        function(x) {
-                          get_sim_weight_evol(data_folder = x,
-                                              generations = seq(1, 999, 25))
-                        }
-)
-```
-
-```{r}
-# bind with parameters
-data <- param_combinations
-data[, wt_data := temp_gen_data]
-
-# unnest
-data <- data[, unlist(wt_data, recursive = F),
-             by = list(sim_type, replicate, regrowth)]
-fwrite(data, file = "data/results/data_weight_evolution.csv")
 ```
 
 ```{r}
@@ -48,18 +23,20 @@ data <- fread("data/results/data_weight_evolution.csv")
 data[, weight_num := 
        stringi::stri_extract_last(weight_value, 
                                   regex = "[-0-9]+\\.\\d{2}")]
+# assign numeric
+data[, weight_num := as.numeric(weight_num)]
 ```
 
 ```{r}
 test <- data[regrowth == 0.05 & 
-               sim_type == "obligate" &
+               sim_type == "facultative" &
                replicate == 1, ]
 
 test <- test[weight_prop > 0.001, 
              list(n_pos = as.double(sum(weight_num > 0)),
                   n_neg = as.double(sum(weight_num < 0)),
-                  p_neg = sum(weight_prop[weight_num > 0]),
-                  p_pos = sum(weight_prop[weight_num < 0])),
+                  p_neg = sum(weight_prop[weight_num < 0]),
+                  p_pos = sum(weight_prop[weight_num > 0])),
              by = c("sim_type", "replicate", 
                     "regrowth", "weight_id", "gen")]
 
@@ -69,14 +46,14 @@ test <- melt(test,
              id.vars = c("sim_type", "replicate", "regrowth",
                          "weight_id", "gen", "p_pos", "p_neg"))
 
-test[,value := ifelse(variable == "n_neg", -value, value)]
+test[, value := ifelse(variable == "n_neg", -value, value)]
 
 test[, p_sum := ifelse(variable == "n_neg", -p_neg, p_pos)]
 
 test[, `:=`(p_pos = NULL, p_neg = NULL)]
 
 ggplot(test)+
-  geom_col(aes(gen, p_sum, 
+  geom_point(aes(gen, p_sum, 
                # lwd = max_val,
                fill = value),
            col = NA,
@@ -157,6 +134,10 @@ plots <- Map(function(le) {
                col = NA,
                width = 25,
                show.legend = F)+
+      geom_hline(
+        yintercept = 0,
+        lwd = 0.2
+      )+
       facet_grid(weight_id ~ replicate, 
                  labeller = labeller(weight_id = label_wt,
                                      replicate = label_both))+
@@ -182,7 +163,7 @@ plots <- Map(function(le) {
   
   # figure filename
   fig_name <- unique(le[[1]]$sim_type)
-  filename = sprintf("figures/fig_node_weight_%s.png",
+  filename = sprintf("figures/fig_node_weight_summary_%s.png",
                      fig_name)
   message(fig_name)
   ggsave(figure,
