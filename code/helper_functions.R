@@ -88,7 +88,7 @@ get_overall_movement <- function(gen_data,
                       seq(min_w_val, max_w_val, step_size),
                       right = TRUE)
   # get proportions
-  weight_prop <- table(weight_class) / length(weights)
+  weight_prop <- table(weight_class) / length(move_weights)
   
   # get the weight names
   weight_value_names <- names(weight_prop)
