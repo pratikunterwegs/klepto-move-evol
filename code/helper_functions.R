@@ -65,6 +65,44 @@ get_weights_prop <- function(gen_data, weight_w,
   return(weight_data)
 }
 
+# get overall individuals and relative value
+get_overall_movement <- function(gen_data,
+                                  min_w_val = -1.01,
+                                  max_w_val = 1.01,
+                                  steps = 50) {
+  
+  # calculate stepsize
+  step_size <- (max_w_val - min_w_val) / steps
+  
+  # get generation data and which weights rowsums times 20
+  # item_weight <- rowSums(gen_data[["agents"]][["ann"]][, c(4)]) * 20
+  
+  # get relative value
+  move_weights <- rowSums(gen_data[["agents"]][["ann"]][, c(2, 3)]) * 20
+  # rel_val <- move_weights - item_weight
+  
+  # this is now a dt
+  
+  weight_tanh <- tanh(move_weights)
+  weight_class <- cut(weight_tanh, 
+                      seq(min_w_val, max_w_val, step_size),
+                      right = TRUE)
+  # get proportions
+  weight_prop <- table(weight_class) / length(weights)
+  
+  # get the weight names
+  weight_value_names <- names(weight_prop)
+  
+  # make a data.table
+  weight_data <- data.table::data.table(
+    weight_id = 51,
+    weight_value = weight_value_names,
+    weight_prop = as.vector(weight_prop)
+  )
+  return(weight_data) 
+  
+}
+
 # function to get overall behaviour weight
 get_overall_behaviour <- function(gen_data, which_weights,
                                   min_w_val = -1.01,
@@ -131,14 +169,19 @@ get_weights_timeline <- function(generations,
     weight_behaviour <- get_overall_behaviour(gen_data = G, 
                                           which_weights = last(seq_weights, 4))
     # add gen
-    weight_behaviour[, gen := g]                                          
+    weight_behaviour[, gen := g]                     
+    
+    # add overall individuals
+    weight_individuals <- get_overall_movement(gen_data = G)
+    
+    weight_individuals[, gen := g]
     
     # bind the list
     weight_data <- data.table::rbindlist(weight_data)
     # add generation
     weight_data[, gen := g]
     
-    return(rbind(weight_data, weight_behaviour))
+    return(rbind(weight_data, weight_behaviour, weight_individuals))
   })
   
   # bind all generations
