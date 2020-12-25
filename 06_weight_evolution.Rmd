@@ -43,6 +43,9 @@ data <- fread("data/results/data_weight_evolution.csv")
 data[, weight_num := 
        stringi::stri_extract(weight_value, 
                              regex = "[-0-9]+\\.\\d{2}")]
+
+# make character
+data[, weight_num := as.numeric(weight_num)]
 ```
 
 ```{r}
