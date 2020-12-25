@@ -29,8 +29,7 @@ data[, weight_num := as.numeric(weight_num)]
 
 ```{r}
 test <- data[regrowth == 0.05 & 
-               sim_type == "facultative" &
-               replicate == 1, ]
+               sim_type == "facultative"]
 
 test <- test[weight_prop > 0.001, 
              list(n_pos = as.double(sum(weight_num > 0)),
@@ -42,39 +41,50 @@ test <- test[weight_prop > 0.001,
 
 test <- na.omit(test)
 
-test <- melt(test,
-             id.vars = c("sim_type", "replicate", "regrowth",
-                         "weight_id", "gen", "p_pos", "p_neg"))
+test[, p_pos_var := n_pos / (n_pos + n_neg)]
+test[, n_morphs := n_pos + n_neg]
 
-test[, value := ifelse(variable == "n_neg", -value, value)]
+# test[, c("n_pos", "n_neg") := NULL]
 
-test[, p_sum := ifelse(variable == "n_neg", -p_neg, p_pos)]
+# test[, value := ifelse(variable == "n_neg", -value, value)]
+# 
+# test[, p_sum := ifelse(variable == "n_neg", -p_neg, p_pos)]
 
-test[, `:=`(p_pos = NULL, p_neg = NULL)]
+# test[, `:=`(p_pos = NULL, p_neg = NULL)]
 
-ggplot(test)+
-  geom_point(aes(gen, p_sum, 
-               # lwd = max_val,
-               fill = value),
-           col = NA,
-           width = 25)+
+ggplot(test, 
+       aes(group = replicate))+
+  geom_ribbon(
+    aes(x = gen, 
+        ymin = 1 - p_neg,
+        ymax = (1 - p_neg) + (n_pos/50)),
+    fill = "dodgerblue",
+    alpha = 0.3
+  )+
+  geom_ribbon(
+    aes(x = gen, 
+        ymin = 1 - p_neg,
+        ymax = (1 - p_neg) - (n_neg/50)),
+    fill = "indianred",
+    alpha = 0.3
+  )+
+  geom_line(aes(gen, 1 - p_neg),
+            lwd = 0.2)+
   facet_grid(~ weight_id)+
   # scale_fill_viridis_c(option = "B")+
-  scale_fill_gradientn(
-    colours = c("grey90", 
-                pals::kovesi.diverging_bkr_55_10_c35(3), 
-                "grey90"),
-    limits = c(-10, 10),
+  scale_colour_gradientn(
+    colours = c(pals::kovesi.diverging_bkr_55_10_c35(3)),
+    # limits = c(-10, 10),
     na.value = "grey90"
   )+
-  scale_y_continuous(breaks = c(-1, 0, 1),
-                     labels = c("-tive", "0", "+tive"))+
+  # scale_y_continuous(breaks = c(-1, 0, 1),
+  #                    labels = c("-tive", "0", "+tive"))+
   ggthemes::theme_few(base_family = "sans")+
   labs(x = "generation",
-       y = "p(population)",
+       y = "p(+ve weight)",
        fill = "diversity")
 
-ggsave(filename = "test.png")
+  ggsave(filename = "test.png")
 ```
 
 
@@ -112,54 +122,56 @@ plots <- Map(function(le) {
     df <- df[weight_prop > 0.001, 
              list(n_pos = as.double(sum(weight_num > 0)),
                   n_neg = as.double(sum(weight_num < 0)),
-                  p_neg = sum(weight_prop[weight_num > 0]),
-                  p_pos = sum(weight_prop[weight_num < 0])),
+                  p_neg = sum(weight_prop[weight_num < 0]),
+                  p_pos = sum(weight_prop[weight_num > 0])),
              by = c("sim_type", "replicate", 
                     "regrowth", "weight_id", "gen")]
     
     
-    df <- melt(df,
-               id.vars = c("sim_type", "replicate", "regrowth",
-                           "weight_id", "gen", "p_pos", "p_neg"))
-    
-    df[, p_sum := ifelse(variable == "n_neg", -p_neg, p_pos)]
-    df[,value := ifelse(variable == "n_neg", -value, value)]
-    
-    df[, `:=`(p_pos = NULL, p_neg = NULL)]
-    
-    ggplot(df)+
-      geom_col(aes(gen, p_sum, 
-                   # lwd = max_val,
-                   fill = value),
-               col = NA,
-               width = 25,
-               show.legend = F)+
-      geom_hline(
-        yintercept = 0,
-        lwd = 0.2
+    df <- na.omit(df)
+
+    df[, p_pos_var := n_pos / (n_pos + n_neg)]
+    df[, n_morphs := n_pos + n_neg]
+    # plot
+    ggplot(df, 
+           aes(group = replicate))+
+      geom_ribbon(
+        aes(x = gen, 
+            ymin = 1 - p_neg,
+            ymax = (1 - p_neg) + (n_pos/50)),
+        fill = "dodgerblue",
+        alpha = 0.3
       )+
-      facet_grid(weight_id ~ replicate, 
-                 labeller = labeller(weight_id = label_wt,
-                                     replicate = label_both))+
-      scale_fill_gradientn(
-        colours = c("grey90", 
-                    pals::kovesi.diverging_bkr_55_10_c35(3), 
-                    "grey90"),
-        limits = c(-10, 10),
+      geom_ribbon(
+        aes(x = gen, 
+            ymin = 1 - p_neg,
+            ymax = (1 - p_neg) - (n_neg/50)),
+        fill = "indianred",
+        alpha = 0.3
+      )+
+      geom_line(aes(gen, 1 - p_neg),
+                lwd = 0.2)+
+      facet_grid(~ weight_id,
+                 labeller = labeller(weight_id = label_wt))+
+      # scale_fill_viridis_c(option = "B")+
+      scale_colour_gradientn(
+        colours = c(pals::kovesi.diverging_bkr_55_10_c35(3)),
+        # limits = c(-10, 10),
         na.value = "grey90"
       )+
-      scale_y_continuous(breaks = c(-1, 0, 1),
-                         labels = c("-ve", "0", "+ve"))+
-      ggthemes::theme_few(base_family = "sans")+
+      coord_cartesian(ylim = c(-0.5, 1.5))+
+      scale_y_continuous(breaks = c(0, 1),
+                         labels = c("0", "1"))+
+      ggthemes::theme_tufte(base_family = "sans")+
       theme(axis.text.x = element_blank(),
             axis.title.x = element_text(size= 4),
             panel.grid = element_blank())+
       labs(x = "generation",
-           y = "p(population)",
+           y = "p(+ve weight)",
            title = title)
   })
   
-  figure <- patchwork::wrap_plots(subfigures, ncol = 5)
+  figure <- patchwork::wrap_plots(subfigures, ncol = 1)
   
   # figure filename
   fig_name <- unique(le[[1]]$sim_type)
@@ -168,8 +180,8 @@ plots <- Map(function(le) {
   message(fig_name)
   ggsave(figure,
          filename = filename,
-         height = 9,
-         width = 25,
+         height = 10,
+         width = 20,
          units = "in")
   
   return(figure)
