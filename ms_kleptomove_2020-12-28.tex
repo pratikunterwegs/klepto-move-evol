@@ -276,22 +276,22 @@ WIP.
 
 \paragraph{Scenario 1: The Producers-Only Case}
 
-Among the weights determining movement, the weight for food items $m_g$ evolved consistently positive values across values of $r_{base}$ but the population did not converge upon a single value of $m_g$ (see Figure X).
-The number of phenotypes expressed by $\geq 1\%$ of the population declined asymptotically over generations, and there were fewer such phenotypes at lower $r_{base}$.
-The phenotypes expressed were not consistent across replicate simulations with the same $r_{base}$.
-%%
-The weight for handlers $m_h$ evolved mostly positive values over the range of $r_{base}$, but this weight too did not converge upon a single value, evolving neutrally for $r_{base} \geq$ 0.075 (Figure X).
-Negative values of $m_h$ also evolved repeatedly and persisted for multiple generations when $r_{base} <$ 0.1.
-The number of phenotypes of $m_h$ declined asymptotically over evolutionary time up to an $r_{base}$ of 0.1, after which they appeared to decline linearly.
-Simulations with lower $r_{base}$ also had fewer $m_h$ phenotypes.
-%%
-The weight for non-handlers $m_p$ evolved consistently negative values for $0.001 \leq r_{base} \leq 0.04$, but did not converge to a single value.
-For $r_{base} \in 0.05, 0.075$, $m_p$ evolved negative or neutral values in different replicates, while for $r_{base} \geq$ 0.1 $m_p$ evolved neutrally (Figure X).s
-The number of phenotypes of $m_p$ declined asymptotically over evolutionary time up to an $r_{base}$ of 0.1, after which they appeared to decline linearly.
-Simulations with lower $r_{base}$ also had fewer $m_p$ phenotypes in general (Figure X).
-%%
-The four decision making weights for foraging strategy ($f_g$, $f_h$, $f_p$, $f_b$) evolved neutrally since individual foraging strategies were fixed to searching for food, i.e., being a producer (see Figure X).
-Nonetheless, the number of phenotypes declined asymptotically over generations, but there were no differences in relation to $r_{base}$.
+% Among the weights determining movement, the weight for food items $m_g$ evolved consistently positive values across values of $r_{base}$ but the population did not converge upon a single value of $m_g$ (see Figure X).
+% The number of phenotypes expressed by $\geq 1\%$ of the population declined asymptotically over generations, and there were fewer such phenotypes at lower $r_{base}$.
+% The phenotypes expressed were not consistent across replicate simulations with the same $r_{base}$.
+% %%
+% The weight for handlers $m_h$ evolved mostly positive values over the range of $r_{base}$, but this weight too did not converge upon a single value, evolving neutrally for $r_{base} \geq$ 0.075 (Figure X).
+% Negative values of $m_h$ also evolved repeatedly and persisted for multiple generations when $r_{base} <$ 0.1.
+% The number of phenotypes of $m_h$ declined asymptotically over evolutionary time up to an $r_{base}$ of 0.1, after which they appeared to decline linearly.
+% Simulations with lower $r_{base}$ also had fewer $m_h$ phenotypes.
+% %%
+% The weight for non-handlers $m_p$ evolved consistently negative values for $0.001 \leq r_{base} \leq 0.04$, but did not converge to a single value.
+% For $r_{base} \in 0.05, 0.075$, $m_p$ evolved negative or neutral values in different replicates, while for $r_{base} \geq$ 0.1 $m_p$ evolved neutrally (Figure X).s
+% The number of phenotypes of $m_p$ declined asymptotically over evolutionary time up to an $r_{base}$ of 0.1, after which they appeared to decline linearly.
+% Simulations with lower $r_{base}$ also had fewer $m_p$ phenotypes in general (Figure X).
+% %%
+% The four decision making weights for foraging strategy ($f_g$, $f_h$, $f_p$, $f_b$) evolved neutrally since individual foraging strategies were fixed to searching for food, i.e., being a producer (see Figure X).
+% Nonetheless, the number of phenotypes declined asymptotically over generations, but there were no differences in relation to $r_{base}$.
 
 \begin{figure*}[h]
     \centering
@@ -314,38 +314,57 @@ Nonetheless, the number of phenotypes declined asymptotically over generations, 
 
 \paragraph{Scenario 2: The Fixed Strategy Case}
 
-Of the movement weights, the weight for food items $m_g$ evolved consistently positive values for all $r_{base}$ except 0.25, where $m_g$ evolved neutrally across the positive range.
-Furthermore, the population largely converged upon $m_g$ values close to zero, though variation in $m_g$ persisted over evolutionary time for all $r_{base}$.
-This was reflected in the number of $m_g$ phenotypes which declined asymptotically nearly to zero over generations with little difference among $r_{base}$, except for $r_{base} = $ 0.25 which showed a weakly linear decline.
-%%
-The weight for handlers $m_h$ evolved with little consistency in direction or magnitude, with mostly positive values for $r_{base} \leq$ 0.01, and a mixture of positive and negative values beyond that.
-Rather than converge to a single $m_h$, the population expressed a few distinct $m_h$ phenotypes over generations, with multiple phenotypes of similar population frequencies co-existing in the same generation.
-Consequently, the number of $m_h$ phenotypes remained almost constant after an initial asymptotic decline over generations, with no differences among $r_{base}$ except for $r_{base} = $ 0.25 which showed a weakly linear decline.
-%%
-The weight for non-handlers $m_p$ evolved consistently negative values over $r_{base}$ but rather than converge to a single $m_p$, the population showed a few distinct $m_p$ phenotypes over generations, and multiple phenotypes of similar population frequencies co-existed in the same generation.
-At the highest $r_{base}$ (0.25) $m_p$ evolved neutrally (Figure X).
-The number of phenotypes of $m_p$ declined asymptotically over evolutionary time up to an $r_{base}$ of 0.1, after which they declined linearly, but there were no differences among growth rates except when $r_{base}$ = 0.25.
-%%
-The weights determining the lifetime foraging strategy ($f_g$, $f_h$, $f_p$, $f_b$) did not evolve consistently across $r_{base}$, and showed both large variation as well as coexistence of phenotypes of similar frequencies across generations.
-There was no easily detected pattern in the difference among dominant phenotypes.
-All foraging strategy weights evolved neutrally when $r_{base} =$ 0.25; the bias $f_b$ evolved neutrally only in the positive range at this growth rate.
+% Of the movement weights, the weight for food items $m_g$ evolved consistently positive values for all $r_{base}$ except 0.25, where $m_g$ evolved neutrally across the positive range.
+% Furthermore, the population largely converged upon $m_g$ values close to zero, though variation in $m_g$ persisted over evolutionary time for all $r_{base}$.
+% This was reflected in the number of $m_g$ phenotypes which declined asymptotically nearly to zero over generations with little difference among $r_{base}$, except for $r_{base} = $ 0.25 which showed a weakly linear decline.
+% %%
+% The weight for handlers $m_h$ evolved with little consistency in direction or magnitude, with mostly positive values for $r_{base} \leq$ 0.01, and a mixture of positive and negative values beyond that.
+% Rather than converge to a single $m_h$, the population expressed a few distinct $m_h$ phenotypes over generations, with multiple phenotypes of similar population frequencies co-existing in the same generation.
+% Consequently, the number of $m_h$ phenotypes remained almost constant after an initial asymptotic decline over generations, with no differences among $r_{base}$ except for $r_{base} = $ 0.25 which showed a weakly linear decline.
+% %%
+% The weight for non-handlers $m_p$ evolved consistently negative values over $r_{base}$ but rather than converge to a single $m_p$, the population showed a few distinct $m_p$ phenotypes over generations, and multiple phenotypes of similar population frequencies co-existed in the same generation.
+% At the highest $r_{base}$ (0.25) $m_p$ evolved neutrally (Figure X).
+% The number of phenotypes of $m_p$ declined asymptotically over evolutionary time up to an $r_{base}$ of 0.1, after which they declined linearly, but there were no differences among growth rates except when $r_{base}$ = 0.25.
+% %%
+% The weights determining the lifetime foraging strategy ($f_g$, $f_h$, $f_p$, $f_b$) did not evolve consistently across $r_{base}$, and showed both large variation as well as coexistence of phenotypes of similar frequencies across generations.
+% There was no easily detected pattern in the difference among dominant phenotypes.
+% All foraging strategy weights evolved neutrally when $r_{base} =$ 0.25; the bias $f_b$ evolved neutrally only in the positive range at this growth rate.
+
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=0.99\textwidth]{figures/fig_04_strategy_weight_end_vals.png}
+    \caption{
+        The proportion of individuals choosing a foraging strategy based on environmental cues is not linked to the regrowth rate.
+        Panels \textbf{(a -- e)} show the proportion of individuals with positive weights for each cue: \textbf{(a)} bias, \textbf{(b)} non-handling individuals, \textbf{(c)} handling individuals, \textbf{(d)} prey items, and \textbf{(e)} all cues combined.
+        Colours and shapes represent scenarios (blue circles: \textit{producers-only}; green triangles: \textit{fixed-strategy}; red squares: \textit{flexible-strategy}).
+        Lines connect similarly numbered replicates across $r_{base}$, but these are entirely independent simulations.
+        %%
+        Panels \textbf{(f -- j)} show the number of distinct values for each weight in the population in panels \textbf{(a -- e)} separated by the sign (positive or negative): \textbf{(f)} bias, \textbf{(g)} non-handling individuals, \textbf{(h)} handling individuals, \textbf{(i)} prey items, and \textbf{(j)} all cues combined.
+        Bar colours represent scenarios (blue: \textit{producers-only}; green: \textit{fixed-strategy}; red: \textit{flexible-strategy}), while the hue represents the sign (light: positive, dark: negative).
+        %%
+        Individuals' weights in scenario 1 evolve neutrally since they are only allowed a producer strategy.
+        However, scenario 2 also results in neutral evolution of all weights except $f_b$, with a larger proportion of individuals biased towards producing at high $r_{base}$.
+        Almost all individuals in scenario 3 choose to steal except at very low $r_{base}$, with $f_h$ the strongest contributor to the decision.
+    }
+    \label{fig:figure_pipeline}
+\end{figure*}
 
 \paragraph{Scenario 3: The Flexible Strategy Case}
 
-Decision making weights evolved in a pattern contrary to the producer-only and fixed-strategy cases, with the population converging to one or a few values of all weights at high growth rates, and with more variation at lower growth rates.
-%%
-The movement weight for food items $m_g$ evolved to consistently positive values near zero across $r_{base}$, with convergence on a single phenotype or the maintenance of 1 -- 3 phenotypes with decreasing $r_{base}$.
-%% No long description here.
-The weight for handlers $m_h$ also evolved consistently positive values over different $r_{base}$, with increasing variation at lower growth rates.
-Indeed, the lowest variation was seen at intermediate growth rates ($r_{base} \in 0.04, 0.05, 0.075, 0.1$).
-%%
-The weight for non-handlers $m_p$ showed little consistency, and evolved positive values just above zero for $r_{base} =$ 0.25, and largely negative or neutral values for all other growth rates.
-The population showed less convergence in this weight than others, with between 1 -- 3 dominant phenotypes in any simulation.
-%%
-Weights determining foraging strategies also showed convergence upon 1 -- 3 dominant phenotypes with increasing growth rates, and substantial variation at lower growth rates.
-While the strategy bias $f_b$ and the strategy weight for non-handlers $f_p$ showed no clear pattern, the strategy weight for handlers $f_h$ evolved consistently negative values at $r_{base} <$ 0.01, below which showed more variation in both the positive and negative range (see Figure X).
-The strategy weight for food $f_g$ almost always converged to values at or near zero for $r_{base} >$ 0.01, below which it evolved neutrally.
-Overall, the sum of strategy weights evolved consistent, strongly negative values for $r_{base} >$ 0.02, below which there was more variation.
+% Decision making weights evolved in a pattern contrary to the producer-only and fixed-strategy cases, with the population converging to one or a few values of all weights at high growth rates, and with more variation at lower growth rates.
+% %%
+% The movement weight for food items $m_g$ evolved to consistently positive values near zero across $r_{base}$, with convergence on a single phenotype or the maintenance of 1 -- 3 phenotypes with decreasing $r_{base}$.
+% %% No long description here.
+% The weight for handlers $m_h$ also evolved consistently positive values over different $r_{base}$, with increasing variation at lower growth rates.
+% Indeed, the lowest variation was seen at intermediate growth rates ($r_{base} \in 0.04, 0.05, 0.075, 0.1$).
+% %%
+% The weight for non-handlers $m_p$ showed little consistency, and evolved positive values just above zero for $r_{base} =$ 0.25, and largely negative or neutral values for all other growth rates.
+% The population showed less convergence in this weight than others, with between 1 -- 3 dominant phenotypes in any simulation.
+% %%
+% Weights determining foraging strategies also showed convergence upon 1 -- 3 dominant phenotypes with increasing growth rates, and substantial variation at lower growth rates.
+% While the strategy bias $f_b$ and the strategy weight for non-handlers $f_p$ showed no clear pattern, the strategy weight for handlers $f_h$ evolved consistently negative values at $r_{base} <$ 0.01, below which showed more variation in both the positive and negative range (see Figure X).
+% The strategy weight for food $f_g$ almost always converged to values at or near zero for $r_{base} >$ 0.01, below which it evolved neutrally.
+% Overall, the sum of strategy weights evolved consistent, strongly negative values for $r_{base} >$ 0.02, below which there was more variation.
 
 \subsection*{Spatial Distribution of Individuals and Prey}
 
