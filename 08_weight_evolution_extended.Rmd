@@ -51,7 +51,7 @@ ggplot(test,
     aes(x = gen, 
         ymin = 1 - p_neg,
         ymax = (1 - p_neg) + (n_pos/50)),
-    fill = "darkgreen",
+    fill = "royalblue",
     alpha = 0.3
   )+
   geom_ribbon(
@@ -132,7 +132,7 @@ plots <- Map(function(le) {
         aes(x = gen, 
             ymin = 1 - p_neg,
             ymax = (1 - p_neg) + (n_pos/50)),
-        fill = "darkgreen",
+        fill = "steelblue",
         alpha = 0.3
       )+
       geom_ribbon(
@@ -210,91 +210,122 @@ weight_summary <- data[weight_prop >= 0.001,
 label_wt <- c(
   # sprintf("weight: %s", c(2:8, 99))
   c("m(non-h)", "m(hand)", "m(food)",
-    "f(bias)", "f(non-h)", "f(hand)", "f(food)", "f(total)")
+    "f(bias)", "f(non-h)", "f(hand)", "f(food)", 
+    "m(indivs)", "f(total)")
 )
-names(label_wt) <- c(seq(2, 8), 99)
+names(label_wt) <- c(seq(2, 8), 51, 99)
 
 # remove random
 weight_summary_move <- weight_summary[sim_type != "random" &
-                                   weight_id < 5]
+                                   weight_id %in% c(2:4, 51)]
 
 # arrange order
 weight_summary_move[, sim_type := factor(sim_type,
                                     levels = c("foragers",
                                                "obligate",
                                                "facultative"))]
-# split for better vis
-weight_summary_move <- split(weight_summary_move, by = "sim_type")
+```
 
-# arrange in list
-weight_summary_move <- weight_summary_move[c("foragers", "obligate", "facultative")]
+```{r plot_prop_pos}
+# split for labels
+weight_summary_move <- split(weight_summary_move, by = "weight_id")
 
-plots <- Map(
+# make plot
+subplots_wt_move <- Map(f = function(df) {
+  ggplot(df)+
+  geom_line(aes(regrowth, p_pos,
+                group = interaction(replicate, sim_type),
+                colour = sim_type),
+             position = position_dodge(width = 0.01))+
+  geom_point(aes(regrowth, p_pos,
+                group = interaction(replicate, sim_type),
+                colour = sim_type,
+                shape = sim_type),
+              # size = 2,
+              # shape = 21,
+              fill = "grey",
+             position = position_dodge(width = 0.01))+
+  scale_colour_manual(
+    values = tol.rainbow(3)
+  )+
+  scale_x_sqrt(breaks = c(0.01, 0.1, 0.25))+
+  scale_y_continuous(breaks = c(0, 0.5, 1))+
+  coord_fixed(ratio = 0.5,
+              xlim = c(0.001, 0.25),
+              ylim = c(0, 1))+
+  theme_test(base_size = 12)+
+  theme(
+    legend.position = "none"
+  )+
+  labs(x = "growth rate",
+       y = "p(+ve weight)")
+}, weight_summary_move)
+```
+
+```{r}
+# summarise the variation
+weight_move_var <- Map(
   function(df) {
-    ggplot(df)+
-  geom_linerange(aes((regrowth), 
-                      p_pos,
-                      ymin = p_pos,
-                      ymax = p_pos + 0.2,
-                      col = (n_pos / (n_neg + n_pos))),
-                 lwd = 2,
-                 alpha = 0.4)+
-  geom_linerange(aes((regrowth), 
-                      p_pos,
-                      ymax = p_pos,
-                      ymin = p_pos - 0.2,
-                      col = -(n_neg / (n_neg + n_pos))),
-                 lwd = 3,
-                 alpha = 0.4)+
-  geom_point(aes((regrowth),
-                 p_pos,
-                group = replicate),
-            # lwd = 0.5,
-             shape = 1)+
-  geom_hline(yintercept = 0,
-             colour = "grey",
-             lwd = 0.2)+
-  scale_colour_gradientn(
-    colours = rev(pals::kovesi.diverging_bwr_40_95_c42(5))
-  )+
-  facet_grid(~ weight_id, 
-             labeller = labeller(weight_id = label_wt),
-             scales = "fixed")+
-  coord_cartesian(ylim = c(-0.2, 1.2),
-                  xlim = c(0, 0.25),
-                  expand = T)+
-  scale_y_continuous(breaks = c(0, 1),
-                     labels = scales::percent)+
-  scale_x_continuous(
-    breaks = c(0, 0.1, 0.25),
-    labels = c("0", "0.1", "0.25")
-  )+
-  ggthemes::theme_few(base_family = "sans",
-                      base_size = 10)+
-  theme(panel.grid = element_blank(),
-        axis.text.y = element_text(angle = 90, hjust = 0.5),
-        strip.text = element_text(face = "italic"),
-        legend.position = "none",
-        plot.margin = unit(rep(0, 4), "mm"))+
-  labs(x = "regrowth rate",
-       y = "% positive")
+    df <- copy(df)
+    df[, p_pos := NULL]
+    df <- melt(df, id.vars = c("sim_type", "replicate", "regrowth", "weight_id"))
+    df[, value := ifelse(variable == "n_neg", -value, value)]
   },
   weight_summary_move
 )
 
-# make patchwork
-fig_node_weight_end <- 
-  patchwork::wrap_plots(plots, ncol = 1)+
-  patchwork::plot_annotation(tag_levels = "a", 
-                             tag_prefix = "(",
-                             tag_suffix = ")") &
-  theme(plot.tag = element_text(face = "bold"))
+subplots_move_variation <- Map(function(df) {
+  ggplot(df)+
+  geom_hline(
+    yintercept = 0,
+    col = "grey",
+  )+
+  geom_col(aes(regrowth, value,
+               fill = interaction(variable, sim_type),
+               group = interaction(regrowth, replicate)),
+           width = 0.1,
+           position = position_dodge(width = 0.01))+
+  scale_x_sqrt(breaks = c(0.01, 0.1, 0.25))+
+  scale_y_continuous(
+    breaks = c(-10, 10),
+    labels = c("-ve", "+ve")
+  )+
+  facet_grid(~sim_type,
+             labeller = labeller(
+               sim_type = c("foragers" = "Sc.1",
+                            "obligate" = "Sc.2",
+                            "facultative" = "Sc.3")
+             ))+
+  scale_fill_brewer(palette = "Paired")+
+  theme_void(base_size = 12)+
+  theme(
+    axis.text.y = element_text(size = 8),
+    axis.title.y = element_text(angle = 90),
+    legend.position = "none"
+  )+
+  labs(x = "growth rate",
+       y = "# phenotypes")
+}, weight_move_var)
+```
+
+
+```{r}
+# merge plots
+fig_move_weight_end <-
+  wrap_plots(append(subplots_wt_move,
+                    subplots_move_variation), 
+             ncol = 4)+
+  plot_annotation(tag_levels = "a",
+                  tag_prefix = "(",
+                  tag_suffix = ")") &
+  theme(plot.tag = element_text(face = "bold",
+                                size = 12))
 
 # save
-ggsave(fig_node_weight_end,
-       filename = "figures/fig_node_weight__move_end.png",
-       dpi = 300, height = 120, width = 90, units = "mm")
+ggsave(fig_move_weight_end,
+       filename = "figures/fig_03_weight_end_vals.png")
 ```
+
 
 ### Summarise evolved strategy weights
 
