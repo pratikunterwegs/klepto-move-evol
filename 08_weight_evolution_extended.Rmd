@@ -236,26 +236,30 @@ subplots_wt_move <- Map(f = function(df) {
   geom_line(aes(regrowth, p_pos,
                 group = interaction(replicate, sim_type),
                 colour = sim_type),
+             lwd = 0.2,
              position = position_dodge(width = 0.01))+
   geom_point(aes(regrowth, p_pos,
                 group = interaction(replicate, sim_type),
                 colour = sim_type,
                 shape = sim_type),
-              # size = 2,
-              # shape = 21,
-              fill = "grey",
+              size = 2,
+              fill = NA,
              position = position_dodge(width = 0.01))+
   scale_colour_manual(
-    values = tol.rainbow(3)
+    values = qualitative_hcl(3, "Set2", l = 20, rev = T)
   )+
   scale_x_sqrt(breaks = c(0.01, 0.1, 0.25))+
   scale_y_continuous(breaks = c(0, 0.5, 1))+
+  scale_shape_manual(values = c(21, 22, 24))+
   coord_fixed(ratio = 0.5,
               xlim = c(0.001, 0.25),
               ylim = c(0, 1))+
   theme_test(base_size = 12)+
   theme(
-    legend.position = "none"
+    legend.position = "none",
+    panel.background = element_rect(
+      fill = "grey95"
+    )
   )+
   labs(x = "growth rate",
        y = "p(+ve weight)")
@@ -273,6 +277,11 @@ weight_move_var <- Map(
   },
   weight_summary_move
 )
+
+pal <- c(rbind(
+  qualitative_hcl(3, "Set2", l = 20, rev = T),
+  qualitative_hcl(3, "Set2", l = 50, rev = T)
+))
 
 subplots_move_variation <- Map(function(df) {
   ggplot(df)+
@@ -296,12 +305,17 @@ subplots_move_variation <- Map(function(df) {
                             "obligate" = "Sc.2",
                             "facultative" = "Sc.3")
              ))+
-  scale_fill_brewer(palette = "Paired")+
+  scale_fill_manual(
+    values = pal
+  )+
   theme_void(base_size = 12)+
   theme(
     axis.text.y = element_text(size = 8),
     axis.title.y = element_text(angle = 90),
-    legend.position = "none"
+    legend.position = "none",
+    panel.background = element_rect(
+      fill = "grey95"
+    )
   )+
   labs(x = "growth rate",
        y = "# phenotypes")
@@ -323,7 +337,8 @@ fig_move_weight_end <-
 
 # save
 ggsave(fig_move_weight_end,
-       filename = "figures/fig_03_move_weight_end_vals.png")
+       filename = "figures/fig_03_move_weight_end_vals.png",
+       height = 5, width = 10)
 ```
 
 
@@ -355,26 +370,31 @@ subplots_wt_strat <- Map(f = function(df) {
   geom_line(aes(regrowth, p_pos,
                 group = interaction(replicate, sim_type),
                 colour = sim_type),
+             lwd = 0.2,
              position = position_dodge(width = 0.01))+
   geom_point(aes(regrowth, p_pos,
                 group = interaction(replicate, sim_type),
                 colour = sim_type,
                 shape = sim_type),
-              # size = 2,
+              size = 2,
               # shape = 21,
-              fill = "grey",
+              fill = NA,
              position = position_dodge(width = 0.01))+
   scale_colour_manual(
-    values = tol.rainbow(3)
+    values = qualitative_hcl(3, "Set2", l = 20, rev = T)
   )+
   scale_x_sqrt(breaks = c(0.01, 0.1, 0.25))+
   scale_y_continuous(breaks = c(0, 0.5, 1))+
+  scale_shape_manual(values = c(21, 22, 24))+
   coord_fixed(ratio = 0.5,
               xlim = c(0.001, 0.25),
               ylim = c(0, 1))+
   theme_test(base_size = 12)+
   theme(
-    legend.position = "none"
+    legend.position = "none",
+    panel.background = element_rect(
+      fill = "grey95"
+    )
   )+
   labs(x = "growth rate",
        y = "p(+ve weight)")
@@ -415,12 +435,17 @@ subplots_strat_variation <- Map(function(df) {
                             "obligate" = "Sc.2",
                             "facultative" = "Sc.3")
              ))+
-  scale_fill_brewer(palette = "Paired")+
+  scale_fill_manual(
+    values = pal
+  )+
   theme_void(base_size = 12)+
   theme(
     axis.text.y = element_text(size = 8),
     axis.title.y = element_text(angle = 90),
-    legend.position = "none"
+    legend.position = "none",
+    panel.background = element_rect(
+      fill = "grey95"
+    )
   )+
   labs(x = "growth rate",
        y = "# phenotypes")
@@ -441,6 +466,7 @@ fig_strategy_weight_end <-
 # save
 ggsave(fig_strategy_weight_end,
        filename = "figures/fig_04_strategy_weight_end_vals.png",
-       dpi = 300)
+       dpi = 300,
+       height = 4, width = 12)
 ```
 
