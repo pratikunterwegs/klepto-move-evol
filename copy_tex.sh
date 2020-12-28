@@ -10,6 +10,7 @@ rm ms_kleptomove_*.tex
 rm docs/ms_kleptomove_*.pdf
 cp -p overleaf-kleptomove/AmNat_MS_template.tex ms_kleptomove_`date -I`.tex
 cp -p overleaf-kleptomove/AmNat_MS_template.pdf docs/ms_kleptomove_`date -I`.pdf
+cp figures/fig_0*.png overleaf-kleptomove/figures
 
 # build atlastools manual
 # Rscript --slave -e 'devtools::build_manual(pkg = "../atlastools", path = "docs/")'
