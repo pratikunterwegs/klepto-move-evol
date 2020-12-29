@@ -88,9 +88,11 @@ ggplot(test,
 label_wt <- c(
   # sprintf("weight: %s", c(2:8, 99))
   c("m(non-h)", "m(hand)", "m(food)",
-    "f(bias)", "f(non-h)", "f(hand)", "f(food)", "f(total)")
+    "f(bias)", "f(non-h)", "f(hand)", "f(food)", 
+    "m(indivs)",
+    "f(total)")
 )
-names(label_wt) <- c(seq(2, 8), 99)
+names(label_wt) <- c(seq(2, 8), 51, 99)
 
 # subset
 data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25)]
@@ -152,6 +154,10 @@ plots <- Map(function(le) {
       ggthemes::theme_tufte(base_family = "sans",
                             base_size = 6)+
       theme(axis.text.x = element_blank(),
+            panel.background = element_rect(
+              fill = "grey95",
+              colour = NA
+            ),
             panel.grid = element_blank())+
       labs(x = "generation",
            y = "p(+ve weight)",
