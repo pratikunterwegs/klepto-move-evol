@@ -11,6 +11,7 @@ editor_options:
 library(data.table)
 library(ggplot2)
 library(patchwork)
+library(colorspace)
 
 # get helper functions
 source("code/helper_functions.R")
@@ -236,6 +237,9 @@ weight_summary_move[, sim_type := factor(sim_type,
 # split for labels
 weight_summary_move <- split(weight_summary_move, by = "weight_id")
 
+# arrange order
+weight_summary_move <- weight_summary_move[as.character(c(4, 3, 2, 51))]
+
 # make plot
 subplots_wt_move <- Map(f = function(df) {
   ggplot(df)+
@@ -288,6 +292,9 @@ pal <- c(rbind(
   qualitative_hcl(3, "Set2", l = 20, rev = T),
   qualitative_hcl(3, "Set2", l = 50, rev = T)
 ))
+
+# select order
+weight_move_var <- weight_move_var[as.character(c(4, 3, 2, 51))]
 
 subplots_move_variation <- Map(function(df) {
   ggplot(df)+
@@ -369,6 +376,10 @@ weight_summary_strategy[, sim_type := factor(sim_type,
                                                "facultative"))]
 # split for labels
 weight_summary_strategy <- split(weight_summary_strategy, by = "weight_id")
+# arrange
+weight_summary_strategy <- weight_summary_strategy[as.character(
+  c(5, 8, 7, 6, 99)
+)]
 
 # make plot
 subplots_wt_strat <- Map(f = function(df) {
