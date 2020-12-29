@@ -11,7 +11,9 @@ floor_any <- function(x, v) {
 #' @param n_time Number of timesteps. Single numeric.
 #' @param layers Which layers to add.
 #'
-#' @return A data.table with per capita intake.
+#' @return A list of data.tables each with the cell specific,
+#' per-timestep value of a single variable in each of the generations
+#' queried.
 #' @export
 do_read_data <- function(
   data_folder,
@@ -44,45 +46,88 @@ do_read_data <- function(
     })
     
     # sum the agents over the generations 991 -- 998
-    matrices <- Reduce(f = `+`, x = matrices)
+    # matrices <- Reduce(f = `+`, x = matrices)
   }, how = "list")
   
   # convert to dataframe for capacity wise mean
   data_proc <- rapply(data_in, function(matrix_) {
-    vals <- as.vector(matrix_) / length(which_gen) # for N gen mean
+    vals <- as.vector(matrix_) # for N gen mean
     vals <- vals / n_time # for timestep mean
     
     return(vals)
   }, how = "list")
   
   # get per capita forager intake
-  pc_intake_forager <- data_proc[["foragers_intake"]] /
-    data_proc[["foragers"]]
+  pc_intake_forager <- Map("/",
+                           data_proc[["foragers_intake"]],
+                           data_proc[["foragers"]]
+  )
   
   # get per capita klepto intake
-  pc_intake_klepts <- data_proc[["klepts_intake"]] /
-    data_proc[["klepts"]]
+  pc_intake_klepts <- Map("/",
+                          data_proc[["klepts_intake"]],
+                          data_proc[["klepts"]]
+  )
   
   # replace NANs with 0
-  pc_intake_forager[is.nan(pc_intake_forager)] <- 0
-  pc_intake_klepts[is.nan(pc_intake_klepts)] <- 0
+  pc_intake_forager <- lapply(pc_intake_forager, function(x) {
+    x[is.nan(x)] <- 0
+    return(x)
+  })
+  pc_intake_klepts <- lapply(pc_intake_klepts, function(x) {
+    x[is.nan(x)] <- 0
+    return(x)
+  })
   
   # total pc intake
-  pc_intake_total <- pc_intake_forager + pc_intake_klepts
+  pc_intake_total <- Map("+",
+                         pc_intake_forager,
+                         pc_intake_klepts
+  )
+  
+  # total agents
+  total_agents <- Map("+",
+                     data_proc[["foragers"]],
+                     data_proc[["klepts"]]
+  )
   
   # add pc intake to list
   data_proc <- append(data_proc, list(
     pc_intake_forager = pc_intake_forager,
     pc_intake_klepts = pc_intake_klepts,
-    pc_intake_total = pc_intake_total
+    pc_intake_total = pc_intake_total,
+    total_agents = total_agents
   ))
   
   #### get pc intake per items and per agents ####
   # first make data.table
-  data_proc <- as.data.table(data_proc)
+  data_proc <- lapply(data_proc, function(le) {
+    Map(function(x, this_gen) {
+      data.table::data.table(
+        value = x,
+        gen = this_gen,
+        cell = seq(length(x))
+      )
+    }, le, which_gen)
+  })
   
-  # get total agents
-  data_proc[, `:=`(total_agents = foragers + klepts)]
+  # bind within list elements
+  data_proc <- lapply(data_proc, rbindlist)
+  
+  # assign name
+  data_proc <- Map(function(df, name) {
+    df[, variable := name]
+  }, data_proc, names(data_proc))
+  
+  # change names
+  data_proc <- lapply(data_proc, function(df) {
+    data.table::setnames(df, old = "value", new = unique(df$variable))
+    df[, c("variable") := NULL]
+  })
+  
+  data_proc <- Reduce(function(dt1, dt2) {
+    data.table::merge.data.table(dt1, dt2, by = c("cell", "gen"))
+  }, data_proc)
   
   return(data_proc)
 }
@@ -131,13 +176,12 @@ get_functional_response <-
       layers = layers
     )
     
-
     # floor drivers to the nearest floor value
     data_proc[, (drivers) := lapply(.SD, floor_any, v = round_value),
               .SD = drivers]
     
     # subset data for driver and response columnsd
-    cols <- c(response, drivers)
+    cols <- c(response, drivers, "gen")
     data_fun_response <- data_proc[, ..cols]
     
     # melt here before NANs appear
@@ -146,11 +190,11 @@ get_functional_response <-
       response
     ))
 
-    # get intake rate
+    # get mean intake rate per unique driver and gen value
     data_fun_response <-
       data_fun_response[, lapply(.SD, mean),
         .SD = c("value"),
-        by = c(drivers, "variable")
+        by = c(drivers, "variable", "gen")
       ]
     
     # check cols
