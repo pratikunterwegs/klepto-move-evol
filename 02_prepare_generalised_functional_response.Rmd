@@ -26,7 +26,7 @@ Prepare to read data.
 
 ```{r}
 # simulation type
-sim_type <- c("obligate", "facultative", "foragers", "random")
+sim_type <- c("obligate", "facultative", "foragers")
 
 # get the replicates
 replicate <- stringr::str_pad(seq_len(3), pad = "0", width = 3)
@@ -70,11 +70,7 @@ data$data_summary <- lapply(data$folder_path, function(x) {
 # unnest the data
 data <- unnest(data,
                cols = "data_summary")
-# set dt
-setDT(data)
-```
 
-```{r}
 # average over replicates and select only the highest growth rate
 # data_summary <- data_plot[, 
 #                      list(value = mean(value)),
