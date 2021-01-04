@@ -94,7 +94,7 @@ fwrite(data, file = "data/data_funresp_general.csv")
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
-    round_value = 0.001,
+    round_value = 0.005,
     drivers = c("klepts", "foragers")
   )
 })
