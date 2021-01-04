@@ -20,7 +20,7 @@ library(data.table)
 
 ```{r}
 # read in data
-data = fread("data/results/data_funresp_small.csv")
+data = fread("data/results/data_funresp_general.csv")
 head(data)
 ```
 
@@ -91,6 +91,10 @@ sim_coefs[, vbl := dplyr::case_when(
 sim_coefs[, sim_type := factor(sim_type,
                                levels = c("foragers", "obligate", 
                                           "facultative", "random"))]
+```
+
+```{r}
+fwrite(sim_coefs, "data/results/data_funresp_gen_coefs.csv")
 ```
 
 ## Plot coefficient values
