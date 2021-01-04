@@ -19,7 +19,8 @@ param_combinations <- fread("data/results/data_param_combinations.csv")
 temp_gen_data <- lapply(param_combinations$folder_path, 
                         function(x) {
                           get_sim_weight_evol(data_folder = x,
-                                              generations = seq(1, 999, 25))
+                                              generations = c(seq(1, 999, 25),
+                                                              990:998))
                         }
 )
 ```
