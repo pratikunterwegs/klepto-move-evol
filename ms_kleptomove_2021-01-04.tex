@@ -217,9 +217,9 @@ The total lifetime intake of individuals is used as a proxy of fitness, and the 
 The decision-making weights are subject to independent random mutations with a probability of 0.001.
 The size of the mutation (either positive or negative) is drawn from a Cauchy distribution with a scale of 0.01 centred on the current value of the weight to be mutated.
 This allows for a small number of very large mutations while the majority of mutations are small.
-Autocorrelation in the landscape coupled with limited natal dispersal can lead to spatial heterogeneity becoming fixed in populations, as lineages adapt to local conditions.
-Among other things, this could lead to population-level movements due to differential reproduction that mirror shifts in resource abundance, rather than individual movement.
-To ensure individual movement rules evolved, we intialised each offspring at a random location on the landscape, and also reset its total intake to zero.
+We recognised that spatial autocorrelation in the landscape coupled with limited natal dispersal can lead to spatial heterogeneity in evolved movement rules, as lineages adapt to local conditions.
+Furthermore, limited natal dispersal could lead to population-level movements due to differential reproduction that mirror shifts in resource abundance, rather than individual movement.
+To ensure that global individual movement rules evolved, we intialised each offspring at a random location on the landscape, and also reset its total intake to zero.
 
 \subsection*{Simulation Output and Analysis}
 
@@ -244,12 +244,12 @@ We plotted the timestep- and generation-averaged item count ($G$), strategy coun
 
 In our simulation, individuals perceive and respond to the standing stock of prey items $G$ on a cell rather than its growth rate $r$.
 This standing stock is unpredictable due to consumption by other individuals.
-To understand the consequences of movement, we need to investigate how individual intake rate varies with $G$ as well as the presence of potential competitors.
+To understand the consequences of movement, we needed to investigate how individual intake varies with $G$ as well as the presence of potential competitors.
 Thus we examined the generalised functional response ($W$) \textit{sensu}\citet{meer1997}.
-We plotted the per-capita intake rate achieved by individuals on grid-cells with similar numbers of prey items ($G$) and individuals ($N_p + N_s$) (see Figure Xa).
-We did this separately for $W_p$ and $W_s$, the generalised functional response of individuals using the producer and kleptoparasitic scrounger respectively (see Figure Xb, Xc).
+We plotted the per-capita intake rate achieved by individuals on grid-cells with similar numbers of prey items ($G$) and individuals ($N_p + N_s$).
+We did this separately for $W_p$ and $W_s$, i.e., the generalised functional response for producers and kleptoparasitic scroungers, respectively.
 We modelled the effect of competition and resource availability on $W_p$ and $W_s$ using a simple generalised linear model (GLM) with either $W_p$ or $W_s$ as the response, and the number of individuals and the number of prey items as the only additive predictors.
-We repeated this for simulations with different baseline growth rates $r$, and examined variation in the contribution of competition and resource availability in the \textbf{form of the linear model coefficients of individual density and item density, respectively (see Figure X)}.
+We repeated this for simulations with different baseline growth rates $r$, and examined variation in the contribution of competition and resource availability in the form of the linear model coefficients of individual density and item density, respectively.
 These linear models took the form
 \begin{linenomath*}
     \begin{equation*}
@@ -309,17 +309,18 @@ Across high growth rates ($\geq$ 0.1), an increasing proportion of individuals p
     \centering
     \includegraphics[width=0.99\textwidth]{figures/fig_03_move_weight_end_vals.png}
     \caption{
-        Proportion of individuals in populations evolved across different regrowth rates selecting \textit{for} environmental cues in deciding movement.
+        Proportion of evolved populations moving towards environmental cues in deciding movement, across different regrowth rates.
         Panels \textbf{(a -- d)} show the proportion of individuals with positive weights for each cue: \textbf{(a)} non-handling individuals, \textbf{(b)} handling individuals, \textbf{(c)} prey items, and \textbf{(d)} individuals overall.
         Colours and shapes represent scenarios (blue circles: \textit{producers-only}; green triangles: \textit{fixed-strategy}; red squares: \textit{flexible-strategy}).
-        While lines connect similarly numbered replicates across $r_{base}$, these are entirely independent simulations.
+        Each point represents a single generation between 990 and 998 in 3 replicates.
         %%
         Panels \textbf{(e -- h)} show the number of distinct values for each weight in the population in panels \textbf{(a -- d)} separated by the sign (positive or negative): \textbf{(e)} non-handling individuals, \textbf{(f)} handling individuals, \textbf{(g)} prey items, and \textbf{(h)} individuals overall.
         Bar colours represent scenarios (blue: \textit{producers-only}; green: \textit{fixed-strategy}; red: \textit{flexible-strategy}), while the hue represents the sign (light: positive, dark: negative).
         %%
-        Individuals avoid non-handlers for $r_{base} \leq$ 0.1, after which they evolve neutrally in scenarios 1 and 2, and strongly positive values in scenario 3  (\textbf{a, e}).
-        Similarly, most individuals in scenarios 1 and 2 move towards handlers, but the proportion and diversity of negative weights increases at $r_{base} \geq$ 0.1 (\textbf{b, f}). Individuals in scenario 3 consistently move towards handlers, and individuals overall (\textbf{b, f, d, h}).
-        Overall, in scenario 1 individual preference for moving towards other individuals has an inverse-humped relationship with $r_{base}$, while in scenario 2 it shows a steady linear decline.
+        Individuals across scenarios and growth rates evolve to always move towards food items (\textbf{a, e}).
+        The preference for handlers decreases with growth rate in scenarios 1 and 2, but is consistently positive in scenario 3 (\textbf{b, f}).
+        Non-handler avoidance decreases only at high growth rates (\textbf{c, g}).
+        While the overall preference for individuals depends on the growth rate in scenarios 1 (inverse hump shape) and 2 (linear decline), individuals in scenario 3 always move towards each other (\textbf{d, h}).
     }
     \label{fig:figure_pipeline}
 \end{figure*}
@@ -381,15 +382,26 @@ In the \textbf{third scenario} $G$ varied only weakly across cells with differen
 
 \subsection*{Generalised Functional Response}
 
-The model coefficients of $G$ and $N_p + N_s$ changed non-linearly in relation to $r_{base}$ (Figure X).
+The effect of individual and prey-item density on per-capita intake changed non-linearly in relation to $r_{base}$ (Figure 3).
 %%
-In the producers-only case, the coefficient $\beta_2$ increased with $r_{base}$ when $r_{base} \leq$ 0.03, after which it decreased below zero for $r_{base}$ = 0.25.
-Similarly, the coefficient of items $\beta_1$ was highest at $r_{base}$ = 0.03, decreasing to zero for $r_{base}$ = 0.1 and 0.25.
+In scenario 1, the effect of individuals on producer per-capita intake (coefficient $\beta_2$) was initially negative at low growth rates, and then slightly positive (max. $\beta_2$ $\approx$ 0.5) for intermediate, high and very high growth rates.
+The effect of items (coefficient $\beta_1$) declined from low positive values to zero with increasing $r_{base}$.
 %%
-In the fixed-strategy case, $\beta_1$ (items) was at or near zero across all $r_{base}$.
-However, $\beta_2$ for both $W_p$ and $W_s$ was near zero for $r_{base} \leq$ 0.05, positive for $r_{base} \in 0.075, 0.1$, and zero for $r_{base}$ = 0.25.
+In scenario 2, $\beta_2$ for both $W_p$ and $W_s$ was near zero for $r_{base} <$ 0.05, increased rapidly for for $r_{base} \in 0.05, 0.075, 0.1$, and declined to $< $ 0.5 for $r_{base}$ = 0.25.
+The $\beta_1$ (items) was at or near zero across all $r_{base}$ for both $W_p$ and $W_s$.
 %%
-In the flexible-strategy case, both $\beta_1$ and $\beta_2$ showed a hump-shaped relationship with $r_{base}$ for both $W_p$ and $W_s$, with the highest values at intermediate growth rates.
+In the flexible-strategy case, $\beta_2$ showed a hump-shaped relationship with $r_{base}$ for both $W_p$ and $W_s$, with negative values at low growth rates, the highest values at intermediate growth rates, and low values at the highest growth rate.
+The effect of items ($\beta_1$) declined from low positive values to zero with increasing $r_{base}$.
+
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=0.50\textwidth]{figures/fig_05_coef_intake_general.png}
+    \caption{
+        The effect of individuals and items on per-capita intake rate differs across regrowth rates and individual strategy.
+        Across scenarios (\textbf{a}: producers-only, \textbf{b}: fixed-strategy, and \textbf{c}: flexible-strategy) and strategies (blue: producer, red: kleptoparasite), the effect of individuals ($\beta_2$) and prey items ($\beta_1$) is hump-shaped with respect to regrowth rates.
+        It is initially negative or zero at low regrowth rates, and increases to positive values for intermediate and high regrowth rates, before declining at extremely high levels of prey regrowth.
+    }
+\end{figure*}
 
 % If you have deposited data to Dryad, you should cite them somewhere in the main text (usually in the Methods or Results sections). A sentence like the following will do. All data are available in the Dryad Digital Repository (\citealt{CookEtAl2015}).
 
