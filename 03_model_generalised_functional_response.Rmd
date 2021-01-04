@@ -148,5 +148,5 @@ fig_coef_intake <-
 
 # save
 ggsave(fig_coef_intake,
-       filename = "figures/fig_coef_intake_general.png")
+       filename = "figures/fig_05_coef_intake_general.png")
 ```
