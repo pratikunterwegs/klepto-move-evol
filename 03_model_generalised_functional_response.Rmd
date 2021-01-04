@@ -100,31 +100,51 @@ fwrite(sim_coefs, "data/results/data_funresp_gen_coefs.csv")
 ## Plot coefficient values
 
 ```{r}
+# read in data
+data = fread("data/results/data_funresp_gen_coefs.csv")
+data = data[strategy != "pc_intake_total" & vbl != "intercept"]
+```
+
+```{r}
 fig_coef_intake <- 
-  ggplot(sim_coefs[strategy != "pc_intake_total"])+
+  ggplot(data)+
   geom_hline(yintercept = 0, col = "grey",
              lty = 2)+
-  geom_line(aes(regrowth,
-                 cf,
-                col = c(strategy),
-                group = interaction(replicate, gen, strategy)),
-                se = F)+
+  # geom_line(aes(regrowth,
+  #                cf,
+  #               col = c(strategy),
+  #               group = interaction(replicate, gen, strategy)),
+  #               se = F)+
+  geom_smooth(
+    aes(regrowth,
+        cf,
+        col = strategy),
+    lwd = 0.2
+  )+
   geom_jitter(aes((regrowth), 
                  cf,
                  col = strategy),
-             shape = 1, stroke = 1)+
+             shape = 1)+
   
-  facet_grid(sim_type~vbl, scales = "free")+
+  facet_grid(sim_type~vbl, scales = "fixed")+
   scale_colour_manual(
-    values = pals::coolwarm(2)
+    values = diverging_hcl(2, "Blue-Red", l = 30, rev = F)
   )+
+  scale_x_sqrt(breaks = c(0.01, 0.1, 0.25))+
   # xlim(0, 0.075)+
-  # coord_cartesian(xlim = c(0, 0.2))+
+  coord_fixed(ratio = 0.2)+
   theme_test()+
-  theme(legend.position = "top")+
+  theme(
+    axis.text.y = element_text(size = 8),
+    axis.title.y = element_text(angle = 90),
+    legend.position = "top",
+    panel.background = element_rect(
+      fill = "grey95"
+    )
+  )+
   labs(x = "growth rate",
        y = "coefficient",
-       col = "scenario")
+       col = "strategy")
 
 # save
 ggsave(fig_coef_intake,
