@@ -14,6 +14,7 @@ We fit a GLM with per-capita intake rate as the response, and items and individu
 # load libs
 library(ggplot2)
 library(data.table)
+library(colorspace)
 ```
 
 ## Load data and split
@@ -106,15 +107,20 @@ data = data[strategy != "pc_intake_total" & vbl != "intercept"]
 ```
 
 ```{r}
-fig_coef_intake <- 
-  ggplot(data)+
+# make coefficient labels
+data$vbl <- factor(data$vbl, labels = c(expression(beta*"1"), 
+                                        expression(beta*"2")))
+
+# split by sim type
+data <- split(data, by = "sim_type")
+
+# arrange
+data <- data[c("foragers", "obligate", "facultative")]
+
+subplots_coef_intake <- Map(function(df) {
+  ggplot(df)+
   geom_hline(yintercept = 0, col = "grey",
              lty = 2)+
-  # geom_line(aes(regrowth,
-  #                cf,
-  #               col = c(strategy),
-  #               group = interaction(replicate, gen, strategy)),
-  #               se = F)+
   geom_smooth(
     aes(regrowth,
         cf,
@@ -126,25 +132,37 @@ fig_coef_intake <-
                  col = strategy),
              shape = 1)+
   
-  facet_grid(sim_type~vbl, scales = "fixed")+
+  facet_grid(~vbl, scales = "fixed",
+             labeller = label_parsed)+
   scale_colour_manual(
     values = diverging_hcl(2, "Blue-Red", l = 30, rev = F)
   )+
   scale_x_sqrt(breaks = c(0.01, 0.1, 0.25))+
-  # xlim(0, 0.075)+
-  coord_fixed(ratio = 0.2)+
+  coord_fixed(ratio = 0.2,
+              xlim = c(0, 0.25),
+              ylim = c(-0.25, 2))+
   theme_test()+
   theme(
     axis.text.y = element_text(size = 8),
     axis.title.y = element_text(angle = 90),
-    legend.position = "top",
+    legend.position = "none",
     panel.background = element_rect(
       fill = "grey95"
     )
   )+
-  labs(x = "growth rate",
-       y = "coefficient",
-       col = "strategy")
+  labs(x = "Regrowth rate",
+       y = "Coef. value")
+}, data)
+
+# wrap
+fig_coef_intake <-
+  wrap_plots(
+    subplots_coef_intake,
+    ncol = 1
+  )+
+  plot_annotation(tag_levels = "a",
+                  tag_prefix = "(",
+                  tag_suffix = ")")
 
 # save
 ggsave(fig_coef_intake,
