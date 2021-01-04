@@ -202,13 +202,14 @@ data[, weight_num := as.numeric(weight_num)]
 
 ```{r}
 # get max gen
-data <- data[gen == max(gen), ]
+data <- data[gen > 900, ]
 
 weight_summary <- data[weight_prop >= 0.001, 
                        list(p_pos = sum(weight_prop[weight_num > 0]),
                             n_pos = length(unique(weight_num[weight_num > 0])),
                             n_neg = length(unique(weight_num[weight_num < 0]))),
-                       by = c("sim_type", "replicate", "regrowth", "weight_id")]
+                       by = c("sim_type", "replicate", "regrowth", "weight_id",
+                              "gen")]
 ```
 
 ### Prepare figure
@@ -243,16 +244,17 @@ weight_summary_move <- weight_summary_move[as.character(c(4, 3, 2, 51))]
 # make plot
 subplots_wt_move <- Map(f = function(df) {
   ggplot(df)+
-  geom_line(aes(regrowth, p_pos,
-                group = interaction(replicate, sim_type),
+  geom_smooth(aes(regrowth, p_pos,
+                group = interaction(sim_type),
                 colour = sim_type),
-             lwd = 0.2,
+             lwd = 0.5, alpha = 0.5,
              position = position_dodge(width = 0.01))+
   geom_point(aes(regrowth, p_pos,
-                group = interaction(replicate, sim_type),
+                group = interaction(replicate, sim_type, gen),
                 colour = sim_type,
                 shape = sim_type),
-              size = 2,
+              # size = 2,
+              alpha = 0.5,
               fill = NA,
              position = position_dodge(width = 0.01))+
   scale_colour_manual(
@@ -282,7 +284,7 @@ weight_move_var <- Map(
   function(df) {
     df <- copy(df)
     df[, p_pos := NULL]
-    df <- melt(df, id.vars = c("sim_type", "replicate", "regrowth", "weight_id"))
+    df <- melt(df, id.vars = c("sim_type", "replicate", "regrowth", "weight_id", "gen"))
     df[, value := ifelse(variable == "n_neg", -value, value)]
   },
   weight_summary_move
@@ -304,7 +306,7 @@ subplots_move_variation <- Map(function(df) {
   )+
   geom_col(aes(regrowth, value,
                fill = interaction(variable, sim_type),
-               group = interaction(regrowth, replicate)),
+               group = interaction(regrowth, replicate, gen)),
            width = 0.1,
            position = position_dodge(width = 0.01))+
   scale_x_sqrt(breaks = c(0.01, 0.1, 0.25))+
