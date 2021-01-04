@@ -45,3 +45,4 @@ data/*
 !data/00_data_exists.txt
 !data/data_parameters/
 !data/data.csv
+!data/results/data_funresp_gen_coefs.csv
