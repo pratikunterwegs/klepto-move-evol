@@ -1,0 +1,128 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Ecology: Intake in relation to individuals and items
+
+We fit a GLM with per-capita intake rate as the response, and items and individuals as the predictors, and extract the coefficients (and p-values) of each for every regrowth rate and simulation type.
+
+## Get libraries
+
+```{r}
+# load libs
+library(ggplot2)
+library(data.table)
+```
+
+## Load data and split
+
+```{r}
+# read in data
+data = fread("data/results/data_funresp_small.csv")
+head(data)
+```
+
+```{r}
+# split the data
+data_model <- split(data, by = c("sim_type", "replicate", "regrowth", "gen", 
+                                 "variable"))
+```
+
+## Prepare linear model and run
+
+```{r}
+# define a function to collect coefficients
+do_model <- function(df, ...) {
+  mod <- glm(..., data = df)
+
+  cf <- coefficients(mod)
+
+  data.table(cf = cf, vbl = names(cf))
+}
+```
+
+```{r}
+# gather coefficients
+model_cf <- Map(function(df) {
+  do_model(df = df, "value ~ items + total_agents")
+}, df = data_model)
+```
+
+## Get model coefficients
+
+```{r}
+# read in parameters
+params <- unique(data, by = c("sim_type", "regrowth", "variable", 
+                              "gen", "replicate"))
+
+setnames(params, old = "variable", new = "strategy")
+
+# add list column of coefficients
+params[, mod_cf := model_cf]
+
+# unlist as data
+sim_coefs <- params[, unlist(mod_cf, recursive = F), 
+                    by = list(sim_type, regrowth, strategy, replicate, gen)]
+```
+
+## Handle coefficient names
+
+```{r}
+# subset columns
+sim_coefs <- sim_coefs[stringi::stri_detect(vbl,
+  regex = "(items)|(agents)|(Intercept)"
+), ]
+
+# rename vbl
+sim_coefs[, vbl := dplyr::case_when(
+  stringi::stri_detect(vbl,
+    fixed = "items:total_agents"
+  ) ~
+  "items * individuals",
+  stringi::stri_detect(vbl, fixed = "items") ~ "items",
+  stringi::stri_detect(vbl, fixed = "Intercept") ~ "intercept",
+  # stringi::stri_detect(vbl, fixed = "klepts") ~ "kleptoparasite",
+  T ~ "individuals"
+)]
+
+# relevel simulation type
+sim_coefs[, sim_type := factor(sim_type,
+                               levels = c("foragers", "obligate", 
+                                          "facultative", "random"))]
+```
+
+## Plot coefficient values
+
+```{r}
+fig_coef_intake <- 
+  ggplot(sim_coefs[strategy != "pc_intake_total"])+
+  geom_hline(yintercept = 0, col = "grey",
+             lty = 2)+
+  geom_line(aes(regrowth,
+                 cf,
+                col = c(strategy),
+                group = interaction(replicate, gen, strategy)),
+                se = F)+
+  geom_jitter(aes((regrowth), 
+                 cf,
+                 col = strategy),
+             shape = 1, stroke = 1)+
+  
+  facet_grid(sim_type~vbl, scales = "free")+
+  scale_colour_manual(
+    values = pals::coolwarm(2)
+  )+
+  # xlim(0, 0.075)+
+  # coord_cartesian(xlim = c(0, 0.2))+
+  theme_test()+
+  theme(legend.position = "top")+
+  labs(x = "growth rate",
+       y = "coefficient",
+       col = "scenario")
+
+# save
+ggsave(fig_coef_intake,
+       filename = "figures/fig_coef_intake_general.png")
+```
