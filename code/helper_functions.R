@@ -286,25 +286,33 @@ get_sim_summary <- function(data_folder,
   }, how = "list")
   
   # get per capita forager intake
-  pc_intake_forager <- Map("/",
-                           data_proc[["foragers_intake"]],
-                           data_proc[["foragers"]]
+  pc_intake_forager <- Map(function(df1, df2) {
+    data.table(
+      value = df1$value / df2$value,
+      cap = df1$cap
+    )
+  }, 
+  data_proc[["foragers_intake"]],
+  data_proc[["foragers"]]
   )
   
   # get per capita klepto intake
-  pc_intake_klepts <- Map("/",
-                          data_proc[["klepts_intake"]],
-                          data_proc[["klepts"]]
+  pc_intake_klepts <- Map(function(df1, df2) {
+    data.table(
+      value = df1$value / df2$value,
+      cap = df1$cap
+    )
+  },
+  data_proc[["klepts_intake"]]$value,
+  data_proc[["klepts"]]$value
   )
   
   # replace NANs with 0
   pc_intake_forager <- lapply(pc_intake_forager, function(x) {
-    x$cap = data_proc[["foragers"]][[1]]$cap
     x[is.nan(x$value), ]$value <- 0
     return(x)
   })
   pc_intake_klepts <- lapply(pc_intake_klepts, function(x) {
-    x$cap = data_proc[["klepts"]][[1]]$cap
     x[is.nan(x$value), ]$value <- 0
     return(x)
   })
