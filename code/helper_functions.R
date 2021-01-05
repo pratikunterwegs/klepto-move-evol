@@ -286,39 +286,45 @@ get_sim_summary <- function(data_folder,
     })
     
     # sum the agents over the generations 991 -- 998
-    matrices <- Reduce(f = `+`, x = matrices)
+    # matrices <- Reduce(f = `+`, x = matrices)
   }, how = "list")
   
   # convert to dataframe for capacity wise mean
   data_proc <- rapply(data_in, function(matrix_) {
-    vals <- as.vector(matrix_) / length(which_gen) # for N gen mean
+    vals <- as.vector(matrix_) #/ length(which_gen) # for N gen mean
     vals <- vals / n_time # for timestep mean
     
     # convert the capacity matrix into a vector
     cap <- as.vector(capacity_matrix)
     
     # for the capacity, get the per-time per-gen mean layer value
-    val_by_cap <- data.table::data.table(value = vals, cap = cap)
+    val_by_cap <- data.table::data.table(value = vals, 
+      cap = cap)
     
     return(val_by_cap)
   }, how = "list")
   
   # get per capita forager intake
-  pc_intake_forager <- data_proc[["foragers_intake"]]$value / 
-    data_proc[["foragers"]]$value
-  
-  pc_intake_forager <- data.table::data.table(
-    value = pc_intake_forager,
-    cap = data_proc[["foragers"]]$cap
+  pc_intake_forager <- Map("/",
+                           data_proc[["foragers_intake"]],
+                           data_proc[["foragers"]]
   )
   
   # get per capita klepto intake
-  pc_intake_klepts <- data_proc[["klepts_intake"]]$value / 
-    data_proc[["klepts"]]$value
-  pc_intake_klepts <- data.table::data.table(
-    value = pc_intake_klepts,
-    cap = data_proc[["klepts"]]$cap
+  pc_intake_klepts <- Map("/",
+                          data_proc[["klepts_intake"]],
+                          data_proc[["klepts"]]
   )
+  
+  # replace NANs with 0
+  pc_intake_forager <- lapply(pc_intake_forager, function(x) {
+    x[is.nan(x)] <- 0
+    return(x)
+  })
+  pc_intake_klepts <- lapply(pc_intake_klepts, function(x) {
+    x[is.nan(x)] <- 0
+    return(x)
+  })
   
   # add pc intake to list
   data_proc <- append(data_proc, list(pc_intake_forager = pc_intake_forager,
