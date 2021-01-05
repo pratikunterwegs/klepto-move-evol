@@ -299,10 +299,12 @@ get_sim_summary <- function(data_folder,
   
   # replace NANs with 0
   pc_intake_forager <- lapply(pc_intake_forager, function(x) {
+    x$cap = data_proc[["foragers"]][[1]]$cap
     x[is.nan(x$value), ]$value <- 0
     return(x)
   })
   pc_intake_klepts <- lapply(pc_intake_klepts, function(x) {
+    x$cap = data_proc[["klepts"]][[1]]$cap
     x[is.nan(x$value), ]$value <- 0
     return(x)
   })
