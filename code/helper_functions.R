@@ -220,25 +220,6 @@ get_sim_weight_evol <- function(data_folder,
   }
   names(weight_names) <- seq(length(weight_names) + 1)[-1]
 
-  # plot weights data
-  # plot_weights <-
-  #   ggplot2::ggplot()+
-  #   ggplot2::geom_tile(data = weight_data_gen,
-  #                      ggplot2::aes(gen, weight_value,
-  #                                   fill = weight_prop),
-  #                      show.legend = FALSE) +
-  #   ggplot2::facet_grid(~ weight_id,
-  #                       labeller = ggplot2::labeller(
-  #                         weight_id = weight_names
-  #                       )
-  #   ) +
-  #   ggplot2::scale_fill_distiller(palette = "YlOrRd") +
-  #   ggplot2::geom_hline(yintercept = 0) +
-  #   ggplot2::theme(axis.text = ggplot2::element_blank(),
-  #                  axis.ticks = ggplot2::element_blank())+
-  #   ggplot2::labs(x = "generation",
-  #                 y = "weight value")
-
   # return the ggplot
   return(weight_data_gen)
   
@@ -318,11 +299,11 @@ get_sim_summary <- function(data_folder,
   
   # replace NANs with 0
   pc_intake_forager <- lapply(pc_intake_forager, function(x) {
-    x[is.nan(x)] <- 0
+    x[is.nan(x$value), ]$value <- 0
     return(x)
   })
   pc_intake_klepts <- lapply(pc_intake_klepts, function(x) {
-    x[is.nan(x)] <- 0
+    x[is.nan(x$value), ]$value <- 0
     return(x)
   })
   
@@ -330,12 +311,17 @@ get_sim_summary <- function(data_folder,
   data_proc <- append(data_proc, list(pc_intake_forager = pc_intake_forager,
                                       pc_intake_klepts = pc_intake_klepts))
   
-  # within layer get capacity wise mean and sd
-  data_proc <- lapply(data_proc, function(dt) {
-    dt[, .(mean_val = mean(value, na.rm = TRUE),
-           sd_val = sd(value, na.rm = TRUE),
-           median_val = median(value, na.rm = TRUE)),
-       by = "cap"]
+  # add gens and get mean and sd per quality
+  data_proc <- lapply(data_proc, function(le) {
+    rbindlist(
+      Map(function(le2, name) {
+        setDT(le2)
+        le2[, gen := name]
+        le2[, list(mean_val = mean(value, na.rm = TRUE),
+                   sd_val = sd(value, na.rm = TRUE)),
+            by = c("cap", "gen")]
+      }, le, which_gen)
+    )
   })
   
   # assign layer name
