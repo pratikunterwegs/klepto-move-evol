@@ -303,8 +303,8 @@ get_sim_summary <- function(data_folder,
       cap = df1$cap
     )
   },
-  data_proc[["klepts_intake"]]$value,
-  data_proc[["klepts"]]$value
+  data_proc[["klepts_intake"]],
+  data_proc[["klepts"]]
   )
   
   # replace NANs with 0
@@ -325,7 +325,7 @@ get_sim_summary <- function(data_folder,
   data_proc <- lapply(data_proc, function(le) {
     rbindlist(
       Map(function(le2, name) {
-        setDT(le2)
+        # setDT(le2)
         le2[, gen := name]
         le2[, list(mean_val = mean(value, na.rm = TRUE),
                    sd_val = sd(value, na.rm = TRUE)),
