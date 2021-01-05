@@ -272,7 +272,7 @@ Similarly, weights at or near +1 represent the greatest evovled preference for o
 
 \subsection*{Emergence of a Dynamic Equilibrium}
 
-\textbf{WORK IN PROGRESS}
+\paragraph*{\textbf{WORK IN PROGRESS}}
 
 \subsection*{Evolution of Movement Decisions}
 
@@ -327,7 +327,7 @@ Across high growth rates ($\geq$ 0.1), an increasing proportion of individuals p
 
 \subsection*{Evolution of Foraging Strategy}
 
-Populations in scenario 3 were fixed to choose a producer strategy, and their foraging strategy weights evolved neutrally, providing a null model of weight evolution against which to compare scenarios 2 and 3.
+Populations in scenario 1 were fixed to choose a producer strategy, and their foraging strategy weights evolved neutrally, providing a null model of weight evolution against which to compare scenarios 2 and 3.
 Populations in scenario 3 did not show a consistently evolved bias towards choosing a producing strategy, with no discernible pattern in the proportion of the population bearing a positive $f_b$ (Fig. 2. a).
 However, populations in scenario 2 showed an increasing proportion of individuals biased towards a foraging strategy with increasing $r_{base}$.
 At the highest growth rate, all evolved individuals in scenario 3 were biased towards producing (Fig. 2.a).
@@ -374,11 +374,11 @@ At very low $r_{base}$ (0.001) the kleptoparasitic strategy was more ofen used t
 \paragraph{Consequences for Prey Item Distribution}
 
 The distributon of items $G$ varied considerably between scenarios and simulation-specific baseline growth rates $r_{base}$.
-In the \textbf{first scenario} $G$ was insensitive to $r$, and items were uniformly distributed across cells of different growth rates.
+In the \textbf{scenario 1} $G$ was insensitive to $r$, and items were uniformly distributed across cells of different growth rates.
 $G$ was not signficantly different among simulations with different $r_{base}$.
-In the \textbf{second scenario} $G$ increased strongly with $r$, and the curve of $G ~ r$ varied with $r_{base}$.
+In the \textbf{scenario 2} $G$ increased strongly with $r$, and the curve of $G ~ r$ varied with $r_{base}$.
 The $G ~ r$ transformed from roughly linear ($r_{base}$ = 0.001), to exponential ($r_{base}$ = 0.01), and finally to sigmoidal ($r_{base} \in$ 0.03, 0.05) [see Figure X].
-In the \textbf{third scenario} $G$ varied only weakly across cells with different $r$, and the $G ~ r$ response had a positive slope only for the highest $r_{base}$ of 0.03 and 0.05.
+In the \textbf{scenario 3} $G$ varied only weakly across cells with different $r$, and the $G ~ r$ response had a positive slope only for the highest $r_{base}$ of 0.03 and 0.05.
 
 \subsection*{Generalised Functional Response}
 
@@ -402,6 +402,30 @@ The effect of items ($\beta_1$) declined from low positive values to zero with i
         It is initially negative or zero at low regrowth rates, and increases to positive values for intermediate and high regrowth rates, before declining at extremely high levels of prey regrowth.
     }
 \end{figure*}
+
+\subsection*{Mechanisms of an Ideal Dynamic Distribution}
+
+In all three scenarios, per-capita intake rates were roughly equalised across cell qualities (Figure X).
+This finding is broadly in the spirit of the original IFD concept that individuals should distribute themselves in such a way as to be unable to obtain a better intake by moving; this is despite ignoring all the IFD assumptions.
+%%
+Since the IFD is an emergent phenomenon of the population-landscape interaction, individuals redistribute themselves when the underlying landscape changes \citep[][]{cressman2006}.
+Individuals following the producer strategy navigate this complex landscape by using indirect cues of the immediate benefit as well as long-term quality of landscape cells.
+This mechanism is very poorly captured by phenomenological models of functional response coefficients for individuals and prey-items.
+%%
+Across regrowth rates, models of intake rate would predict that prey-item abundance has little to no effect with $\beta_1 \approx$ 0, while competitor density (coefficient $\beta_2$) would be expected to have an equal or stronger effect.
+These models would predict that individuals do not select for prey-items, and that individuals should move away from each other at low regrowth rates, while moving towards each other at higher regrowth rates
+%%
+However, individuals are not neutral to prey-items, instead showing a strong preference at all regrowth rates.
+Further, individuals' response to other individuals is based on behavioural state; populations evolve to move towards handlers and away from non-handlers across a range of regrowth rates.
+At low regrowth rates, items are expected to be scarce across the landscape, and item densities are unreliable cues of cell quality.
+Yet individual immobility while handling prey leads to the positive correlation of individual densities and cell quality, as producers are converted to handlers more rapidly on cells with higher $r$.
+When direct cues are unreliable, individuals can use the foraging status of conspecifics as public information to detect a landscape quality gradient.
+%%
+Thus even though individual intake is negatively affected by the presence of other individuals generally, a strong preference for moving towards handlers evolves.
+This social-information use may explain why animal groups are apparently larger than predicted on low-productivity landscapes without invoking extrinsic mechanisms such as predation risk.
+%%
+At high regrowth rates, the probability of finding a food item is invariant with the number of potential competitors, food items are good cues of cell quality, and selection for individuals becomes neutral.
+Nonetheless, handling-immobility ensures that most producer-handler conversions occur in the presence of already-handling individuals, giving rise to the spurious inference of a facilitative effect of individuals on intake.
 
 % If you have deposited data to Dryad, you should cite them somewhere in the main text (usually in the Methods or Results sections). A sentence like the following will do. All data are available in the Dryad Digital Repository (\citealt{CookEtAl2015}).
 

@@ -15,6 +15,7 @@ We fit a GLM with per-capita intake rate as the response, and items and individu
 library(ggplot2)
 library(data.table)
 library(colorspace)
+library(patchwork)
 ```
 
 ## Load data and split
@@ -108,8 +109,8 @@ data = data[strategy != "pc_intake_total" & vbl != "intercept"]
 
 ```{r}
 # make coefficient labels
-data$vbl <- factor(data$vbl, labels = c(expression(beta*"1"), 
-                                        expression(beta*"2")))
+data$vbl <- factor(data$vbl, labels = c(expression(beta*"2: individuals"), 
+                                        expression(beta*"1: items")))
 
 # split by sim type
 data <- split(data, by = "sim_type")
@@ -137,8 +138,9 @@ subplots_coef_intake <- Map(function(df) {
   scale_colour_manual(
     values = diverging_hcl(2, "Blue-Red", l = 30, rev = F)
   )+
-  scale_x_sqrt(breaks = c(0.01, 0.1, 0.25))+
-  coord_fixed(ratio = 0.2,
+  scale_x_continuous(breaks = c(0.01, 0.1, 0.25))+
+  coord_cartesian(
+    # ratio = 0.2,
               xlim = c(0, 0.25),
               ylim = c(-0.25, 2))+
   theme_test()+
@@ -158,13 +160,15 @@ subplots_coef_intake <- Map(function(df) {
 fig_coef_intake <-
   wrap_plots(
     subplots_coef_intake,
-    ncol = 1
+    ncol = 3
   )+
   plot_annotation(tag_levels = "a",
                   tag_prefix = "(",
                   tag_suffix = ")")
 
+fig_coef_intake
 # save
 ggsave(fig_coef_intake,
+       width = 12, height = 3,
        filename = "figures/fig_05_coef_intake_general.png")
 ```
