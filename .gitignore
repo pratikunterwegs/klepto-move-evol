@@ -48,4 +48,4 @@ data/*
 !data/results/data_funresp_gen_coefs.csv
 
 # any word files
-.docx
+*.docx
