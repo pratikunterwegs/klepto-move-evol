@@ -6,8 +6,11 @@ editor_options:
 
 ```{r}
 library(data.table)
+library(dplyr)
+library(stringr)
 library(ggplot2)
 library(colorspace)
+library(patchwork)
 ```
 
 Prepare the data for plotting.
@@ -26,7 +29,7 @@ data$layer <- forcats::fct_relevel(data$layer,
                                      "pc_intake_forager"))
 # relevel the simulation (strategy) type
 data$sim_type <- forcats::fct_relevel(data$sim_type, 
-                                      "obligate", "facultative", "foragers", "random")
+                                      "foragers", "obligate", "facultative", "random")
 
 # regroup data
 data$layer_type <- dplyr::case_when(
@@ -44,21 +47,56 @@ More plotting preparation.
 data <- data[sim_type != "random", ]
 
 # split the data by growth rate
-data_plot <- split(data, by = "layer_type")
+data_plot <- split(data, by = c("sim_type", "layer_type"))
+data_plot <- data_plot[sapply(data_plot, function(x){nrow(x) > 1})]
+
+# arrange order
+data_plot <- data_plot[c(str_which(names(data_plot), "forager"),
+            str_which(names(data_plot), "obligate"),
+            str_which(names(data_plot), "facul"))]
 ```
 
 ```{r}
-ggplot(data)+
-  geom_line(aes(cap, mean_val,
-                 col = regrowth,
-                group = interaction(regrowth, replicate, gen)),
-              shape = 1)+
-  facet_grid(layer~sim_type,scales = "free")+
-  scale_colour_continuous_sequential(palette = "Red-Blue")
+subplots <- 
+  Map(function(df) {
+    
+    if (!unique(df$layer)[[1]] == "items") {
+      pal <- c(sequential_hcl(10, "Reds", rev = T),
+               sequential_hcl(10, "PuBu", rev = T))
+    } else {
+      pal <- sequential_hcl(10, "Greens 2", rev = T)
+    }
+    
+    ggplot(df)+
+      geom_line(aes(cap, mean_val,
+                    col = interaction(regrowth, layer),
+                    group = interaction(regrowth, replicate, gen)),
+                show.legend = F)+
+      facet_grid(~ layer, scales = "free")+
+      scale_colour_manual(
+        values = pal,
+      )+
+      theme_test(base_family = "serif")+
+      theme(
+        panel.background = element_rect(
+          fill = "grey95"
+        ), 
+        axis.text = element_blank()
+      ) +
+      labs(x = "quality",
+           y = "value")
+  },
+  data_plot)
+```
 
-ggsave(
-  filename = "figures/fig_item_agent.png"
-)
+```{r}
+fig_agent_dist <- wrap_plots(subplots)+
+  plot_annotation(tag_levels = "a",
+                  tag_prefix = "(",
+                  tag_suffix = ")")
+
+ggsave(fig_agent_dist,
+       filename = "figures/fig_06_agent_dist.png")
 ```
 
 
