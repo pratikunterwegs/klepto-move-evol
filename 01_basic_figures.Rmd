@@ -13,6 +13,7 @@ library(glue)
 library(ggplot2)
 library(data.table)
 
+library(colorspace)
 # some helper functions
 source("code/helper_functions.R")
 ```
@@ -102,105 +103,3 @@ data$data_summary <- lapply(data$folder_path,
 data <- unnest(data,
                cols = "data_summary")
 ```
-
-Prepare the data for plotting.
-
-```{r}
-# relevel the layer names for better plotting
-data$layer <- forcats::fct_relevel(data$layer,
-                                   c("klepts", "foragers", "items",
-                                     "klepts_intake", "foragers_intake",
-                                     "pc_intake_klepts", 
-                                     "pc_intake_forager"))
-# relevel the simulation (strategy) type
-data$sim_type <- forcats::fct_relevel(data$sim_type, 
-                                      "obligate", "facultative", "foragers", "random")
-
-# regroup data
-data$layer_type <- dplyr::case_when(
-  stringi::stri_detect(data$layer, fixed = "pc_intake") ~ "per_capita_intake",
-  stringi::stri_detect(data$layer, fixed = "item") ~ "items",
-  stringi::stri_detect(data$layer, fixed = "intake") ~ "intake",
-  TRUE ~ "strategy count"
-)
-```
-
-More plotting preparation.
-
-```{r}
-# choose layer colours
-layer_cols <- tibble(
-  layer = c("klepts", "foragers", "items",
-            "klepts_intake", "foragers_intake",
-            "pc_intake_klepts", 
-            "pc_intake_forager"),
-  colour = c("indianred", "royalblue", "forestgreen",
-             "indianred1", "royalblue1",
-             "indianred2", "royalblue2")
-)
-
-# merge to data
-data_plot <- dplyr::left_join(data,
-                              layer_cols)
-
-# split the data by growth rate
-data_plot <- split(data_plot, data$layer_type)
-```
-
-
-Make the overall figure and save it.
-
-```{r echo=FALSE, eval=FALSE}
-# make a list of plots
-plot_list <- lapply(data_plot, function(df) {
-  df <- dplyr::filter(df,
-                      cap %in% seq(0, 5, 0.2))
-  ggplot(df)+
-    
-    geom_hline(yintercept = 0, col = "grey", lwd = 0.2)+
-    geom_vline(xintercept = 0, col = "grey", lwd = 0.2)+
-    geom_errorbar(aes(cap,
-                    ymin = mean_val - sd_val,
-                    ymax = mean_val + sd_val,
-                    group = interaction(layer, replicate, regrowth)),
-                alpha = 0.5,
-                show.legend = F,
-                position = position_dodge(width = 0.2),
-                col = df$colour)+
-    geom_line(aes(cap, mean_val,
-                   group = interaction(layer, replicate, regrowth)),
-               position = position_dodge(width = 0.2),
-               col = df$colour,
-              lwd = 0.2)+
-    geom_point(aes(cap, mean_val,
-                   shape = layer,
-                  group = interaction(layer, replicate, regrowth)),
-               position = position_dodge(width = 0.2),
-               fill = df$colour, 
-               colour = "white",
-               show.legend = F)+
-    facet_grid(regrowth ~ sim_type, as.table = F,
-               scales = "free_y",
-               labeller = label_both)+
-    scale_shape_manual(values = c(21, 24))+
-    coord_cartesian(ylim = c(0, NA))+
-    theme_test()+
-    theme(legend.position = "top",
-          axis.text.y = element_text(size = 6),
-          axis.title.y = element_blank())+
-    labs(x = "grid cell quality",
-         y = "value",
-         colour = "value",
-         title = sprintf("%s", 
-                         unique(df$layer_type)))
-})
-
-plot_dist <- patchwork::wrap_plots(plot_list[c("strategy count",
-                                               "intake", 
-                                   "items", "per_capita_intake")])
-
-ggsave(plot_dist,
-       filename = "figures/fig_agent_item_distribution.png",
-       dpi = 300, height = 10, width = 12)
-```
-

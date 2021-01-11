@@ -14,3 +14,6 @@ cp figures/fig_0*.png overleaf-kleptomove/figures
 
 # build atlastools manual
 # Rscript --slave -e 'devtools::build_manual(pkg = "../atlastools", path = "docs/")'
+
+# render docx
+pandoc overleaf-kleptomove/AmNat_MS_template.tex -o ms_kleptomove_`date -I`.docx
