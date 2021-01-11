@@ -4,7 +4,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Generalised Response: Items and all Individuals
+# Function Response of Intake to All Predators
 
 ```{r}
 library(data.table)
@@ -20,55 +20,53 @@ source("code/functional_response.R")
 
 ```{r}
 # read general fun response and split by sim type
-data <- fread("data/data_funresp_general.csv")
+data <- fread("data/results/data_funresp_vdmens.csv")
 
-# subset for max regrowth
-data <- data[regrowth == max(regrowth)]
-
-# round over more items
-data[, items_round := floor_any(items, 0.01)]
-
-# get summary
-df <- data[, list(value = mean(value)),
-  by = c(
-    "sim_type",
-    "items_round", "total_agents", "variable"
-  )
-]
+# get specific regrowths
+data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
 ```
 
 ```{r}
 # split by sim type
-df <- split(df, by = "sim_type")
+data <- split(data, by = "sim_type")
 ```
+
+```{r}
+# check plot
+ggplot(data[[1]])+
+  geom_point(aes(
+    total_agents,
+    meanv,
+    col = variable
+  ),
+  # size = 0.2,
+  alpha = 0.2)+
+  facet_grid(~ regrowth)+
+  # scale_x_sqrt()+
+  coord_cartesian(xlim = c(0, 0.5),
+                  ylim = c(0, 0.5))+
+  scale_colour_discrete_diverging()
+```
+
 
 
 ```{r}
 fig_fun_response <-
-  lapply(df, function(df) {
-    ggplot(df) +
-      # geom_vline(xintercept = item_levels,
-      #            lty = 2, lwd = 0.25)+
-      geom_tile(aes(items_round, total_agents,
-        fill = value
+  lapply(data, function(df) {
+    ggplot(df)+
+      geom_point(aes(
+        total_agents,
+        meanv,
+        group = interaction(replicate, gen, variable),
+        col = variable
       ),
-      show.legend = T
-      ) +
-      facet_grid(sim_type ~ variable) +
-      # coord_fixed(ratio = 20)+
-      scale_fill_gradientn(
-        colours = (pals::cubehelix(10, r = -2.5)),
-        limits = c(1e-6, 0.3),
-        breaks = seq(0, 0.3, 0.1),
-        na.value = NA
-      ) +
-      theme_bw(base_size = 8, base_family = "sans") +
-      theme(
-        legend.position = "top",
-        # panel.grid = element_blank(),
-        legend.key.height = unit(1, units = "mm"),
-        legend.background = element_blank()
-      ) +
+      size = 0.2,
+      alpha = 0.2)+
+      facet_grid(~ regrowth)+
+      # scale_x_sqrt()+
+      coord_cartesian(xlim = c(0, 0.5),
+                      ylim = c(0, 0.25))+
+      scale_colour_discrete_diverging()+
       labs(
         fill = "per-captia\nintake",
         x = "# food items",
@@ -79,8 +77,7 @@ fig_fun_response <-
 fig_fun_response <- patchwork::wrap_plots(fig_fun_response[c(
   "foragers",
   "obligate",
-  "facultative",
-  "random"
+  "facultative"
 )],
 ncol = 1,
 guides = "collect"
