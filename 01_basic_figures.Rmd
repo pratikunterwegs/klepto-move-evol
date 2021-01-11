@@ -75,7 +75,8 @@ sim_type <- c("obligate", "facultative", "foragers", "random")
 replicate <- stringr::str_pad(seq_len(2), pad = "0", width = 3)
 
 # growth rates
-regrowth <- c(0.001, 0.01, 0.03, 0.05)
+regrowth <- c(0.001, 0.01, 0.03, 0.05,
+              0.02, 0.04, 0.075, 0.1, 0.25, 0.005)
 
 # glue data folder names together
 data <- crossing(
