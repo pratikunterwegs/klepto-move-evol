@@ -54,6 +54,7 @@ Write param combinations.
 fwrite(data, "data/data_param_combinations.csv")
 ```
 
+## Function response: PC Intake ~ all agents
 
 Summarise the data and read it in, using the helper functions.
 
@@ -63,34 +64,25 @@ data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
     round_value = 0.005,
-    drivers = c("items", "total_agents")
+    drivers = c("total_agents")
   )
 })
 
 # unnest the data
 data <- unnest(data,
                cols = "data_summary")
-
-# average over replicates and select only the highest growth rate
-# data_summary <- data_plot[, 
-#                      list(value = mean(value)),
-#                      by = c("sim_type", "regrowth",
-#                             "items", "total_agents", "variable")]
-
-# remove simulation type foragers and random
-# data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
-
-# # make factor
-# data$value_cut <- cut(data$value, seq(0, 1, 0.01))
-
 # write file
-fwrite(data, file = "data/data_funresp_general.csv")
+fwrite(data, file = "data/results/data_funresp_agents.csv")
 ```
 
-## Functional response: Klepts ~ foragers
+## Functional response: PC Intake ~ klepts and foragers
 
 ```{r}
-# get data
+# remove old
+data$data_summary <- NULL
+gc()
+
+# get new data
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
@@ -102,61 +94,32 @@ data$data_summary <- lapply(data$folder_path, function(x) {
 # unnest the data
 data_plot <- unnest(data,
                cols = "data_summary")
-setDT(data_plot)
+
+# write to file
+fwrite(data_plot, file = "data/results/data_funresp_strategy.csv")
 ```
 
-### Average over replicates
+## Functional response: All agents, klepts, foragers ~ items
 
 ```{r}
-# average over replicates and select only the highest growth rate
-data_summary <- data_plot[, 
-                     list(value = mean(value)),
-                     by = c("sim_type", "regrowth",
-                            "klepts", "foragers", "variable")]
+# remove old
+data$data_summary <- NULL
+gc()
 
-# remove simulation type foragers and random
-# data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
-
-# # make factor
-data_summary$value_cut <- cut(data_summary$value, seq(0, 1, 0.01))
-
-# write file
-fwrite(data_summary, file = "data/data_funresp_strategy.csv")
-```
-
-## Functional response: Foragers ~ items
-
-```{r}
 # get data
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
     round_value = 0.001,
-    drivers = c("items", "foragers")
+    response = c("total_agents", "klepts", "foragers"),
+    drivers = c("items")
   )
 })
 
 # unnest the data
 data_plot <- unnest(data,
                cols = "data_summary")
-setDT(data_plot)
-```
 
-### Average over replicates
-
-```{r}
-# average over replicates and select only the highest growth rate
-data_summary <- data_plot[, 
-                     list(value = mean(value)),
-                     by = c("sim_type", "regrowth",
-                            "items", "foragers", "variable")]
-
-# remove simulation type foragers and random
-# data_summary <- data_summary[sim_type %in% c("facultative", "obligate"), ]
-
-# # make factor
-data_summary$value_cut <- cut(data_summary$value, seq(0, 1, 0.01))
-
-# write file
-fwrite(data_summary, file = "data/data_funresp_foragers.csv")
+# write 
+fwrite(data_plot, file = "data/results/data_funresp_predators_items.csv")
 ```
