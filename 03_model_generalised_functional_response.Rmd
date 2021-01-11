@@ -22,12 +22,28 @@ library(patchwork)
 
 ```{r}
 # read in data
-data = fread("data/results/data_funresp_general.csv")
-head(data)
+data <- fread("data/results/data_funresp_small.csv")
 ```
 
 ```{r}
-# split the data
-data_model <- split(data, by = c("sim_type", "replicate", "regrowth", "gen", 
-                                 "variable"))
+# get functional response following figure 1 van der meer and ens
+# average over cells with same number of individuals but nothing else
+
+data_funresp <- data[variable != "pc_intake_total", ][, list(
+  meanv = mean(value),
+  sdv = sd(value)
+),
+by = c(
+  "sim_type", "replicate", "gen",
+  "regrowth",
+  "total_agents", "variable"
+)
+]
 ```
+
+```{r}
+# save data
+fwrite(data_funresp, 
+       "data/results/data_funresp_vdmens.csv")
+```
+
