@@ -4,76 +4,99 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Function Response of Intake to All Predators
+# Functional Response of Intake to All Predators
 
 ```{r}
 library(data.table)
 library(ggplot2)
-library(pals)
+library(colorspace)
+library(patchwork)
 
 # custom functions
 source("code/functional_response.R")
-```
 
+# summary function
+multsum <- function(x) {
+  list(mean = mean(x),
+       median = median(x),
+       sd = sd(x))
+}
+```
 
 ## Get data
 
 ```{r}
 # read general fun response and split by sim type
-data <- fread("data/results/data_funresp_vdmens.csv")
+data <- fread("data/results/data_funresp_agents.csv")
 
 # get specific regrowths
 data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
 ```
 
+## Summarise data over generations
+
+```{r}
+# get mean, median and sd for intake by strategy, rep, and growth
+# as well as sim type
+data_summary <- data[, unlist(lapply(.SD, multsum), recursive = F),
+                     .SDcols = c("value"),
+                     by = c("sim_type", "replicate", "regrowth",
+                            "total_agents", "variable")]
+
+# split off total from strategy specific
+data_total_intake <- data[variable == "pc_intake_total", ]
+
+# get remainder as sumamry
+data_summary <- data_summary[variable != "pc_intake_total", ]
+```
+
+## Test figure
+
+to be removed or commented out
+
+```{r}
+ggplot(data_summary)+
+  geom_point(aes(total_agents, value.mean,
+                 col = variable),
+             size = 0.5)+
+  facet_grid(sim_type ~ regrowth)+
+  theme_grey(base_size = 10,
+             base_family = "serif")+
+  coord_cartesian(xlim = c(0, 0.75),
+                  ylim = c(0, 0.25))+
+  scale_colour_discrete_diverging(palette = "Blue-Red 2",
+                                  rev = F)
+```
+
+## Plot: Per-capita intake by strategy ~ total agents
+
 ```{r}
 # split by sim type
-data <- split(data, by = "sim_type")
+data_summary <- split(data_summary, by = "sim_type")
 ```
 
 ```{r}
-# check plot
-ggplot(data[[1]])+
-  geom_point(aes(
-    total_agents,
-    meanv,
-    col = variable
-  ),
-  # size = 0.2,
-  alpha = 0.2)+
-  facet_grid(~ regrowth)+
-  # scale_x_sqrt()+
-  coord_cartesian(xlim = c(0, 0.5),
-                  ylim = c(0, 0.5))+
-  scale_colour_discrete_diverging()
-```
-
-
-
-```{r}
+# make each figure
 fig_fun_response <-
-  lapply(data, function(df) {
+  lapply(data_summary, function(df) {
     ggplot(df)+
-      geom_point(aes(
-        total_agents,
-        meanv,
-        group = interaction(replicate, gen, variable),
-        col = variable
-      ),
-      size = 0.2,
-      alpha = 0.2)+
-      facet_grid(~ regrowth)+
-      # scale_x_sqrt()+
-      coord_cartesian(xlim = c(0, 0.5),
+      geom_point(aes(total_agents, value.mean,
+                     col = variable),
+                 size = 0.5,
+                 show.legend = F)+
+      facet_grid(sim_type ~ regrowth)+
+      theme_grey(base_size = 12)+
+      coord_cartesian(xlim = c(0, 0.75),
                       ylim = c(0, 0.25))+
-      scale_colour_discrete_diverging()+
+      scale_colour_discrete_diverging(palette = "Blue-Red 2",
+                                      rev = F)+
       labs(
-        fill = "per-captia\nintake",
-        x = "# food items",
-        y = "# individuals"
+        x = "# predators",
+        y = "per-capita intake"
       )
   })
 
+# wrap figures together
 fig_fun_response <- patchwork::wrap_plots(fig_fun_response[c(
   "foragers",
   "obligate",
@@ -83,8 +106,16 @@ ncol = 1,
 guides = "collect"
 ) &
   theme(legend.position = "top")
-fig_fun_response
-# fig_fun_response[[3]]
+
+# view figure
+fig_fun_response <- 
+  fig_fun_response +
+  plot_annotation(
+    tag_levels = "a",
+    tag_prefix = "(",
+    tag_suffix = ")"
+  ) &
+  theme(plot.tag = element_text(face = "bold"))
 ```
 
 ```{r}
