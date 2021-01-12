@@ -4,7 +4,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Functional Response of Intake to All Predators
+## Functional Response of Intake to All Predators
 
 ```{r}
 library(data.table)
@@ -23,7 +23,7 @@ multsum <- function(x) {
 }
 ```
 
-## Get data
+### Get data
 
 ```{r}
 # read general fun response and split by sim type
@@ -33,7 +33,7 @@ data <- fread("data/results/data_funresp_agents.csv")
 data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
 ```
 
-## Summarise data over generations
+### Summarise data over generations
 
 ```{r}
 # get mean, median and sd for intake by strategy, rep, and growth
@@ -44,31 +44,60 @@ data_summary <- data[, unlist(lapply(.SD, multsum), recursive = F),
                             "total_agents", "variable")]
 
 # split off total from strategy specific
-data_total_intake <- data[variable == "pc_intake_total", ]
+data_total_intake <- data_summary[variable == "pc_intake_total", ]
 
 # get remainder as sumamry
 data_summary <- data_summary[variable != "pc_intake_total", ]
 ```
 
-## Test figure
-
-to be removed or commented out
+### Plot: Total intake ~ total agents
 
 ```{r}
-ggplot(data_summary)+
-  geom_point(aes(total_agents, value.mean,
-                 col = variable),
-             size = 0.5)+
-  facet_grid(sim_type ~ regrowth)+
-  theme_grey(base_size = 10,
-             base_family = "serif")+
-  coord_cartesian(xlim = c(0, 0.75),
-                  ylim = c(0, 0.25))+
-  scale_colour_discrete_diverging(palette = "Blue-Red 2",
-                                  rev = F)
+# split and plot
+data_total_intake <- split(data_total_intake, by = "sim_type")
+subfig_fun_response_total <- 
+  lapply(data_total_intake, function(df){
+  ggplot(df)+
+    geom_point(aes(total_agents, value.mean),
+               size = 0.5)+
+    facet_grid(sim_type ~ regrowth)+
+    theme_grey(base_size = 12)+
+    coord_cartesian(xlim = c(0, 0.75),
+                    ylim = c(0, 0.3))+
+    labs(
+      x = "# predators",
+      y = "per-capita intake"
+    )
+})
+
+# collect figures
+fig_fun_response_total <- 
+  wrap_plots(subfig_fun_response_total[c(
+  "foragers",
+  "obligate",
+  "facultative"
+)],
+ncol = 1)
+
+# view figure
+fig_fun_response_total <- 
+  fig_fun_response_total +
+  plot_annotation(
+    tag_levels = "a",
+    tag_prefix = "(",
+    tag_suffix = ")"
+  ) &
+  theme(plot.tag = element_text(face = "bold"))
 ```
 
-## Plot: Per-capita intake by strategy ~ total agents
+```{r}
+ggsave(fig_fun_response_total,
+  filename = "figures/fig_fun_response_general.png",
+  dpi = 150
+)
+```
+
+### Plot: Per-capita intake by strategy ~ total agents
 
 ```{r}
 # split by sim type
@@ -77,7 +106,7 @@ data_summary <- split(data_summary, by = "sim_type")
 
 ```{r}
 # make each figure
-fig_fun_response <-
+subfig_fun_response <-
   lapply(data_summary, function(df) {
     ggplot(df)+
       geom_point(aes(total_agents, value.mean,
@@ -97,15 +126,12 @@ fig_fun_response <-
   })
 
 # wrap figures together
-fig_fun_response <- patchwork::wrap_plots(fig_fun_response[c(
+fig_fun_response <- wrap_plots(subfig_fun_response[c(
   "foragers",
   "obligate",
   "facultative"
 )],
-ncol = 1,
-guides = "collect"
-) &
-  theme(legend.position = "top")
+ncol = 1)
 
 # view figure
 fig_fun_response <- 
@@ -120,7 +146,78 @@ fig_fun_response <-
 
 ```{r}
 ggsave(fig_fun_response,
-  filename = "figures/fig_fun_response_general.png",
+  filename = "figures/fig_fun_response_strategy.png",
   dpi = 150
 )
 ```
+
+### Compare total and strategy-wise total functional response
+
+```{r}
+# collect data at rmax = 0.1
+data_summary <- lapply(data_summary, function(x) {
+  x[, tag := "by strategy"][regrowth == 0.1, ]
+})
+
+# fix names
+data_summary <- data_summary[c("foragers", "obligate", "facultative")]
+names(data_summary) <- sprintf('%s_strat', names(data_summary))
+
+# collect total and apply tag
+data_total_intake <- lapply(data_total_intake, function(x) {
+  x[, tag := "total"][regrowth == 0.1, ]
+})
+# fix order
+data_total_intake <- data_total_intake[c("foragers", "obligate", "facultative")]
+# append lists
+data_compare <- append(data_total_intake, data_summary)
+```
+
+```{r}
+subfig_funresp_compare <- 
+  lapply(data_compare, function(df) {
+    
+    # fix pal
+    if (length(unique(df$variable)) == 2) {
+      pal <- diverge_hcl(n = 2, palette = "Blue-Red 2")
+    } else {
+      pal <- "black"
+    }
+    
+    # make plot
+    subfig <- 
+      ggplot(df)+
+      geom_point(aes(total_agents, value.mean,
+                     col = variable),
+                 shape = 1,
+                 # size = 0.5,
+                 show.legend = F)+
+      facet_grid(sim_type ~ tag)+
+      theme_grey(base_size = 12)+
+      coord_cartesian(xlim = c(0, 0.75),
+                      ylim = c(0, 0.3))+
+      scale_colour_manual(values = pal)+
+      labs(
+        x = "# predators",
+        y = "per-capita intake"
+      )
+      
+      return(subfig)
+  })
+
+# collect figures
+fig_funresp_compare <- 
+  wrap_plots(subfig_funresp_compare)+
+   plot_annotation(
+    tag_levels = "a",
+    tag_prefix = "(",
+    tag_suffix = ")"
+  ) &
+  theme(plot.tag = element_text(face = "bold"))
+```
+
+```{r}
+ggsave(fig_funresp_compare,
+       filename = "figures/fig_functional_response_compare.png")
+```
+
