@@ -99,6 +99,30 @@ data_summary <- unnest(data,
 fwrite(data_summary, file = "data/results/data_funresp_strategy.csv")
 ```
 
+## Functional response: PC Intake ~ items
+
+```{r}
+# remove old
+data$data_summary <- NULL
+gc()
+
+# get new data
+data$data_summary <- lapply(data$folder_path, function(x) {
+  get_functional_response(
+    data_folder = x,
+    round_value = 0.005,
+    drivers = c("items")
+  )
+})
+
+# unnest the data
+data_summary <- unnest(data,
+               cols = "data_summary")
+
+# write to file
+fwrite(data_summary, file = "data/results/data_funresp_intake_items.csv")
+```
+
 ## Functional response: All agents, klepts, foragers ~ items
 
 ```{r}
