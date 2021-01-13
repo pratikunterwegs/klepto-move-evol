@@ -37,10 +37,10 @@ data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
 # get mean, median and sd for intake by strategy, rep, and growth
 # as well as sim type
 data_intake_items <- data[variable != "pc_intake_total", 
-                     unlist(lapply(.SD, multsum), recursive = F),
-                     .SDcols = c("value"),
-                     by = c("sim_type", "regrowth",
-                            "items", "variable")]
+                          unlist(lapply(.SD, multsum), recursive = F),
+                          .SDcols = c("value"),
+                          by = c("sim_type", "regrowth",
+                                 "items", "variable")]
 ```
 
 ```{r}
@@ -486,5 +486,32 @@ ggsave(
   figure_functional_response,
   filename = "figures/fig_04_functional_response.png"
 )
+```
+
+## Aggregative response: Agents ~ items
+
+```{r}
+data = fread("data/results/data_funresp_predators_items.csv")
+# get specific regrowths
+data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
+
+# summarise
+data_predators_prey = data[variable != "total_agents", 
+                           unlist(lapply(.SD, multsum), recursive = F),
+                           .SDcols = c("value"),
+                           by = c("sim_type", "regrowth",
+                                  "items", "variable")]
+```
+
+```{r}
+ggplot(data_predators_prey)+
+  geom_point(aes(items, value.mean,
+                 col = variable),
+             size = 0.2, shape = 1)+
+  facet_grid(sim_type ~ regrowth)+
+  scale_y_sqrt()+
+  coord_cartesian(ylim = c(0, 0.5))+
+  scale_colour_discrete_diverging(palette = "Blue-Red 2",
+                                      rev = F)
 ```
 
