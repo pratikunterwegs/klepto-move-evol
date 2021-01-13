@@ -6,8 +6,6 @@ editor_options:
 
 # Functional and Aggregative Response
 
-## Functional Response of Intake to All Predators
-
 ```{r}
 library(data.table)
 library(ggplot2)
@@ -24,6 +22,86 @@ multsum <- function(x) {
        sd = sd(x))
 }
 ```
+
+
+## Functional response of intake to items
+
+```{r}
+data <- fread("data/results/data_funresp_intake_items.csv")
+
+# get specific regrowths
+data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
+```
+
+```{r}
+# get mean, median and sd for intake by strategy, rep, and growth
+# as well as sim type
+data_intake_items <- data[variable != "pc_intake_total", 
+                     unlist(lapply(.SD, multsum), recursive = F),
+                     .SDcols = c("value"),
+                     by = c("sim_type", "regrowth",
+                            "items", "variable")]
+```
+
+```{r}
+
+```
+
+### Plot: Intake ~ items
+
+```{r}
+# split and plot
+data_intake_items <- split(data_intake_items, by = "sim_type")
+
+subfig_intake_items <- 
+  lapply(data_intake_items, function(df){
+  ggplot(df)+
+  geom_point(aes(items, value.median,
+                 col = variable),
+             size = 0.2,
+             shape = 1,
+             show.legend = F)+
+  coord_cartesian(ylim = c(0, 0.3),
+                  xlim = c(0, NA))+
+  scale_x_sqrt()+
+  scale_y_sqrt()+
+  facet_grid(sim_type ~ regrowth, scales = "fixed")+
+  scale_colour_discrete_diverging(palette = "Blue-Red 2",
+                                  rev = F)+
+    labs(
+      x = "# prey items",
+      y = "per-capita intake"
+    )
+})
+
+# collect figures
+fig_intake_items <- 
+  wrap_plots(subfig_intake_items[c(
+  "foragers",
+  "obligate",
+  "facultative"
+)],
+ncol = 1)
+
+# view figure
+fig_intake_items <- 
+  fig_intake_items +
+  plot_annotation(
+    tag_levels = "a",
+    tag_prefix = "(",
+    tag_suffix = ")"
+  ) &
+  theme(plot.tag = element_text(face = "bold"))
+```
+
+```{r}
+ggsave(fig_intake_items,
+  filename = "figures/fig_intake_items.png",
+  dpi = 150
+)
+```
+
+## Functional Response of Intake to All Predators
 
 ### Get data
 
