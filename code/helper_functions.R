@@ -242,7 +242,7 @@ get_sim_weight_evol <- function(data_folder,
 #'
 get_sim_summary <- function(data_folder,
                     which_gen = seq(991, 998, 1),
-                    n_time = 400,
+                    n_time = 200,
                     capacity_matrix,
                     layers = c("items", "foragers", "klepts", 
                                "klepts_intake", "foragers_intake")) {
