@@ -77,7 +77,7 @@
 
 \newpage{}
 
-\section*{Abstract}
+\section{Abstract}
 
 Understanding the causes and consequences of animal movement is key to mechanistically linking individual behaviour with population-level patterns.
 Classical models of individual-to-population foraging distributions do not account for the complex and changeable resource landscapes animals must navigate.
@@ -97,7 +97,7 @@ As a result, populations with low behavioural complexity can still deviate easil
 
 \newpage{}
 
-\section*{Introduction}
+\section{Introduction}
 
 \textbf{WORK IN PROGRESS}
 
@@ -106,7 +106,7 @@ As a result, populations with low behavioural complexity can still deviate easil
 % section~\ref{section:CountingOwlEggs}), and refer to sections by name
 % (e.g. section ``Counting Owl Eggs'').
 
-\section*{Evolutionary Simulation Model of Individual Foraging Decisions}
+\section{Methods: Simulation Model of Movement-Behaviour Co-Evolution}
 
 Our model is an individual-based evolutionary simulation whose most basic components --- the environment size and shape, its gridded structure and each cell's capacity to hold multiple individuals, as well as the discrete conception of time within and between generations --- is taken from Netz et al. \textit{in prep.}.
 We conceptualised the model and the scenarios around the behaviour of waders (\textit{Charadrii}, and especially oystercatchers \textit{Haematopus sp.}), which are extensively studied in an optimal foraging context \citep[e.g. ][]{vahl2005, vahl2005a, vahl2005b, ENS1990219}.
@@ -115,7 +115,7 @@ Individuals have a lifetime of $T$ timesteps, with $T$ set to 400 by default.
 After their lifetime, individuals reproduce and transmit their heritable traits proportional to their fitness over their lifetime.
 The model code (in C++) can be found as part of the Supplementary Material in the Zenodo repository at \textbf{Zenodo/other repository here}.
 
-\subsection*{Flexibility in Foraging Strategies}
+\subsection{Flexibility in Foraging Strategies}
 
 Our model considers three main scenarios of flexibility in individual foraging strategies.
 The \textbf{first scenario} is an inflexible producer-only case, in which individuals move about on the landscape and probabilistically find and consume discrete prey food items.
@@ -137,7 +137,7 @@ Thus kleptoparasites clearly save time on handling compared to a producer, and t
 The \textbf{third scenario} is a flexible-strategy case, and individuals are allowed to be plastic in their foraging strategies, and choose between producing and scrounging strategies in each timestep.
 Apart from the frequency of the choice, the actual foraging dynamics are the same as described in the fixed-strategy case. Individuals move about on the environment, and each foraging strategy choice is based on local environmental cues (see ``Movement and Foraging Decisions'').
 
-\subsection*{Movement and Foraging Decisions}
+\subsection{Movement and Foraging Decisions}
 
 Individuals essentially use cues available in timestep $t$ to predict their best move for the next timestep $t+1$, and the strategy associated with that move (when this is allowed).
 The movement decision is based on three local environmental cues: (1) the number of discrete prey items $G$, (2) the number of individuals handling  prey $H$ (referred to as `handlers'), and (3) the number of individuals not handling prey $P$ (referred to as `non-handlers').
@@ -146,9 +146,9 @@ These cues are available to individuals in all three model scenarios.
 Individuals occupy a single grid cell on the environment at a time, and assign a suitability score $S$ incorporating $G$, $H$, and $P$ per cell to the nine cells in their Moore neighbourhood (including their current cell).
 Following Netz et al. \textit{in prep.}, individuals calculate the cell-specific $S$ as
 \begin{linenomath*}
-    \begin{equation*}
+    \begin{equation}
         S = m_gG + m_hH + m_pP + m_b
-    \end{equation*}
+    \end{equation}
 \end{linenomath*}
 where the weighing factors for each cue $m_g$, $m_h$ and $m_p$, and the bias $m_b$ are genetically encoded and heritable between generations.
 Individuals rank their Moore neighbourhood by $S$ in timestep $t$ and move to the highest ranked cell in timestep $t+1$.
@@ -158,13 +158,13 @@ In the fixed-strategy case, individuals pick a lifelong foraging strategy in the
 Individuals in these latter two cases process the cell-specific environmental cues $G$, $H$, and $P$ to determine their foraging strategy $F$ for life (fixed strategy), or in the grid cell into which they have chosen to move in $t+1$ (flexible strategy).
 $F$ is determined as
 \begin{linenomath*}
-    \begin{equation*}
+    \begin{equation}
         F = 
     \begin{cases}
         {producer},& \text{if } f_gG + f_hH + f_pP + f_b \geq 0\\
         {scrounger},              & \text{otherwise}
     \end{cases}
-    \end{equation*}
+    \end{equation}
 \end{linenomath*}
 where the cue weights $f_g$, $f_h$ and $f_p$, and the bias $f_b$ are also genetically encoded and heritable between generations.
 
@@ -173,7 +173,7 @@ This excludes individuals that have been stolen from are an important exception;
 Thus kleptoparasitism not only gains individuals prey items while depriving the targeted individual, it also displaces a potential competitor.
 All individuals move simultaneously, and attempt to implement the foraging strategy chosen for their new location (see below).
 
-\subsection*{Prey Environment and Ecological Dynamics}
+\subsection{Prey Environment and Ecological Dynamics}
 
 Since our model was initially conceived to represent foraging waders, we developed a resource landscape based on mussels (family \textit{Mytilidae}) that are commonly found in inter-tidal systems.
 Mussels beds share some important characteristics with other discrete prey items.
@@ -192,9 +192,9 @@ While a cell is at carrying capacity its $r$ is 0.
 We modelled near-perfect intermediate-range perception but uncertain short-range acquisition of prey by allowing individuals to perceive all prey items $G$ in a cell, but giving individuals which choose a producer strategy only a probability of finding one of these prey.
 The probability of finding a prey item $p(success)$ is given as the probability of not finding any of $G$ prey
 \begin{linenomath*}
-    \begin{equation*}
+    \begin{equation}
         p({success}) = 1 - \left(1 - p_i\right) ^ G
-    \end{equation*}
+    \end{equation}
 \end{linenomath*}
 where $p_i$ is the detection probability of each of $G$ items, which is uniformly set to 0.2 by default for all items.
 
@@ -214,7 +214,7 @@ A handler that finishes processing its prey in timestep $t$ returns to the non-h
 Individuals move and forage on the resource landscape for $T$ timesteps per generation, and $T$ is set at 400 by default.
 Handling a food item requires a maximum of $T_H$ timesteps, during which the handler is immobile.
 
-\subsection*{Reproduction and the Evolution of Decision Making}
+\subsection{Reproduction and the Evolution of Decision Making}
 
 At the end of each generation, the population is replaced by its offspring, maintaining the fixed population size, and the decision-making weights which determine individual movement ($m_g$, $m_h$, $m_p$, $m_b$) and foraging strategy choice ($f_g$, $f_h$, $f_p$, $f_b$) are transmitted from parent individuals to offspring.
 The number of offspring of each parent is proportional to the parent's share of the population fitness, and this is implemented as a weighted lottery that selects a parent for each offspring.
@@ -226,45 +226,9 @@ We recognised that spatial autocorrelation in the landscape coupled with limited
 Furthermore, limited natal dispersal could lead to population-level movements due to differential reproduction that mirror shifts in resource abundance, rather than individual movement.
 To ensure that global individual movement rules evolved, we intialised each offspring at a random location on the landscape, and also reset its total intake to zero.
 
-\subsection*{Simulation Output and Analysis}
+\subsection{Simulation Output and Analysis}
 
-\paragraph{Spatial Distribution of Individuals, their Intake, and Prey Items}
-
-Over each of the last eight generations of the simulation (991 -- 998), we summed the following for each grid cell $ij$ over the generation's timesteps: (1) the number of prey items $G$, (2) the number of individuals following each of the two strategies, producer $N_p$ or kleptoparasitic scrounger $N_s$, and (3) the intake (in food items consumed after handling) by agents following each of the two strategies, producer $I_p$ or kleptoparasite $I_s$.
-For instance, the number of producer individuals in a generation to inhabit a cell $ij$ would be
-\begin{linenomath*}
-    \begin{equation*}
-        N_p = \sum_{t=0}^{i=T} n_{p_t}
-    \end{equation*}
-\end{linenomath*}
-where $t \in (0, 1 \dots T = 400)$, and $n_{p_t}$ is the number of producers in cell $ij$ at each timestep $t$.
-We saved this generation- and simulation- specific data to file, and these data are available at the Zenodo/IRODS repository at \textbf{Zenodo/other link here}.
-The volume of data at this stage was comparable to a very high-resolution, long-term ecological study, and we handled it accordingly.
-First, we processed the data to get the timestep-averaged values of $G$, $N_p$, $N_s$, $I_p$, and $I_s$ for each cell, dividing each value by $T$ (400).
-From this data, we calculated the per-capita intake rate ($I$ per $t$) on each cell for each of the two strategies separately, which we denote as $R_p$ (producers) and $R_s$ (scroungers).
-% The total intake rate $R$ per cell was then $R_p + R_s$.
-We plotted the timestep- and generation-averaged item count ($G$), strategy count ($N_p$, $N_s$), and absolute and per-capita intake ($I_p$, $I_s$, and $R_p$, $R_s$) in relation to grid-cell quality (the growth rate, $r$) to investigate the spatial distribution of individuals (see Figure X).
-
-\paragraph{Generalised Functional Response}
-
-In our simulation, individuals perceive and respond to the standing stock of prey items $G$ on a cell rather than its growth rate $r$.
-This standing stock is unpredictable due to consumption by other individuals.
-To understand the consequences of movement, we needed to investigate how individual intake varies with $G$ as well as the presence of potential competitors.
-Thus we examined the generalised functional response ($W$) \textit{sensu}\citet{meer1997}.
-We plotted the per-capita intake rate achieved by individuals on grid-cells with similar numbers of prey items ($G$) and individuals ($N_p + N_s$).
-We did this separately for $W_p$ and $W_s$, i.e., the generalised functional response for producers and kleptoparasitic scroungers, respectively.
-We modelled the effect of competition and resource availability on $W_p$ and $W_s$ using a simple generalised linear model (GLM) with either $W_p$ or $W_s$ as the response, and the number of individuals and the number of prey items as the only additive predictors.
-We repeated this for simulations with different baseline growth rates $r$, and examined variation in the contribution of competition and resource availability in the form of the linear model coefficients of individual density and item density, respectively.
-These linear models took the form
-\begin{linenomath*}
-    \begin{equation*}
-        W = \beta_0 + \beta_1 G + \beta_2 (N_p + N_s)
-    \end{equation*}
-\end{linenomath*}
-where $W$ is either $W_p$ or $W_s$.
-We fit these models for each $r_{base}$ separately, but did not distinguish between replicates.
-
-\paragraph{Decision Making Weights}
+\subsubsection{Decision Making Weights}
 
 To understand the evolutionary consequences of our simulation, we exported the the decision-making weights which determine individual movement ($m_g$, $m_h$, $m_p$, $m_b$) and foraging strategy choice ($f_g$, $f_h$, $f_p$, $f_b$) of each individual in every generation of the simulation.
 We examined how the frequency of these weights changed over the simulation, i.e., how the weights evolved.
@@ -273,87 +237,47 @@ We refer to these scaled and binned values as phenotypes for convenience.
 Weights at or near -1 would represent the maximum evolved avoidance of an environmental cue (in relation to a movement weight) or the greatest evolved negative effect of a cue on choosing the foraging strategy (in relation to a strategy choice weight).
 Similarly, weights at or near +1 represent the greatest evovled preference for or positive effect of a cue on the movement and strategy choice mechanism of an individual.
 
-\section*{Simulation Model Outcomes}
+\subsubsection{Functional and Aggregative Response}
 
-\subsection*{Emergence of a Dynamic Equilibrium}
+In our simulation, individuals perceive and respond to the standing stock of prey items on a cell rather than its productivity, which they cannot sense directly.
+This standing stock is unpredictable due to consumption by other individuals, and the movement (and consumption) of individuals is also unpredictable.
+To understand the consequences of evolved movement rules, we must investigate how individual intake varies with the presence of items and other individuals.
+Determining the functional response of intake to competitors, and the distribution of predators relative to prey \textit{sensu} \citet{meer1997} is a prevalent method in spatial ecology.
+Adopting this method, we sought to fit the widely used Beddington model of functional and aggregative response to pseudo-ecological data generated by our simulation.
+Over the final ten generations of each simulation run, we summed the number of individuals and items on each cell, as well as the total intake on the cell.
+We were able to record the number of individuals following a forager and kleptoparasite strategy, as well as intake due to foraging or stealing, separately.
+This allowed us to determine the average per-capita, per-strategy intake on each cell, which we plotted against the number of competing agents on the cell (Figure X).
+Additionally, we plotted the average number of individuals following each strategy against the number of prey items on the cell (Figure Y).
+In both cases, we used data only from the second half of each generation so as to capture the system in a state of ecological equilibrium.
+
+\subsubsection{Distribution Along Productivity Gradients}
+
+While recognising that individuals move in response to their rapidly-changing prey landscape, it is useful to determine how individuals distribute along more slowly-changing productivity gradients; 
+this is because these may often be easier to measure in the real world.
+The ideal free distribution (IFD) and the matching rule robustly predict that individuals should distribute themselves such that intake rates are equalised over patches of similar productivity.
+The large volume of pseduo-ecological data generated by our simulation allowed us to test whether intake rates were indeed equalised over the productivity gradient.
+Having previously calculated the average numbers of each strategy, and the average per-captia intake for each strategy on each cell, we plotted both against the productivity of the cell (Figure Z).
+Here too, we used data only from the second half of each generation to approximate ecological equilibrium.
+
+\paragraph*{Data Availability}
+
+Simulation data used in this study are available on the Dryad/IRODS/Zenodo repository \textbf{REPOSITORY LINK HERE}; 
+simulation code is available on Github and archived on Zenodo at \textbf{ZENODO LINK HERE}; 
+data analysis and figure code is available on Github and archived on Zenodo at \textbf{ZENODO LINK HERE}.
+
+\section{Results: Simulation Model Outcomes}
+
+\subsection{Emergence of an Evolutionary Equilibrium}
 
 Work in progress: Dynamic equilibrium emerges within 1000 generations --- equilibria are identical across replicates --- kleptoparasites emerge in most replicates when allowed --- kleptoparasites establish as a stable and significant proportion of individuals, or individual strategies.
 
-\subsection*{Evolution of Movement Decisions}
+\subsection{Movement-Behaviour Co-Evolution}
 
-\paragraph*{Response to Prey Items}
+\subsubsection{Movement-Behaviour Co-Evolution with Exploitative Competition}
 
-Populations across scenarios consistently evolve to move towards food items, with all individuals evolving positive values of $m_g$ across regrowth rates (Fig. 1.a).
-However, across scenarios, replicates and growth rates, populations did not converge upon a single value of $m_g$, with a similar number of phenotypes evolved across replicates (Fig. 1.e).
-Scenarios 2 and 3 show opposite relationships between the number of $m_g$ phenotypes and $r_{base}$: in scenario 2, there are only about half as many phenotypes as in scenario 3 for $r_{base} \leq$ 0.1, while at the highest $r_{base}$ (0.25), there are almost four times as many phenotypes in scenario 2 as in scenario 3.
+\subsubsection{Movement-Behaviour Co-Evolution with Kleptoparasitism}
 
-\paragraph*{Response to Handling Individuals}
-
-Populations across scenarios evolve to move towards handling individuals at low--intermediate growth rates, with most individuals in the final generation having positive values of $m_h$ ($r_{base} <$ 0.05; Fig. 1.b).
-At higher growth rates, populations in scenario 3 consistently evolve a preference for handling individuals, with variation in the number of phenotypes declining with increasing $r_{base} $(Fig. 1.b, f).
-In scenarios 1 and 2 however, the proportion of the population with an evolved preference for moving towards handling individuals declines at higher growth rates, with only between 25\% and 50\% of the population showing such a preference at the highest growth rate.
-This decreasing preference for handlers is accompanied by an increase in the number of negative phenotypes of $m_h$, though the number of positive phenotypes was maintained despite the lower proportion of individuals with a positive $m_h$.
-
-\paragraph{Response to Non-Handling Individuals}
-
-Across scenarios, populations evolve to move away from non-handling individuals when growth rates are low, with most individuals in the final generation having negative values of $m_p$ ($r_{base} <$ 0.1; Fig. 1.c).
-At higher growth rates, however, populations in scenarios 1 and 2 evolve no particular preference or avoidance of non-handlers, while in scenario 3 the population consistently evolved to move towards non-handling individuals.
-There was wide variation in the strength of avoidance (and at higher $r_{base}$, preference), with multiple $m_p$ phenotypes (Fig. 1.g).
-
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=0.99\textwidth]{figures/fig_03_move_weight_end_vals.png}
-    \caption{
-        Proportion of evolved populations moving towards environmental cues in deciding movement, across different regrowth rates.
-        Panels \textbf{(a -- c)} show the proportion of individuals with positive weights for each cue: \textbf{(a)} prey-iems, \textbf{(b)} handling individuals, \textbf{(c)} non-handling individuals.
-        Colours and shapes represent scenarios (blue circles: \textit{producers-only}; green triangles: \textit{fixed-strategy}; red squares: \textit{flexible-strategy}).
-        Each point represents a single generation between 990 and 998 in 3 replicates.
-        %%
-        Panels \textbf{(e -- g)} show the number of distinct values for each weight in the population in panels \textbf{(a -- d)} separated by the sign (positive or negative): \textbf{(e)} prey-items, \textbf{(f)} handling individuals, \textbf{(g)} non-handling individuals.
-        Bar colours represent scenarios (blue: \textit{producers-only}; green: \textit{fixed-strategy}; red: \textit{flexible-strategy}), while the hue represents the sign (light: positive, dark: negative).
-        %%
-        Individuals across scenarios and growth rates evolve to always move towards food items (\textbf{a, e}).
-        The preference for handlers decreases with growth rate in scenarios 1 and 2, but is consistently positive in scenario 3 (\textbf{b, f}).
-        Non-handler avoidance decreases only at high growth rates (\textbf{c, g}).
-        \textbf{Note: Please do not consider (d, h) -- to be removed.}
-    }
-    \label{fig:figure_pipeline}
-\end{figure*}
-
-\subsection*{Evolution of Foraging Strategy}
-
-Populations in \textbf{scenario 1} are fixed to choose a producer strategy, and their foraging strategy weights evolved neutrally, providing a null model of weight evolution against which to compare scenarios 2 and 3.
-Populations in scenario 3 do not evolve any cosisten bias towards choosing a producing strategy, with no discernible pattern in the proportion of the population bearing a positive $f_b$ (Fig. 2. a).
-However, populations in scenario 2 have an increasing proportion of individuals biased towards a foraging strategy with increasing $r_{base}$.
-At the highest growth rate, all evolved individuals in scenario 3 are biased towards producing (Fig. 2.a).
-
-Populations across scenarios, growth rates, and replicates evolve to seemingly ignore prey items and non-handling individuals when making a foraging decision, with no consistency in the proportion of individuals bearing positive $f_g$ and $f_p$ across replicates of the same scenario and growth rate(Fig. 2.b,d).
-Howevever, evolved populations in scenario 3 are more likely to uniformly choose a foraging strategy based on the number of non-handling individuals, with more variation within rather than between growth rates.
-
-The number of handling individuals is not processed similarly by individuals evolved in scenario 2 when choosing a strategy, with proportions oscillating around 0.5 (Fig. 2.c).
-In scenario 3, populations consistently evolved to choose a kleptoparasitic-scrounger strategy in the presence of handlers (Fig. 2c.).
-This proportion was reduced at very low growth rates ($r_{base} <$ 0.01; Fig. 2.c).
-
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=0.99\textwidth]{figures/fig_04_strategy_weight_end_vals.png}
-    \caption{
-        The proportion of individuals choosing a foraging strategy based on environmental cues is not linked to the regrowth rate.
-        Panels \textbf{(a -- e)} show the proportion of individuals with positive weights for each cue: \textbf{(a)} bias, \textbf{(b)} non-handling individuals, \textbf{(c)} handling individuals, \textbf{(d)} prey items, and \textbf{(e)} all cues combined.
-        Colours and shapes represent scenarios (blue circles: \textit{producers-only}; green triangles: \textit{fixed-strategy}; red squares: \textit{flexible-strategy}).
-        Lines connect similarly numbered replicates across $r_{base}$, but these are entirely independent simulations.
-        %%
-        Panels \textbf{(f -- j)} show the number of distinct values for each weight in the population in panels \textbf{(a -- e)} separated by the sign (positive or negative): \textbf{(f)} bias, \textbf{(g)} non-handling individuals, \textbf{(h)} handling individuals, \textbf{(i)} prey items, and \textbf{(j)} all cues combined.
-        Bar colours represent scenarios (blue: \textit{producers-only}; green: \textit{fixed-strategy}; red: \textit{flexible-strategy}), while the hue represents the sign (light: positive, dark: negative).
-        %%
-        Individuals' weights in \textbf{scenario 1} evolve neutrally since they are only allowed a producer strategy.
-        However, scenario 2 also results in neutral evolution of all weights except $f_b$, with a larger proportion of individuals biased towards producing at high $r_{base}$.
-        Almost all individuals in scenario 3 choose to steal except at very low $r_{base}$, with $f_h$ the strongest contributor to the decision.
-    }
-    \label{fig:figure_pipeline}
-\end{figure*}
-
-\subsection*{Evolution of Kleptoparasitism}
+\subsection{Evolution of Kleptoparasitism Requires Movement Pre-Adaptation}
 
 The scrounging kleptoparasitic strategy evolves and is established in populations in some tens of generations, and emerges relatively quickly in the evolutionary history of populations (see Figure X)
 This rapid emergence and invasion is made possible by the pre-adaptation of individuals to use the kleptoparasitic strategy successfully.
@@ -370,98 +294,134 @@ Under such circumstances in \textbf{scenario 2}, though strategy weight mutation
 Thus kleptoparasitism as a fixed-strategy repeatedly evolves and goes extinct in high-productivity environments, as these individuals find themselves in a `desert of plenty'.
 Under the same conditions in \textbf{scenario 3} however, a mixed foraging strategy allows individuals to be producers when appropriate, and yet steal a march on pure-producers when kleptoparasitism is possible.
 
-\subsection*{Generalised Functional Response}
+% \subsection{Evolution of Movement Decisions}
 
-\subsubsection*{Effect of Individuals and Prey Items}
+% \paragraph*{Response to Prey Items}
 
-We modelled the the effect of individual and prey-item density on per-capita intake, and visualised coefficients $\beta_1$ and $\beta_2$ in relation to $r_{base}$ (Figure 3).
-This mimics the resolution of ecological data collection in which it is possible to quantify intake and the strategy leading to prey acquisition.
+% Populations across scenarios consistently evolve to move towards food items, with all individuals evolving positive values of $m_g$ across regrowth rates (Fig. 1.a).
+% However, across scenarios, replicates and growth rates, populations did not converge upon a single value of $m_g$, with a similar number of phenotypes evolved across replicates (Fig. 1.e).
+% Scenarios 2 and 3 show opposite relationships between the number of $m_g$ phenotypes and $r_{base}$: in scenario 2, there are only about half as many phenotypes as in scenario 3 for $r_{base} \leq$ 0.1, while at the highest $r_{base}$ (0.25), there are almost four times as many phenotypes in scenario 2 as in scenario 3.
+
+% \paragraph*{Response to Handling Individuals}
+
+% Populations across scenarios evolve to move towards handling individuals at low--intermediate growth rates, with most individuals in the final generation having positive values of $m_h$ ($r_{base} <$ 0.05; Fig. 1.b).
+% At higher growth rates, populations in scenario 3 consistently evolve a preference for handling individuals, with variation in the number of phenotypes declining with increasing $r_{base} $(Fig. 1.b, f).
+% In scenarios 1 and 2 however, the proportion of the population with an evolved preference for moving towards handling individuals declines at higher growth rates, with only between 25\% and 50\% of the population showing such a preference at the highest growth rate.
+% This decreasing preference for handlers is accompanied by an increase in the number of negative phenotypes of $m_h$, though the number of positive phenotypes was maintained despite the lower proportion of individuals with a positive $m_h$.
+
+% \paragraph{Response to Non-Handling Individuals}
+
+% Across scenarios, populations evolve to move away from non-handling individuals when growth rates are low, with most individuals in the final generation having negative values of $m_p$ ($r_{base} <$ 0.1; Fig. 1.c).
+% At higher growth rates, however, populations in scenarios 1 and 2 evolve no particular preference or avoidance of non-handlers, while in scenario 3 the population consistently evolved to move towards non-handling individuals.
+% There was wide variation in the strength of avoidance (and at higher $r_{base}$, preference), with multiple $m_p$ phenotypes (Fig. 1.g).
+
+% \begin{figure*}[h]
+%     \centering
+%     \includegraphics[width=0.99\textwidth]{figures/fig_03_move_weight_end_vals.png}
+%     \caption{
+%         Proportion of evolved populations moving towards environmental cues in deciding movement, across different regrowth rates.
+%         Panels \textbf{(a -- c)} show the proportion of individuals with positive weights for each cue: \textbf{(a)} prey-iems, \textbf{(b)} handling individuals, \textbf{(c)} non-handling individuals.
+%         Colours and shapes represent scenarios (blue circles: \textit{producers-only}; green triangles: \textit{fixed-strategy}; red squares: \textit{flexible-strategy}).
+%         Each point represents a single generation between 990 and 998 in 3 replicates.
+%         %%
+%         Panels \textbf{(e -- g)} show the number of distinct values for each weight in the population in panels \textbf{(a -- d)} separated by the sign (positive or negative): \textbf{(e)} prey-items, \textbf{(f)} handling individuals, \textbf{(g)} non-handling individuals.
+%         Bar colours represent scenarios (blue: \textit{producers-only}; green: \textit{fixed-strategy}; red: \textit{flexible-strategy}), while the hue represents the sign (light: positive, dark: negative).
+%         %%
+%         Individuals across scenarios and growth rates evolve to always move towards food items (\textbf{a, e}).
+%         The preference for handlers decreases with growth rate in scenarios 1 and 2, but is consistently positive in scenario 3 (\textbf{b, f}).
+%         Non-handler avoidance decreases only at high growth rates (\textbf{c, g}).
+%         \textbf{Note: Please do not consider (d, h) -- to be removed.}
+%     }
+%     \label{fig:figure_pipeline}
+% \end{figure*}
+
+% \subsection{Evolution of Foraging Strategy}
+
+% Populations in \textbf{scenario 1} are fixed to choose a producer strategy, and their foraging strategy weights evolved neutrally, providing a null model of weight evolution against which to compare scenarios 2 and 3.
+% Populations in scenario 3 do not evolve any cosisten bias towards choosing a producing strategy, with no discernible pattern in the proportion of the population bearing a positive $f_b$ (Fig. 2. a).
+% However, populations in scenario 2 have an increasing proportion of individuals biased towards a foraging strategy with increasing $r_{base}$.
+% At the highest growth rate, all evolved individuals in scenario 3 are biased towards producing (Fig. 2.a).
+
+% Populations across scenarios, growth rates, and replicates evolve to seemingly ignore prey items and non-handling individuals when making a foraging decision, with no consistency in the proportion of individuals bearing positive $f_g$ and $f_p$ across replicates of the same scenario and growth rate(Fig. 2.b,d).
+% Howevever, evolved populations in scenario 3 are more likely to uniformly choose a foraging strategy based on the number of non-handling individuals, with more variation within rather than between growth rates.
+
+% The number of handling individuals is not processed similarly by individuals evolved in scenario 2 when choosing a strategy, with proportions oscillating around 0.5 (Fig. 2.c).
+% In scenario 3, populations consistently evolved to choose a kleptoparasitic-scrounger strategy in the presence of handlers (Fig. 2c.).
+% This proportion was reduced at very low growth rates ($r_{base} <$ 0.01; Fig. 2.c).
+
+\subsection{Functional Response of Intake}
+
+Understanding the consequences of aggregating with other individuals is key to explaining why animals form groups.
+We examined the functional response of individual intake of each behavioural strategy on a cell to the number of individuals on that cell.
 %%
-In \textbf{scenario 1}, the effect of individuals on producer per-capita intake (coefficient $\beta_2$) is initially negative at low growth rates, and then slightly positive (max. $\beta_2$ $\approx$ 0.5) for intermediate, high and very high growth rates.
-The effect of items (coefficient $\beta_1$) declined from low positive values to zero with increasing $r_{base}$.
+The foragers-only case presents a useful starting point: forager intake is invariant with individual (forager) density, and only declines at very high or low densities (Fig. 4.a,d).
+Similarly, the functional response of both foragers and kleptoparasite strategies in the fixed-strategy and conditional-strategy case is hump-shaped, with an apparently `optimal' competitor density at which individual intake rates are maximised (Fig. 4.b,c).
+Furthermore, the kleptoparasitic strategy's per-capita intake is always greater than that of the forager strategy (Fig. 4.b,c).
 %%
-In \textbf{scenario 2}, $\beta_2$ (individuals) for both $W_p$ and $W_s$ was near zero for $r_{base} <$ 0.05, increased rapidly for for $r_{base} \in 0.05, 0.075, 0.1$, and declined to $<$ 0.5 for $r_{base}$ = 0.25.
-The $\beta_1$ (items) was at or near zero across all $r_{base}$ for both $W_p$ and $W_s$.
+However on separating potential competitors by strategy, we find that the individual intake of both strategies increases with increasing forager density (Fig. 4.e,f), but decreases with increasing kleptoparasite density (Fig. 4.g,h).
+These consistently opposite responses to foragers and kleptoparasites explain why the overall functional response to all competitors appears hump-shaped.
 %%
-In \textbf{scenario 3}, $\beta_2$ (individuals) showed a hump-shaped relationship with $r_{base}$ for both $W_p$ and $W_s$, with negative values at low growth rates, the highest values at intermediate growth rates, and low values at the highest growth rate.
-The effect of items ($\beta_1$) declined from low positive values to zero with increasing $r_{base}$.
+With growing forager densities, exploitative, scramble competition for prey items is increased, but foragers also accumulate on high-productivity cells, increasing average per-capita intake overall.
+When kleptoparasites accumulate, however, interference competition results in both lower extraction (as only foragers extract prey) as well as lower intake, as the same item is repeatedly passed between agents in stealing interactions.
+Thus we show that taking the type of competition, and behavioural variation among individuals more generally into account is crucial to correctly understand the consequences of multiple competing individuals foraging on the same patch (or in the same group/in proximity to each other).
 
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=0.99\textwidth]{figures/fig_05_coef_intake_general.png}
-    \caption{
-        The effect of individuals and items on per-capita intake rate differs across regrowth rates and individual strategy.
-        Across scenarios (\textbf{a}: producers-only, \textbf{b}: fixed-strategy, and \textbf{c}: flexible-strategy) and strategies (blue: producer, red: kleptoparasite), the effect of individuals ($\beta_2$) and prey items ($\beta_1$) is hump-shaped with respect to regrowth rates.
-        It is initially negative or zero at low regrowth rates, and increases to positive values for intermediate and high regrowth rates, before declining at extremely high levels of prey regrowth.
-    }
-\end{figure*}
+\subsection{Population Distribution}
 
-\subsubsection*{Effect of Different Behavioural Strategies}
-
-work in progress: 
-
-\subsection*{Emergence of a Third Trophic Level}
-
-Work in progress: Kleptoparasite intake depends only on the number of individuals --- kleptoparasite intake is highest when cells have few kleptoparasites and many producers --- kleptoparasite emergence is associated with a reduction in item depletion
-
-\subsection*{Ecological Models Mask Behavioural Mechanisms}
-
-Evolved behavioural mechanisms are very poorly captured by phenomenological models of functional response coefficients for individuals and prey-items.
+Predicting the distribution of a population on a heterogeneous landscape is among the key goals of spatial ecology.
+This is often achieved by finding the aggregative response of individuals to a relatively static indicator of landscape quality; i.e., how many individuals are present on patches or areas with different resource levels.
+We examined the aggregative response of individuals in our simulations in relation to landscape productivity, to compare and contrast with predictions from optimal foraging theory \citep[][; see Fig. 5]{meer1997}.
 %%
-Across regrowth rates, models of intake rate would predict that prey-item abundance has little to no effect with $\beta_1 \approx$ 0, while competitor density (coefficient $\beta_2$) would be expected to have an equal or stronger effect.
-These models predict that individuals should not select for prey-items, and move away from each other at low regrowth rates, while moving towards each other at higher regrowth rates.
-However, individuals are not neutral to prey-items, instead showing a strong preference at all regrowth rates.
+We find that in the foragers-only case, individuals follows the matching rule in relation to grid-cell productivity, with more foragers on higher productivity cells (Fig. 5.a).
+In the fixed-strategy case, the aggregative response of foragers and kleptoparasites differs; forager counts peak on lower productivity cells and declines with further increases in productivity.
+Kleptoparasite counts initially increase with cell productivity and then stabilise (Fig. 5.b).
+In the conditional-strategy case, both foragers and kleptoparasite counts peak on intermediate productivity cells and then begin to decline (Fig. 5.c).
+In the spatial context of our simulation, this translates to three distinct patterns with (1) individuals clustered on productivity peaks in scenario 1, (2) kleptoparasites dominating productivity peaks with fewer foragers in scenario 2, and (3) individuals using a forager strategy more frequently than a kleptoparasitic strategy on productivity peaks in scenario 3.
 %%
-Further, individuals' response to other individuals is based on the sensed behavioural state; populations evolve to move towards handlers and away from non-handlers across a range of regrowth rates.
-At low regrowth rates, items are expected to be scarce across the landscape, and item densities are unreliable cues of cell quality.
-Yet individual immobility while handling prey leads to the positive correlation of individual densities and cell quality, as producers are converted to handlers more rapidly on cells with higher $r$.
-When direct cues are unreliable, individuals can use the foraging status of conspecifics as public information to detect a landscape quality gradient.
-%%
-Thus even though individual intake is negatively affected by the presence of other individuals generally, a strong preference for moving towards handlers evolves.
-This social-information use may explain why animal groups are apparently larger than predicted on low-productivity landscapes without invoking extrinsic effects such as predation risk.
-%%
-At high regrowth rates, the probability of finding a food item is invariant with the number of potential competitors, food items are good cues of cell quality, and selection for individuals becomes neutral.
-Nonetheless, handling-immobility ensures that most producer-handler conversions occur in the presence of already-handling individuals, giving rise to the spurious inference of a facilitative effect of individuals on intake.
+We further find that there are appreciable differences between average and median counts of individuals of each strategy on cells, with the mean typically higher than the median.
 
-\subsection*{Spatial Distribution of Individuals and Prey}
+\subsection{Kleptoparasitism and Predation Have Similar Landscape Effects}
 
-\paragraph{Individual Distributions}
+Work in progress: Kleptoparasite intake depends only on the number of individuals --- kleptoparasite intake is highest when cells have few kleptoparasites and many producers --- kleptoparasite emergence is associated with a reduction in item depletion --- add also landscape metrics etc
 
-There number of individuals on a cell increased with its growth rate $r$, but there was substantial variation across cells with the same $r$. 
-This variation was larger with increasing $r$ since there were fewer cells with higher $r$.
-In the producer-only case, individual abundance showed a linear relationship with cell quality, with the slope increasing with the simulation growth rate $r_{base}$.
-%%
-When two strategies were allowed however, there were strong differences in how they were distributed across cell qualities.
-In the fixed-strategy case, the abundance of producer individuals was uniformly low across cell qualities, while the abundance of scrounging kleptoparasites had a sigmoidal relationship with quality, mediated by $r_{base}$.
-In the flexible-strategy case, the use of either strategy was nearly invariant with cell quality.
-At very low $r_{base}$ (0.001) the kleptoparasitic strategy was more ofen used than the producer strategy, while at higher $r_{base}$, the producer strategy was more common across cell quality.
+% \subsection{Spatial Distribution of Predators and Prey}
 
-\paragraph{Consequences for Prey Item Distribution}
+% \subsubsection{Individual Distributions}
 
-The distributon of items $G$ varied considerably between scenarios and simulation-specific baseline growth rates $r_{base}$.
-In the \textbf{scenario 1} $G$ was insensitive to $r$, and items were uniformly distributed across cells of different growth rates.
-$G$ was not signficantly different among simulations with different $r_{base}$.
-In the \textbf{scenario 2} $G$ increased strongly with $r$, and the curve of $G ~ r$ varied with $r_{base}$.
-The $G ~ r$ transformed from roughly linear ($r_{base}$ = 0.001), to exponential ($r_{base}$ = 0.01), and finally to sigmoidal ($r_{base} \in$ 0.03, 0.05) [see Figure X].
-In the \textbf{scenario 3} $G$ varied only weakly across cells with different $r$, and the $G ~ r$ response had a positive slope only for the highest $r_{base}$ of 0.03 and 0.05.
+% There number of individuals on a cell increased with its growth rate $r$, but there was substantial variation across cells with the same $r$. 
+% This variation was larger with increasing $r$ since there were fewer cells with higher $r$.
+% In the producer-only case, individual abundance showed a linear relationship with cell quality, with the slope increasing with the simulation growth rate $r_{base}$.
+% %%
+% When two strategies were allowed however, there were strong differences in how they were distributed across cell qualities.
+% In the fixed-strategy case, the abundance of producer individuals was uniformly low across cell qualities, while the abundance of scrounging kleptoparasites had a sigmoidal relationship with quality, mediated by $r_{base}$.
+% In the flexible-strategy case, the use of either strategy was nearly invariant with cell quality.
+% At very low $r_{base}$ (0.001) the kleptoparasitic strategy was more ofen used than the producer strategy, while at higher $r_{base}$, the producer strategy was more common across cell quality.
 
-\begin{figure*}[h]
-    \includegraphics[width=0.99\textwidth]{figures/fig_06_agent_dist.png}
-    \caption{
-        Distributions of individuals, their absolute intake, and their per-capita intake for each strategy (blue: producer, red: kleptoparasite), across cell qualities. 
-        The last 8 generations are shown from each of 3 replicates of the three scenarios: \textbf{(a -- d)} scenario 1, \textbf{(e -- h)} scenario 2, and \textbf{(i -- l)} scenario 3. Results from different regrowth rates are indicated by the lightness of the lines (lighter: lower regrowth, darker: higher regrowth).
-    Per-capita intake (\textbf{d, h, l}) are not equalised across cell quality, indicating deviations from the ideal free distribution.}
-\end{figure*}
+% \subsubsection{Consequences for Prey Item Distribution}
 
-\subsection*{Deviations from the IFD}
+% The distributon of items $G$ varied considerably between scenarios and simulation-specific baseline growth rates $r_{base}$.
+% In the \textbf{scenario 1} $G$ was insensitive to $r$, and items were uniformly distributed across cells of different growth rates.
+% $G$ was not signficantly different among simulations with different $r_{base}$.
+% In the \textbf{scenario 2} $G$ increased strongly with $r$, and the curve of $G ~ r$ varied with $r_{base}$.
+% The $G ~ r$ transformed from roughly linear ($r_{base}$ = 0.001), to exponential ($r_{base}$ = 0.01), and finally to sigmoidal ($r_{base} \in$ 0.03, 0.05) [see Figure X].
+% In the \textbf{scenario 3} $G$ varied only weakly across cells with different $r$, and the $G ~ r$ response had a positive slope only for the highest $r_{base}$ of 0.03 and 0.05.
 
-Work in progress: undermatching due to difficulty in detecting gradients --- evolved functional response does not match classical models
+% \begin{figure*}[h]
+%     \includegraphics[width=0.99\textwidth]{figures/fig_06_agent_dist.png}
+%     \caption{
+%         Distributions of individuals, their absolute intake, and their per-capita intake for each strategy (blue: producer, red: kleptoparasite), across cell qualities. 
+%         The last 8 generations are shown from each of 3 replicates of the three scenarios: \textbf{(a -- d)} scenario 1, \textbf{(e -- h)} scenario 2, and \textbf{(i -- l)} scenario 3. Results from different regrowth rates are indicated by the lightness of the lines (lighter: lower regrowth, darker: higher regrowth).
+%     Per-capita intake (\textbf{d, h, l}) are not equalised across cell quality, indicating deviations from the ideal free distribution.}
+% \end{figure*}
+
+% \subsection{Deviations from the IFD}
+
+% Work in progress: undermatching due to difficulty in detecting gradients --- evolved functional response does not match classical models
 
 % If you have deposited data to Dryad, you should cite them somewhere in the main text (usually in the Methods or Results sections). A sentence like the following will do. All data are available in the Dryad Digital Repository (\citealt{CookEtAl2015}).
 
-\section*{Discussion}
+\section{Discussion}
 
-\section*{Conclusion}
+\section{Conclusion}
 
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -473,7 +433,7 @@ Work in progress: undermatching due to difficulty in detecting gradients --- evo
 % If you remove this section, you will need to add it back in to your
 % final files after acceptance.
 
-\section*{Acknowledgments}
+\section{Acknowledgments}
 
 The authors thank Hanno Hildenbrandt for contributing extensively to the coding of the simulation model \textit{Kleptomove};
 Matteo Pederboni for contributing to the model's development; 
@@ -483,7 +443,7 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 
 \newpage{}
 
-\section*{Appendix A: Supplementary Figures}
+\section{Appendix A: Supplementary Figures}
 
 % In many cases, The American Naturalist allows authors to typeset 
 % their own supplementary material in an author-supplied PDF. For author-
@@ -518,7 +478,7 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 \setcounter{figure}{0}
 \setcounter{table}{0}
 
-\subsection*{Fox--dog encounters through the ages}
+\subsection{Fox--dog encounters through the ages}
 
 % The quick red fox jumps over the lazy brown dog. The quick red fox has always jumped over the lazy brown dog. The quick red fox began jumping over the lazy brown dog in the 19th century and has never ceased from so jumping, as we shall see in figure~\ref{Fig:Jumps}. But there can be surprises (figure~\ref{Fig:JumpsOk}).
 
@@ -528,7 +488,7 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 
 % [Figure A2 goes here.]
 
-% \subsection*{Further insights}
+% \subsection{Further insights}
 
 % Tables in the appendices can appear in the appendix text (see table~\ref{Table:Rivers} for an example), unlike appendix figure legends which should be grouped at the end of the document together with the other figure legends.
 
@@ -558,9 +518,9 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 \setcounter{equation}{0}  % reset counter 
 \setcounter{table}{0}
 
-\section*{Appendix B: Additional Methods}
+\section{Appendix B: Additional Methods}
 
-\subsection*{Measuring the height of fox jumps without a meterstick}
+\subsection{Measuring the height of fox jumps without a meterstick}
 
 % Pellentesque ac nibh placerat, luctus lectus non, elementum mauris. 
 % Morbi odio velit, eleifend ut hendrerit vitae, consequat sit amet 
@@ -573,7 +533,7 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 % { \frac{1}{N_k-1} \sum \limits_{t=1}^{N_k} (M_{tjk} - \bar{M}_{jk})^2}
 % \end{equation}
 
-% \subsection*{Quantifying the brownness of the dog}
+% \subsection{Quantifying the brownness of the dog}
 
 % Pellentesque eu nulla odio (\citealt{Xiao2015,CookEtAl2015}). Nulla aliquam porta metus, quis malesuada orci faucibus quis. Suspendisse nunc magna, tristique sit amet sollicitudin nec, elementum et lacus. Sed vitae elementum mi. In hac habitasse platea dictumst. Etiam eu tortor elit. Sed ac tortor purus. Aliquam volutpat, odio sit amet posuere pretium, dolor ex interdum ante, sed luctus quam eros ac nulla. 
 
@@ -599,7 +559,7 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 
 \newpage{}
 
-\section*{Tables}
+\section{Tables}
 \renewcommand{\thetable}{\arabic{table}}
 \setcounter{table}{0}
 
@@ -623,7 +583,7 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 
 \newpage{}
 
-\section*{Figure legends}
+\section{Figure legends}
 
 % \begin{figure}[h!]
 % % \includegraphics[width=0.60\textwidth]{figures/fig_fun_response_general.png}
@@ -665,7 +625,7 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 % \label{Fig:AnotherFigure}
 % \end{figure}
 
-\subsection*{Online figure legends}
+\subsection{Online figure legends}
 
 \renewcommand{\thefigure}{A\arabic{figure}}
 \setcounter{figure}{0}
