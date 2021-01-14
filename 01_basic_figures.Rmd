@@ -102,4 +102,6 @@ data$data_summary <- lapply(data$folder_path,
 # unnest the data
 data <- unnest(data,
                cols = "data_summary")
+
+fwrite(data, "data/results/data_agent_distribution.csv")
 ```
