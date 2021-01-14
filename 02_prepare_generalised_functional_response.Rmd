@@ -63,6 +63,7 @@ Summarise the data and read it in, using the helper functions.
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
+    n_time = 200,
     round_value = 0.005,
     drivers = c("total_agents")
   )
@@ -86,6 +87,7 @@ gc()
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
+    n_time = 200,
     round_value = 0.005,
     drivers = c("klepts", "foragers")
   )
@@ -110,6 +112,7 @@ gc()
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
+    n_time = 200,
     round_value = 0.005,
     drivers = c("items")
   )
@@ -134,7 +137,8 @@ gc()
 data$data_summary <- lapply(data$folder_path, function(x) {
   get_functional_response(
     data_folder = x,
-    round_value = 0.001,
+    round_value = 0.005,
+    n_time = 200,
     response = c("total_agents", "klepts", "foragers"),
     drivers = c("items")
   )
