@@ -1,8 +1,22 @@
 
 #### a helper function to floor values ####
-floor_any <- function(x, v) {
-  floor(x / v) * v
+#' Bin a vector.
+#'
+#' @param x The numeric vector.
+#' @param binsize The binsize
+#'
+#' @return Vector binned.
+#' @export
+bin_vec <- function(x, binsize) {
+  minx = 0
+  maxx = max(x, na.rm = TRUE)
+  
+  seqx = seq(0, maxx, by = binsize)
+  
+  cut(x, breaks = seqx, include.lowest = T)
+  
 }
+
 
 #' Read in simulation data.
 #'
@@ -177,7 +191,7 @@ get_functional_response <-
     )
     
     # floor drivers to the nearest floor value
-    data_proc[, (drivers) := lapply(.SD, floor_any, v = round_value),
+    data_proc[, (drivers) := lapply(.SD, bin_vec, binsize = round_value),
               .SD = drivers]
     
     # subset data for driver and response columnsd
