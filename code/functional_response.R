@@ -10,7 +10,12 @@
 bin_vec <- function(x, binsize) {
   minx = 0
   maxx = max(x, na.rm = TRUE)
-  
+
+  # handle bad maxx
+  if (maxx == 0 | is.infinite(maxx)) {
+    maxx = 1
+  }
+    
   seqx = seq(0, maxx, by = binsize)
   
   cut(x, breaks = seqx, include.lowest = T)
