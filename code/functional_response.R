@@ -12,10 +12,10 @@ bin_vec <- function(x, binsize) {
   maxx = max(x, na.rm = TRUE)
 
   # handle bad maxx
-  if (maxx == 0 | is.infinite(maxx)) {
+  if (maxx == 0 | is.infinite(maxx) | is.nan(maxx) | is.na(maxx)) {
     maxx = 1
   }
-    
+
   seqx = seq(0, maxx, by = binsize)
   
   cut(x, breaks = seqx, include.lowest = T)
@@ -176,7 +176,7 @@ get_functional_response <-
            round_value = 0.005,
            data_folder,
            which_gen = seq(991, 998, 1),
-           n_time = 400,
+           n_time = 200,
            layers = c(
              "items", "foragers", "klepts",
              "klepts_intake", "foragers_intake"
@@ -191,7 +191,7 @@ get_functional_response <-
     data_proc <- do_read_data(
       data_folder,
       which_gen = seq(991, 998, 1),
-      n_time = 400,
+      n_time = n_time,
       layers = layers
     )
     
