@@ -44,13 +44,14 @@ More plotting preparation.
 
 ```{r}
 # remove random
-data <- data[sim_type != "random", ]
+data <- data[sim_type != "random" & regrowth == 0.1, ]
 
 # split the data by growth rate
 data_plot <- split(data, by = c("sim_type", "layer_type"))
 data_plot <- data_plot[sapply(data_plot, function(x){nrow(x) > 1})]
 
 # arrange order
+library(stringr)
 data_plot <- data_plot[c(str_which(names(data_plot), "forager"),
             str_which(names(data_plot), "obligate"),
             str_which(names(data_plot), "facul"))]
@@ -61,17 +62,32 @@ subplots <-
   Map(function(df) {
     
     if (!unique(df$layer)[[1]] == "items") {
-      pal <- c(sequential_hcl(10, "Reds", rev = T),
-               sequential_hcl(10, "PuBu", rev = T))
+      pal <- c(sequential_hcl(1, "Reds", rev = F),
+               sequential_hcl(1, "PuBu", rev = F))
     } else {
-      pal <- sequential_hcl(10, "Greens 2", rev = T)
+      pal <- sequential_hcl(1, "Greens 2", rev = F)
     }
     
     ggplot(df)+
-      geom_line(aes(cap, mean_val,
+      geom_point(aes(cap, med_val,
+                          # ymin = med_val - sd_val,
+                          # ymax = med_val + sd_val,
                     col = interaction(regrowth, layer),
                     group = interaction(regrowth, replicate, gen)),
-                show.legend = F)+
+                show.legend = F,
+                width = 0.001,
+                # size = 0.2,
+                shape = 1)+
+      geom_point(aes(cap, mean_val,
+                          # ymin = med_val - sd_val,
+                          # ymax = med_val + sd_val,
+                    col = interaction(regrowth, layer),
+                    group = interaction(regrowth, replicate, gen)),
+                show.legend = F,
+                width = 0.001,
+                alpha = 0.2,
+                # size = 0.2,
+                shape = 4)+
       facet_grid(~ layer, scales = "free")+
       scale_colour_manual(
         values = pal,
@@ -80,9 +96,10 @@ subplots <-
       theme(
         panel.background = element_rect(
           fill = "grey95"
-        ), 
-        axis.text = element_blank()
+        )
       ) +
+      coord_cartesian(ylim = c(0, NA),
+                      expand = T)+
       labs(x = "quality",
            y = "value")
   },
@@ -95,6 +112,7 @@ fig_agent_dist <- wrap_plots(subplots)+
                   tag_prefix = "(",
                   tag_suffix = ")")
 
+fig_agent_dist
 ggsave(fig_agent_dist,
        filename = "figures/fig_06_agent_dist.png")
 ```
