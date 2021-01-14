@@ -21,6 +21,14 @@ multsum <- function(x) {
        median = median(x),
        sd = sd(x))
 }
+
+# get lower value
+get_lower <- function(x) {
+  as.double(
+    stringi::stri_extract_first(x, 
+                             regex = "[0-9]+\\.\\d*")
+  )
+}
 ```
 
 
@@ -41,13 +49,18 @@ data_intake_items <- data[variable != "pc_intake_total",
                           .SDcols = c("value"),
                           by = c("sim_type", "regrowth",
                                  "items", "variable")]
+
+# convert to number
+data_intake_items[, item_num := get_lower(items)]
+
+# scale by max items
+data_intake_items[, item_num := scales::rescale(
+  item_num
+),
+by = c("sim_type", "regrowth")]
 ```
 
-```{r}
-
-```
-
-### Plot: Intake ~ items
+d### Plot: Intake ~ items
 
 ```{r}
 # split and plot
@@ -56,15 +69,15 @@ data_intake_items <- split(data_intake_items, by = "sim_type")
 subfig_intake_items <- 
   lapply(data_intake_items, function(df){
   ggplot(df)+
-  geom_point(aes(items, value.median,
+  geom_point(aes(item_num, value.median,
                  col = variable),
              size = 0.2,
              shape = 1,
              show.legend = F)+
-  coord_cartesian(ylim = c(0, 0.3),
+  coord_cartesian(ylim = c(0, 0.2),
                   xlim = c(0, NA))+
-  scale_x_sqrt()+
-  scale_y_sqrt()+
+  # scale_x_sqrt()+
+  # scale_y_sqrt()+
   facet_grid(sim_type ~ regrowth, scales = "fixed")+
   scale_colour_discrete_diverging(palette = "Blue-Red 2",
                                   rev = F)+
@@ -120,7 +133,7 @@ data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
 # as well as sim type
 data_summary <- data[, unlist(lapply(.SD, multsum), recursive = F),
                      .SDcols = c("value"),
-                     by = c("sim_type", "replicate", "regrowth",
+                     by = c("sim_type", "regrowth",
                             "total_agents", "variable")]
 
 # split off total from strategy specific
@@ -130,57 +143,11 @@ data_total_intake <- data_summary[variable == "pc_intake_total", ]
 data_summary <- data_summary[variable != "pc_intake_total", ]
 ```
 
-### Plot: Total intake ~ total agents
-
-```{r}
-# split and plot
-data_total_intake <- split(data_total_intake, by = "sim_type")
-subfig_fun_response_total <- 
-  lapply(data_total_intake, function(df){
-  ggplot(df)+
-    geom_point(aes(total_agents, value.mean),
-               size = 0.5)+
-    facet_grid(sim_type ~ regrowth)+
-    theme_grey(base_size = 12)+
-    coord_cartesian(xlim = c(0, 0.75),
-                    ylim = c(0, 0.3))+
-    labs(
-      x = "# predators",
-      y = "per-capita intake"
-    )
-})
-
-# collect figures
-fig_fun_response_total <- 
-  wrap_plots(subfig_fun_response_total[c(
-  "foragers",
-  "obligate",
-  "facultative"
-)],
-ncol = 1)
-
-# view figure
-fig_fun_response_total <- 
-  fig_fun_response_total +
-  plot_annotation(
-    tag_levels = "a",
-    tag_prefix = "(",
-    tag_suffix = ")"
-  ) &
-  theme(plot.tag = element_text(face = "bold"))
-```
-
-```{r}
-ggsave(fig_fun_response_total,
-  filename = "figures/fig_fun_response_general.png",
-  dpi = 150
-)
-```
-
 ### Plot: Per-capita intake by strategy ~ total agents
 
 ```{r}
-# split by sim type
+# get numeric value
+data_summary[, total_agents_num := get_lower(total_agents)]
 data_summary <- split(data_summary, by = "sim_type")
 ```
 
@@ -188,15 +155,16 @@ data_summary <- split(data_summary, by = "sim_type")
 # make each figure
 subfig_fun_response <-
   lapply(data_summary, function(df) {
-    ggplot(df)+
-      geom_point(aes(total_agents, value.mean,
+    ggplot(df[])+
+      geom_point(aes(total_agents_num, value.mean,
                      col = variable),
                  size = 0.5,
+                 shape = 1,
                  show.legend = F)+
       facet_grid(sim_type ~ regrowth)+
       theme_grey(base_size = 12)+
-      coord_cartesian(xlim = c(0, 0.75),
-                      ylim = c(0, 0.25))+
+      coord_cartesian(ylim = c(0, 0.25),
+                      xlim = c(0, 0.75))+
       scale_colour_discrete_diverging(palette = "Blue-Red 2",
                                       rev = F)+
       labs(
@@ -213,6 +181,8 @@ fig_fun_response <- wrap_plots(subfig_fun_response[c(
 )],
 ncol = 1)
 
+fig_fun_response
+
 # view figure
 fig_fun_response <- 
   fig_fun_response +
@@ -227,7 +197,8 @@ fig_fun_response <-
 ```{r}
 ggsave(fig_fun_response,
   filename = "figures/fig_fun_response_strategy.png",
-  dpi = 150
+  dpi = 150,
+  height = 8, width = 8
 )
 ```
 
@@ -250,6 +221,7 @@ data_resp_forager <- data[variable != "pc_intake_total",
                           .SDcols = c("value"),
                           by = c("sim_type", "replicate", "regrowth",
                                  "variable", "foragers")]
+data_resp_forager[, foragers_num := get_lower(foragers)]
 
 # klept data
 data_resp_klept <- data[variable != "pc_intake_total" &
@@ -258,10 +230,10 @@ data_resp_klept <- data[variable != "pc_intake_total" &
                           .SDcols = c("value"),
                           by = c("sim_type", "replicate", "regrowth",
                                  "variable", "klepts")]
+data_resp_klept[, klepts_num := get_lower(klepts)]
 
 # split and append
-data_resp_forager <- split(data_resp_forager,
-                           by = "sim_type")
+data_resp_forager <- split(data_resp_forager, by = "sim_type")
 data_resp_klept <- split(data_resp_klept, by = "sim_type")
 ```
 
@@ -271,7 +243,7 @@ data_resp_klept <- split(data_resp_klept, by = "sim_type")
 # make subfigures
 subfig_resp_forager <- lapply(data_resp_forager, function(df) {
   ggplot(df)+
-  geom_point(aes(foragers, value.mean,
+  geom_point(aes(foragers_num, value.mean,
                  col = variable),
              shape = 1,
              show.legend = F)+
@@ -281,7 +253,7 @@ subfig_resp_forager <- lapply(data_resp_forager, function(df) {
                       ylim = c(0, 0.3))+
       scale_colour_discrete_diverging(palette = "Blue-Red 2",
                                       rev = F)+
-        labs(x = "# forager predators",
+        labs(x = "# foragers",
              y = "per-capita intake")
 })
 
@@ -308,7 +280,7 @@ ggsave(fig_resp_forager, filename = "figures/fig_funresp_foragers.png")
 subfig_resp_klept <- 
   lapply(data_resp_klept, function(df) {
   ggplot(df)+
-  geom_point(aes(klepts, value.mean,
+  geom_point(aes(klepts_num, value.mean,
                  col = variable),
              shape = 1,
              show.legend = F)+
@@ -318,7 +290,7 @@ subfig_resp_klept <-
                       ylim = c(0, 0.3))+
       scale_colour_discrete_diverging(palette = "Blue-Red 2",
                                       rev = F)+
-        labs(x = "# kleptoparasite predators",
+        labs(x = "# kleptoparasites",
              y = "per-capita intake")
 })
 
@@ -367,13 +339,13 @@ subfig_funresp_total <-
     # make plot
     subfig <- 
       ggplot(df)+
-      geom_errorbar(aes(total_agents,
+      geom_errorbar(aes(total_agents_num,
                         ymin = value.mean - value.sd,
                         ymax = value.mean + value.sd,
                         col = variable),
                     show.legend = F,
                     size = 0.1)+
-      geom_point(aes(total_agents, value.mean,
+      geom_point(aes(total_agents_num, value.mean,
                      col = variable),
                  shape = 1,
                  # size = 0.5,
@@ -386,7 +358,7 @@ subfig_funresp_total <-
                       ylim = c(0, 0.3))+
       scale_colour_manual(values = pal)+
       labs(
-        x = "# all predators",
+        x = "# all individuals",
         y = "per-capita intake"
       )
       
@@ -401,13 +373,13 @@ subfig_funresp_total <-
 subfig_resp_forager <- lapply(data_resp_forager, function(df) {
   df <- df[regrowth == 0.1,]
   ggplot(df)+
-    geom_errorbar(aes(foragers,
+    geom_errorbar(aes(foragers_num,
                         ymin = value.mean - value.sd,
                         ymax = value.mean + value.sd,
                         col = variable),
                     show.legend = F,
                     size = 0.1)+
-  geom_point(aes(foragers, value.mean,
+  geom_point(aes(foragers_num, value.mean,
                  col = variable),
              shape = 1,
              show.legend = F)+
@@ -419,7 +391,7 @@ subfig_resp_forager <- lapply(data_resp_forager, function(df) {
                       ylim = c(0, 0.3))+
       scale_colour_discrete_diverging(palette = "Blue-Red 2",
                                       rev = F)+
-        labs(x = "# forager predators",
+        labs(x = "# foragers",
              y = "per-capita intake")
 })
 
@@ -433,13 +405,13 @@ subfig_resp_klept <-
   lapply(data_resp_klept, function(df) {
     df <- df[regrowth == 0.1, ]
     ggplot(df)+
-      geom_errorbar(aes(klepts,
+      geom_errorbar(aes(klepts_num,
                         ymin = value.mean - value.sd,
                         ymax = value.mean + value.sd,
                         col = variable),
                     show.legend = F,
                     size = 0.1)+
-      geom_point(aes(klepts, value.mean,
+      geom_point(aes(klepts_num, value.mean,
                      col = variable),
                  shape = 1,
                  show.legend = F)+
@@ -451,7 +423,7 @@ subfig_resp_klept <-
                       ylim = c(0, 0.3))+
       scale_colour_discrete_diverging(palette = "Blue-Red 2",
                                       rev = F)+
-      labs(x = "# kleptoparasite predators",
+      labs(x = "# kleptoparasites",
            y = "per-capita intake")
   })
 
@@ -501,17 +473,31 @@ data_predators_prey = data[variable != "total_agents",
                            .SDcols = c("value"),
                            by = c("sim_type", "regrowth",
                                   "items", "variable")]
+
+# get lower
+data_predators_prey[, item_num := get_lower(items)]
+
+# scale item num
+data_predators_prey[, item_num_scaled := scales::rescale(item_num),
+                    by = c("sim_type", "regrowth")]
+
+# drop NA
+data_predators_prey <- na.omit(data_predators_prey)
 ```
 
 ```{r}
 ggplot(data_predators_prey)+
-  geom_point(aes(items, value.mean,
+  geom_jitter(aes(item_num_scaled, value.median,
                  col = variable),
+              alpha = 0.5,
              size = 0.2, shape = 1)+
   facet_grid(sim_type ~ regrowth)+
-  scale_y_sqrt()+
-  coord_cartesian(ylim = c(0, 0.5))+
+  # scale_y_sqrt()+
+  # scale_x_continuous(breaks = seq(0,1,0.2))+
+  coord_cartesian(ylim = c(0, 0.15))+
   scale_colour_discrete_diverging(palette = "Blue-Red 2",
                                       rev = F)
+
+ggsave(filename = "figures/fig_aggegrative_response.png")
 ```
 
