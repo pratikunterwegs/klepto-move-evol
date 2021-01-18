@@ -240,7 +240,7 @@ get_sim_weight_evol <- function(data_folder,
 #' values (mean, median, standard deviation) of each layer.
 #' @export
 #'
-get_sim_summary <- function(data_folder,
+get_agent_distribution <- function(data_folder,
                     which_gen = seq(991, 998, 1),
                     n_time = 200,
                     capacity_matrix,
