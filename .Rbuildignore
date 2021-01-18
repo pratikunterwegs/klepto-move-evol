@@ -1,9 +1,8 @@
 ^atlastools\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
-^appveyor\.yml$
+^\.Rmd$
 ^_pkgdown\.yml$
-^\.travis\.yml$
 ^docs$
 ^pkgdown$
 ^doc$
