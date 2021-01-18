@@ -1,0 +1,37 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#### code to make a basic overall plot
+# load libraries
+library(data.table)
+
+# plotting
+library(ggplot2)
+library(colorspace)
+# some helper functions
+library(kleptomoveR)
+```
+
+```{r}
+# read parameter combinations
+data = fread("data/results/data_param_combinations.csv")
+
+# no random
+data = data[sim_type != "random", ]
+```
+
+```{r}
+# get strategy, fitness and conflicts over gens
+data[, summary_data := lapply(folder_path,
+                              kleptomoveR::get_strategy_gen)]
+```
+
+```{r}
+# unlist
+data = data[, unlist(summary_data, recursive = F),
+            by = c("sim_type", "replicate", "regrowth")]
+```
