@@ -140,7 +140,7 @@ data$data_summary <- lapply(data$folder_path, function(x) {
     round_value = 0.005,
     n_time = 200,
     response = c("total_agents", "klepts", "foragers"),
-    drivers = c("items")
+    drivers = c("items", "foragers_intake", "klepts_intake")
   )
 })
 
@@ -149,5 +149,50 @@ data_summary <- unnest(data,
                cols = "data_summary")
 
 # write 
-fwrite(data_summary, file = "data/results/data_funresp_predators_items.csv")
+fwrite(data_summary, file = "data/results/data_funresp_predators_items_intake.csv")
 ```
+
+```{r}
+setDT(data_summary)
+data_summary_2 = data_summary[, list(meanv = mean(value),
+                                   medv = median(value),
+                                   sdv = sd(value)),
+                              by = c("sim_type",
+                                     "regrowth", "items",
+                                     "foragers_intake", "klepts_intake",
+                                     "variable")]
+# write 
+fwrite(data_summary_2, file = "data/results/data_funresp_predators_items_intake_2.csv")
+```
+
+```{r}
+# convert itmes
+data_summary_2[, c("items", "foragers_intake",
+                   "klepts_intake") := lapply(.SD, get_lower),
+               .SDcols = c("items", "foragers_intake", "klepts_intake")]
+```
+
+```{r}
+data_summary_3 = copy(data_summary_2)
+data_summary_3[, total_food := items + foragers_intake]
+data_summary_3[, total_food := round(total_food, 2)]
+```
+```{r}
+data_summary_3 = data_summary_3[, list(meanv = mean(meanv),
+                                   medv = median(meanv),
+                                   sdv = sd(meanv)),
+                              by = c("sim_type",
+                                     "regrowth", "total_food",
+                                     "variable")]
+```
+
+```{r}
+ggplot(data_summary_3[variable != "total_agents"])+
+  geom_point(aes(total_food, meanv,
+                 col = variable),
+             size = 0.1)+
+  facet_grid(sim_type ~ regrowth)+
+  coord_cartesian(ylim = c(0, 0.5))+
+  scale_colour_brewer(palette = "Set1")
+```
+
