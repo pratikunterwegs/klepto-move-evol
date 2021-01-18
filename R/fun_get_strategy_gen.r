@@ -1,5 +1,12 @@
 #### functions to get strategy over generations ####
 
+#' Get strategy counts over generations.
+#'
+#' @param filepath The filepath to data. Must contain a \code{sourceMe.R}.
+#'
+#' @return A data.table of strategy counts over generations.
+#' @export
+
 get_strategy_gen <- function(filepath) {
 
   # what to source
