@@ -11,11 +11,11 @@ get_strategy_gen <- function(filepath) {
 
   # what to source
   toSource <- glue::glue("{filepath}/sourceMe.R")
-  source(toSource)
+  source(toSource, local = T)
 
   # get summary
-  data <- local(summary(), as.environment(2))
-  data <- data.table::data.table(data$agents)
+  data <- summary()
+  data <- data.table::as.data.table(data$agents)
 
   # how many agents and timesteps
   n_agents <- config$agents.N
