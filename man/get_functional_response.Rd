@@ -15,6 +15,12 @@ get_functional_response(
 )
 }
 \arguments{
+\item{response}{Which variables as reponse.}
+
+\item{drivers}{Which drivers to select.}
+
+\item{round_value}{The increments to bin by.}
+
 \item{data_folder}{Which data folder to summarise. Data folders should
 contain the results of ONE replicate of ONE parameter combination.}
 

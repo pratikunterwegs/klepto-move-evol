@@ -1,7 +1,8 @@
-^atlastools\.Rproj$
+^kleptomove-ms\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
-^\.Rmd$
+^\.*\.Rmd
+^overleaf-kleptomove$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
