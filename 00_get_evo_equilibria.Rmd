@@ -27,11 +27,16 @@ data = data[sim_type != "random", ]
 ```{r}
 # get strategy, fitness and conflicts over gens
 data[, summary_data := lapply(folder_path,
-                              kleptomoveR::get_strategy_gen)]
+                              get_strategy_gen)]
 ```
 
 ```{r}
 # unlist
 data = data[, unlist(summary_data, recursive = F),
             by = c("sim_type", "replicate", "regrowth")]
+```
+
+```{r}
+# save data
+fwrite(data, file = "data/results/data_strategy_gen.csv")
 ```
