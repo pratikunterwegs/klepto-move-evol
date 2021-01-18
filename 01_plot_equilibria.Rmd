@@ -1,0 +1,59 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(data.table)
+# plotting
+library(ggplot2)
+library(colorspace)
+```
+
+```{r}
+data = fread("data/results/data_strategy_gen.csv")
+# rearrange
+data$sim_type = factor(data$sim_type,
+                       levels = c("foragers", "obligate", "facultative"))
+```
+
+```{r}
+# basic plot
+fig_strategy_gen <- 
+  ggplot(data[sim_type != "foragers" & 
+              (gen %% 10 == 0 | gen < 100), ])+
+  geom_line(aes(gen, value,
+                col = variable,
+                group = interaction(sim_type,
+                                    regrowth,
+                                    replicate,
+                                    variable)),
+            lwd = 0.1)+
+    geom_point(aes(gen, value,
+                col = variable,
+                group = interaction(sim_type,
+                                    regrowth,
+                                    replicate,
+                                    variable)),
+            size = 0.1, alpha = 0.5)+
+  facet_grid(sim_type ~ regrowth,
+             labeller = label_both)+
+  scale_color_manual(
+    values = c("darkblue", "forestgreen", "red")
+  )+
+  theme_grey(
+    base_line_size = 0.2
+  )+
+  coord_cartesian(expand = F)+
+  scale_x_log10()+
+  labs(y = "proportion of population",
+       x = "generations")
+  
+```
+
+```{r}
+ggsave(fig_strategy_gen,
+       filename = "figures/fig_strategy_generations.png",
+       dpi = 150)
+```

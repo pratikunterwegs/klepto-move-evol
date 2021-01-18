@@ -8,10 +8,6 @@ editor_options:
 #### code to make a basic overall plot
 # load libraries
 library(data.table)
-
-# plotting
-library(ggplot2)
-library(colorspace)
 # some helper functions
 library(kleptomoveR)
 ```
