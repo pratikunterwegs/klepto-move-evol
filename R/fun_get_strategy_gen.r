@@ -14,7 +14,7 @@ get_strategy_gen <- function(filepath) {
   source(toSource)
 
   # get summary
-  data <- local(summary(, as.environment(2)))
+  data <- local(summary(), as.environment(2))
   data <- data.table::data.table(data$agents)
 
   # how many agents and timesteps
