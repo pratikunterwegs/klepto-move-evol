@@ -9,7 +9,7 @@ editor_options:
 # load libraries
 library(data.table)
 # some helper functions
-library(kleptomoveR)
+library(kleptomoveMS)
 ```
 
 ```{r}
