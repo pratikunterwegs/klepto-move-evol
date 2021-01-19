@@ -343,13 +343,15 @@ This arises from individual preference for cells with more prey items, and the c
 In scenario 2 at $r_{max}$ = 0.1, forager density is invariant with prey density except at very high prey densities, where predators are reduced.
 This latter is once again due to the feedback of predators on prey.
 However, kleptoparasite density increases nonlinearly with prey density, with many more kleptoparasites present at high prey densities than foragers.
-The ratio of kleptoparasites to foragers at high prey densities is signficantly higher at low $r_{max}$, in part due to the relatively greater prevalence of kleptoparasitism overall.
+The ratio of kleptoparasites to foragers at high prey densities is signficantly higher at low $r_{max}$, in part due to the relatively greater prevalence of kleptoparasitism overall when landscape productivity is low.
 %%
 In scenario 3 for $r_{max}$ = 0.1, forager and kleptoparasite densities respond similarly to prey density, with a roughly 2:1 ratio of foragers to kleptoparasites.
 
 \subsubsection{Population Distribution in Relation to Productivity}
 
-We find that in the foragers-only case, individuals follows the matching rule in relation to grid-cell productivity, with more foragers on higher productivity cells (Fig. 5.a).
+We find that in the foragers-only case, individuals follow the matching rule in relation to grid-cell productivity, with more foragers on higher productivity cells (Fig. 5.a).
+Individuals distribute such that their intake is equalised on cells with productivity above a threshold, while it is zero on cells below this threshold.
+In this sense, the population appears to reach an ideal free distribution, as individuals can only increase their productivity by moving to cells above the threshold productivity, but not by moving any further up the productivity gradient.
 In the fixed-strategy case, the aggregative response of foragers and kleptoparasites differs; forager counts peak on lower productivity cells and declines with further increases in productivity.
 Kleptoparasite counts initially increase with cell productivity and then stabilise (Fig. 5.b).
 In the conditional-strategy case, both foragers and kleptoparasite counts peak on intermediate productivity cells and then begin to decline (Fig. 5.c).
@@ -357,44 +359,9 @@ In the spatial context of our simulation, this translates to three distinct patt
 %%
 We further find that there are appreciable differences between average and median counts of individuals of each strategy on cells, with the mean typically higher than the median.
 
-
 \subsection{Kleptoparasitism and Predation Have Similar Landscape Effects}
 
 Work in progress: Kleptoparasite intake depends only on the number of individuals --- kleptoparasite intake is highest when cells have few kleptoparasites and many producers --- kleptoparasite emergence is associated with a reduction in item depletion --- add also landscape metrics etc
-
-% \subsection{Spatial Distribution of Predators and Prey}
-
-% \subsubsection{Individual Distributions}
-
-% There number of individuals on a cell increased with its growth rate $r$, but there was substantial variation across cells with the same $r$. 
-% This variation was larger with increasing $r$ since there were fewer cells with higher $r$.
-% In the producer-only case, individual abundance showed a linear relationship with cell quality, with the slope increasing with the simulation growth rate $r_{base}$.
-% %%
-% When two strategies were allowed however, there were strong differences in how they were distributed across cell qualities.
-% In the fixed-strategy case, the abundance of producer individuals was uniformly low across cell qualities, while the abundance of scrounging kleptoparasites had a sigmoidal relationship with quality, mediated by $r_{base}$.
-% In the flexible-strategy case, the use of either strategy was nearly invariant with cell quality.
-% At very low $r_{base}$ (0.001) the kleptoparasitic strategy was more ofen used than the producer strategy, while at higher $r_{base}$, the producer strategy was more common across cell quality.
-
-% \subsubsection{Consequences for Prey Item Distribution}
-
-% The distributon of items $G$ varied considerably between scenarios and simulation-specific baseline growth rates $r_{base}$.
-% In the \textbf{scenario 1} $G$ was insensitive to $r$, and items were uniformly distributed across cells of different growth rates.
-% $G$ was not signficantly different among simulations with different $r_{base}$.
-% In the \textbf{scenario 2} $G$ increased strongly with $r$, and the curve of $G ~ r$ varied with $r_{base}$.
-% The $G ~ r$ transformed from roughly linear ($r_{base}$ = 0.001), to exponential ($r_{base}$ = 0.01), and finally to sigmoidal ($r_{base} \in$ 0.03, 0.05) [see Figure X].
-% In the \textbf{scenario 3} $G$ varied only weakly across cells with different $r$, and the $G ~ r$ response had a positive slope only for the highest $r_{base}$ of 0.03 and 0.05.
-
-% \begin{figure*}[h]
-%     \includegraphics[width=0.99\textwidth]{figures/fig_06_agent_dist.png}
-%     \caption{
-%         Distributions of individuals, their absolute intake, and their per-capita intake for each strategy (blue: producer, red: kleptoparasite), across cell qualities. 
-%         The last 8 generations are shown from each of 3 replicates of the three scenarios: \textbf{(a -- d)} scenario 1, \textbf{(e -- h)} scenario 2, and \textbf{(i -- l)} scenario 3. Results from different regrowth rates are indicated by the lightness of the lines (lighter: lower regrowth, darker: higher regrowth).
-%     Per-capita intake (\textbf{d, h, l}) are not equalised across cell quality, indicating deviations from the ideal free distribution.}
-% \end{figure*}
-
-% \subsection{Deviations from the IFD}
-
-% Work in progress: undermatching due to difficulty in detecting gradients --- evolved functional response does not match classical models
 
 % If you have deposited data to Dryad, you should cite them somewhere in the main text (usually in the Methods or Results sections). A sentence like the following will do. All data are available in the Dryad Digital Repository (\citealt{CookEtAl2015}).
 
