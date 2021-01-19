@@ -9,6 +9,7 @@ library(data.table)
 # plotting
 library(ggplot2)
 library(colorspace)
+library(patchwork)
 ```
 
 ```{r}
@@ -20,36 +21,24 @@ data$sim_type = factor(data$sim_type,
 
 ```{r}
 # basic plot
-fig_strategy_gen <- 
+# fig_strategy_gen <-
   ggplot(data[sim_type != "foragers" & 
-              (gen %% 10 == 0 | gen < 100), ])+
+              (gen %% 10 == 0 | gen < 100) & regrowth == 0.1])+
   geom_line(aes(gen, value,
                 col = variable,
                 group = interaction(sim_type,
                                     regrowth,
                                     replicate,
                                     variable)),
-            lwd = 0.1)+
-    geom_point(aes(gen, value,
-                col = variable,
-                group = interaction(sim_type,
-                                    regrowth,
-                                    replicate,
-                                    variable)),
-            size = 0.1, alpha = 0.5)+
-  facet_grid(sim_type ~ regrowth,
-             labeller = label_both)+
+            size = 0.5)+
+  facet_grid(sim_type ~ regrowth)+
   scale_color_manual(
-    values = c("darkblue", "forestgreen", "red")
+    values = qualitative_hcl(3, "Set2", l = 40, rev = T)
   )+
-  theme_grey(
-    base_line_size = 0.2
-  )+
-  coord_cartesian(expand = F)+
+  theme_custom(grid = T)+
   scale_x_log10()+
   labs(y = "proportion of population",
        x = "generations")
-  
 ```
 
 ```{r}
@@ -57,3 +46,53 @@ ggsave(fig_strategy_gen,
        filename = "figures/fig_strategy_generations.png",
        dpi = 150)
 ```
+
+### Plot for regrowth = 0.1
+
+```{r}
+data_0.1 = data[sim_type != "foragers" & 
+              (gen %% 10 == 0 | gen < 100) & regrowth == 0.1]
+
+# split
+data_0.1 = split(data_0.1, by = "sim_type")
+
+# subfigures
+subfig_strategy_gen = lapply(data_0.1, function(df) {
+  ggplot(df)+
+  geom_line(aes(gen, value,
+                col = variable,
+                group = interaction(sim_type,
+                                    regrowth,
+                                    replicate,
+                                    variable)),
+            size = 0.5)+
+  scale_color_manual(
+    values = qualitative_hcl(3, "Set2", l = 40, rev = T)
+  )+
+    scale_y_continuous(labels = scales::percent,
+                       breaks = seq(0, 0.75, 0.25))+
+  theme_custom(grid = F)+
+    coord_cartesian(ylim = c(0, 0.75))+
+  scale_x_sqrt(breaks = c(0, 10, 100, 500, 1000))+
+  labs(y = "% population",
+       x = "generations")
+})
+
+# make figure
+fig_strategy_gen =
+wrap_plots(
+  subfig_strategy_gen[c("obligate", "facultative")]
+)+
+  plot_annotation(tag_levels = "a",
+                  tag_prefix = "(",
+                  tag_suffix = ")") &
+  theme(plot.tag = element_text(face = "bold",
+                                size = 12))
+```
+
+```{r}
+ggsave(fig_strategy_gen,
+       filename = "figures/fig_02_strategy_generations.png",
+      height = 3, width = 6)
+```
+
