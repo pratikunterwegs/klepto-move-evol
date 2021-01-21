@@ -84,12 +84,11 @@ subfig_strategy_gen <- lapply(data_0.1, function(df) {
       labels = scales::percent,
       breaks = seq(0, 0.75, 0.25)
     ) +
-    kleptomoveMS::theme_custom(grid = F) +
+    kleptomoveMS::theme_custom(grid = F, base_size = 8) +
     coord_cartesian(ylim = c(0, 0.75)) +
     scale_x_sqrt(breaks = c(0, 10, 100, 500, 1000)) +
     labs(
-      y = "% population",
-      x = "generations"
+      y = "% population", x = NULL
     )
 })
 ```
@@ -110,11 +109,11 @@ subfig_fitness = lapply(data_summary, function(df) {
                 group = interaction(sim_type, replicate)),
             col = "grey20"
   )+
-  kleptomoveMS::theme_custom(grid = F) +
-  coord_cartesian(ylim = c(10, 55)) +
+  kleptomoveMS::theme_custom(grid = F, base_size = 8) +
+  coord_fixed(ylim = c(10, 55), ratio = 0.5) +
   scale_x_sqrt(breaks = c(0, 10, 100, 500, 1000)) +
   labs(
-    y = "population intake",
+    y = "pop. intake",
     x = "generations"
   )
 })
@@ -142,7 +141,7 @@ fig_strategy_gen <-
 ```{r}
 ggsave(fig_strategy_gen,
   filename = "figures/fig_02_strategy_generations.png",
-  height = 4, width = 6
+  height = 3.5, width = 6
 )
 ```
 
