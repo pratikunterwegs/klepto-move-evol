@@ -58,8 +58,7 @@ ggsave(fig_strategy_gen,
 ### Plot for regrowth = 0.1
 
 ```{r}
-data_0.1 <- data[sim_type != "foragers" &
-  (gen %% 10 == 0 | gen < 100) & regrowth == 0.1]
+data_0.1 <- data[(gen %% 10 == 0 | gen < 100) & regrowth == 0.1]
 
 # split
 data_0.1 <- split(data_0.1, by = "sim_type")
@@ -93,11 +92,41 @@ subfig_strategy_gen <- lapply(data_0.1, function(df) {
       x = "generations"
     )
 })
+```
 
+### Plot fitness
+
+```{r}
+data_summary = data[(regrowth == 0.1) &
+                      (gen %% 10 == 0 | gen < 100)]
+data_summary = unique(data_summary, 
+                      by = c("sim_type", "replicate",
+                             "pop_fitness"))
+data_summary <- split(data_summary, by = "sim_type")
+
+subfig_fitness = lapply(data_summary, function(df) {
+  ggplot(df)+
+  geom_line(aes(gen, pop_fitness,
+                group = interaction(sim_type, replicate)),
+            col = "grey20"
+  )+
+  kleptomoveMS::theme_custom(grid = F) +
+  coord_cartesian(ylim = c(10, 55)) +
+  scale_x_sqrt(breaks = c(0, 10, 100, 500, 1000)) +
+  labs(
+    y = "population intake",
+    x = "generations"
+  )
+})
+```
+
+
+```{r}
 # make figure
 fig_strategy_gen <-
   wrap_plots(
-    subfig_strategy_gen[c("obligate", "facultative")]
+    append(subfig_strategy_gen[c("foragers", "obligate", "facultative")],
+           subfig_fitness[c("foragers", "obligate", "facultative")])
   ) +
     plot_annotation(
       tag_levels = "a",
@@ -113,7 +142,7 @@ fig_strategy_gen <-
 ```{r}
 ggsave(fig_strategy_gen,
   filename = "figures/fig_02_strategy_generations.png",
-  height = 3, width = 6
+  height = 4, width = 6
 )
 ```
 

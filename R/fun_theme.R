@@ -5,8 +5,8 @@
 #'
 #' @return None
 #' @export
-theme_custom <- function(grid = FALSE) {
-  this_theme <- ggplot2::theme_test(base_size = 12) +
+theme_custom <- function(grid = FALSE, ...) {
+  this_theme <- ggplot2::theme_test(...) +
     ggplot2::theme(
       legend.position = "none",
       panel.background = ggplot2::element_rect(
