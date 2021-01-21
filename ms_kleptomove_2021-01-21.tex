@@ -169,7 +169,7 @@ $F$ is determined as
 where the cue weights $f_g$, $f_h$ and $f_p$, and the bias $f_b$ are also genetically encoded and heritable between generations.
 
 In both latter cases that allow for kleptoparasitism, individuals make their foraging strategy choice for the next timestep after they have passed through the ecological dynamics of their current location.
-This excludes individuals that have been stolen from are an important exception; these fleeing agents are moved to a random cell within a Chebyshev distance of 5, and do not make a foraging decision there.
+This excludes individuals that have been stolen from are an important exception; these fleeing individuals are moved to a random cell within a Chebyshev distance of 5, and do not make a foraging decision there.
 Thus kleptoparasitism not only gains individuals prey items while depriving the targeted individual, it also displaces a potential competitor.
 All individuals move simultaneously, and attempt to implement the foraging strategy chosen for their new location (see below).
 
@@ -209,7 +209,7 @@ All kleptoparasites in a cell successfully steal from a handler, contingent on t
 When the number of kleptoparasites exceeds handlers, handlers are assigned among kleptoparasites at random.
 Successful kleptoparasites convert into handlers, and similar to producer-handlers are unavailable as targets to other kleptoparasites until the next timestep.
 Unsuccessful kleptoparasites are considered idle, and are also counted as non-handlers for timestep $t+1$.
-A handler that finishes processing its prey in timestep $t$ returns to the non-handler state and is assessed as such by other agents when determining movements for $t+1$.
+A handler that finishes processing its prey in timestep $t$ returns to the non-handler state and is assessed as such by other individuals when determining movements for $t+1$.
 
 Individuals move and forage on the resource landscape for $T$ timesteps per generation, and $T$ is set at 400 by default.
 Handling a food item requires a maximum of $T_H$ timesteps, during which the handler is immobile.
@@ -228,29 +228,34 @@ To ensure that global individual movement rules evolved, we intialised each offs
 
 \subsection{Simulation Output and Analysis}
 
-\subsubsection{Decision Making Weights}
+\subsubsection{Ecological Equilibria}
 
-To understand the evolutionary consequences of our simulation, we exported the the decision-making weights which determine individual movement ($m_g$, $m_h$, $m_p$, $m_b$) and foraging strategy choice ($f_g$, $f_h$, $f_p$, $f_b$) of each individual in every generation of the simulation.
+We counted the number of times the forager or kleptoparasite strategy was used in each generation of our simulations, as well as the number of times no strategy could be used because individuals were handling a food item.
+We refer to the ratio of time spent foraging, stealing, and handling as the population's activity budget.
+We examined how the population activity budget developed over evolutionary time, and whether a stable ecological equilibrium was reached.
+Furthermore, we counted the total population intake --- the number of items handled completely and consumed in each generation --- as a measure of population productivity.
+
+\subsubsection{Evolution of Decision Making Weights}
+
+To understand the evolutionary consequences of our simulation, we exported the the decision-making weights which determine individual movement and foraging strategy choice of each individual in every generation of the simulation.
 We examined how the frequency of these weights changed over the simulation, i.e., how the weights evolved.
 We visualised weights' evolution after scaling them between -1 and +1 using a hyperbolic tangent function, and binning the scaled values into intervals of 0.1.
 We refer to these scaled and binned values as phenotypes for convenience.
 Weights at or near -1 would represent the maximum evolved avoidance of an environmental cue (in relation to a movement weight) or the greatest evolved negative effect of a cue on choosing the foraging strategy (in relation to a strategy choice weight).
 Similarly, weights at or near +1 represent the greatest evovled preference for or positive effect of a cue on the movement and strategy choice mechanism of an individual.
 
-\subsubsection{Functional and Aggregative Response}
+\subsubsection{Functional Response of Intake and Population Distribution}
 
 In our simulation, individuals perceive and respond to the standing stock of prey items on a cell rather than its productivity, which they cannot sense directly.
 This standing stock is unpredictable due to consumption by other individuals, and the movement (and consumption) of individuals is also unpredictable.
 To understand the consequences of evolved movement rules, we must investigate how individual intake varies with the presence of items and other individuals.
 Determining the functional response of intake to competitors, and the distribution of predators relative to prey \textit{sensu} \citet{meer1997} is a prevalent method in spatial ecology.
-Adopting this method, we sought to fit the widely used Beddington model of functional and aggregative response to pseudo-ecological data generated by our simulation.
+%%
 Over the final ten generations of each simulation run, we summed the number of individuals and items on each cell, as well as the total intake on the cell.
 We were able to record the number of individuals following a forager and kleptoparasite strategy, as well as intake due to foraging or stealing, separately.
-This allowed us to determine the average per-capita, per-strategy intake on each cell, which we plotted against the number of competing agents on the cell (Figure X).
+This allowed us to determine the average per-capita, per-strategy intake on each cell, which we plotted against the number of competing individuals on the cell (Figure X).
 Additionally, we plotted the average number of individuals following each strategy against the number of prey items on the cell (Figure Y).
 In both cases, we used data only from the second half of each generation so as to capture the system in a state of ecological equilibrium.
-
-\subsubsection{Distribution Along Productivity Gradients}
 
 While recognising that individuals move in response to their rapidly-changing prey landscape, it is useful to determine how individuals distribute along more slowly-changing productivity gradients; 
 this is because these may often be easier to measure in the real world.
@@ -258,6 +263,10 @@ The ideal free distribution (IFD) and the matching rule robustly predict that in
 The large volume of pseduo-ecological data generated by our simulation allowed us to test whether intake rates were indeed equalised over the productivity gradient.
 Having previously calculated the average numbers of each strategy, and the average per-captia intake for each strategy on each cell, we plotted both against the productivity of the cell (Figure Z).
 Here too, we used data only from the second half of each generation to approximate ecological equilibrium.
+
+\subsubsection{Landscape Effects of Kleptoparasitism}
+
+to be added
 
 \paragraph*{Data Availability}
 
@@ -267,13 +276,25 @@ data analysis and figure code is available on Github and archived on Zenodo at \
 
 \section{Results: Simulation Model Outcomes}
 
-\subsection{Emergence of an Evolutionary Equilibrium}
+\subsection{Emergence of an Ecological Equilibrium}
 
+All three simulation scenarios result in population level activity budget equilibria with stable proportions of foraging, kleptoparasitism, and handling (Figure 2).
+Populations reach this stable state within 100 generations, i.e., 10\% of evolutionary time (but see below).
+Once a population reaches a activity budget equilibrium, it also reaches an intake equilibrium which is closely related to the proportion of handling (Figure 2).
 
-
-Work in progress: Dynamic equilibrium emerges within 1000 generations --- equilibria are identical across replicates --- kleptoparasites emerge in most replicates when allowed --- kleptoparasites establish as a stable and significant proportion of individuals, or individual strategies.
+In the foragers-only \textbf{scenario 1} case, the population is split among foraging and handling, with an increasing handling to foraging ratio with increasing $r_{max}$; more foragers find and handle items at higher regrowth rates (see Supplementary Material Figure 1).
+%%
+In the fixed-strategy \textbf{scenario 2}, kleptoparasitism rapidly increases in proportion to a stable 50\% of the population's activity budget within 100 generations. 
+Here as well, the handling:foraging ratio increases with increasing $r_{max}$, while the kleptoparasitism:foraging ratio decreases.
+This decrease is due to less kleptoparasitism, rather than more foraging; foraging forms between 10\% and 25\% of the population activity budget across $r_{max}$ in scenario 2.
+However, at very high $r_{max}$ (0.25), kleptoparasitism is only approx. 10\% of the activity budget, and most individuals either forage or handle.
+In the flexible-strategy \textbf{scenario 3}, handling occupies the population's time, with kleptoparasitism and foraging relatively reduced (Figure 2).
+In this scenario, activity budgets are unstable at low $r_{max}$, with strong oscillations in the proportion of foraging and kleptoparasitism.
+Handling increases with $r_{max}$, and remains stable across generations (Supplementary Material Figure 1).
 
 \subsection{Movement-Behaviour Co-Evolution}
+
+\subsubsection{The Case of Exploitative Competition}
 
 In scenario 1, movement and behavioural rules evolve to maximise intake in the presence of exploitation competition only, since individuals cannot steal.
 Individuals evolve to move towards food items regardless of the simulation specific regrowth rate.
@@ -282,7 +303,9 @@ Similarly, individuals are agnostic towards non-handling individuals at high gro
 
 \subsubsection{The Case of Kleptoparasitism}
 
-In scenarios 2 and 3, movement rules evolve to account for the additional pressure of interference competition in the form of kleptoparasitism.
+\paragraph{Scenario 2}
+
+In both scenarios 2 and 3, movement rules evolve to account for the additional pressure of interference competition in the form of kleptoparasitism.
 In both scenarios and in common with scenario 1, individuals evolve to move towards food items across all $r_{max}$.
 %%
 In the fixed-strategy scenario 2, individuals evolve to move towards handlers at low to intermediate growth rates, but with an increasing proportion of individuals agnostic to handling individuals at higher growth rates.
@@ -290,15 +313,17 @@ Similarly, fixed-strategy individuals avoid non-handlers at lower growth rates, 
 %%
 At lower growth rates, the majority of fixed-strategy individuals are kleptoparasites, and this proportion decreases in favour of the forager strategy with increasing $r_{max}$ until all individuals are foragers.
 
+\paragraph{Scenario 3}
+
 In the conditional-strategy scenario 3, individuals retain a preference for moving towards handlers across growth rates, unlike scenarios 1 and 2.
 Conditional-strategy individuals also evolve a preference for moving towards non-handlers at high growth rates, while at low and intermediate growth rates they evolve to avoid non-handlers.
 %%
 The behavioural strategy of scenario 3 individuals is allowed to be conditional on local environmental cues, but unlike movement rules, few clear strategy choice rules evolve.
 The only consistent signal is that of choosing a stealing strategy in the presence of handlers, with all scenario 3 individuals preferring to steal when possible, across $r_{max}$.
 
-\subsection{Evolution of Kleptoparasitism Requires Movement Pre-Adaptation}
+\subsubsection{Evolution of Kleptoparasitism Requires Movement Pre-Adaptation}
 
-The scrounging kleptoparasitic strategy evolves and is established in populations in some tens of generations, and emerges relatively quickly in the evolutionary history of populations (see Figure X)
+The scrounging kleptoparasitic strategy evolves and is established in populations in some tens of generations, and emerges relatively quickly in the evolutionary history of populations (see Figure 2)
 This rapid emergence and invasion is made possible by the pre-adaptation of individuals to use the kleptoparasitic strategy successfully.
 \textbf{Scenarios 2} and \textbf{3} prior to the emergence and establishment of kleptoparasitism are identical to \textbf{scenario 1}, and all individuals are producers.
 Producers evolve to move towards both items and handlers at most regrowth rates (Figure X), since these are cues to the immediate benefit, and the regrowth rate of a cell, respectively.
@@ -315,9 +340,6 @@ Under the same conditions in \textbf{scenario 3} however, a mixed foraging strat
 
 \subsection{Functional Response of Intake}
 
-Understanding the consequences of aggregating with other individuals is key to explaining why animals form groups.
-We examined the functional response of individual intake of each behavioural strategy on a cell to the number of individuals on that cell.
-%%
 The foragers-only case presents a useful starting point: forager intake is invariant with individual (forager) density, and only declines at very high or low densities (Fig. 4.a,d).
 Similarly, the functional response of both foragers and kleptoparasite strategies in the fixed-strategy and conditional-strategy case is hump-shaped, with an apparently `optimal' competitor density at which individual intake rates are maximised (Fig. 4.b,c).
 Furthermore, the kleptoparasitic strategy's per-capita intake is always greater than that of the forager strategy (Fig. 4.b,c).
@@ -326,7 +348,7 @@ However on separating potential competitors by strategy, we find that the indivi
 These consistently opposite responses to foragers and kleptoparasites explain why the overall functional response to all competitors appears hump-shaped.
 %%
 With growing forager densities, exploitative, scramble competition for prey items is increased, but foragers also accumulate on high-productivity cells, increasing average per-capita intake overall.
-When kleptoparasites accumulate, however, interference competition results in both lower extraction (as only foragers extract prey) as well as lower intake, as the same item is repeatedly passed between agents in stealing interactions.
+When kleptoparasites accumulate, however, interference competition results in both lower extraction (as only foragers extract prey) as well as lower intake, as the same item is repeatedly passed between individuals in stealing interactions.
 Thus we show that taking the type of competition, and behavioural variation among individuals more generally into account is crucial to correctly understand the consequences of multiple competing individuals foraging on the same patch (or in the same group/in proximity to each other).
 
 \subsection{Aggregative Response and Population Distribution}
@@ -368,6 +390,18 @@ Work in progress: Kleptoparasite intake depends only on the number of individual
 % If you have deposited data to Dryad, you should cite them somewhere in the main text (usually in the Methods or Results sections). A sentence like the following will do. All data are available in the Dryad Digital Repository (\citealt{CookEtAl2015}).
 
 \section{Discussion}
+
+work in progress
+
+\subsection{Ecological and Evolutionary Equilibria}
+
+The activity budgets in each scenario have subtly different interpretations. 
+In scenario 1, the handling:foraging ratio indicates the probability of finding a prey item.
+In scenario 2, the proportion of handling also indicates the productivity of the landscape.
+However, the foraging:kleptoparasitism ratio may be taken to indicate the ratio of the evolved strategies in the population.
+Finally, in scenario 3 the strategy ratio is the ratio in which individuals choose the forager and kleptoparasite strategy.
+The interpretations of scenarios 2 and 3 may be confounded by the observation of successful foragers and kleptoparasites as handlers, leading to a misrepresentation of the prevalence of either strategy.
+Only the evolved decision making weights can help determine the true proportion of strategies in scenario 2, and the strategy choice of individuals in scenario 3.
 
 \section{Conclusion}
 
@@ -538,6 +572,20 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 % \caption{Figure legends can be longer than the titles of tables. However, they should not be excessively long.}
 % \label{Fig:OkapiHorn}
 % \end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.90\textwidth]{figures/fig_02_strategy_generations.png}
+    \caption{}
+    \label{Fig:EcologicalEquilibrium}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.90\textwidth]{figures/fig_02_strategy_generations.png}
+    \caption{}
+    \label{Fig:NodeWeightEvol}
+\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%
