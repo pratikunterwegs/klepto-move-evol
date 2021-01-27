@@ -79,21 +79,23 @@
 
 \section{Abstract}
 
-Understanding the causes and consequences of animal movement is key to mechanistically linking individual behaviour with population-level patterns.
-Classical models of individual-to-population foraging distributions do not account for the complex and changeable resource landscapes animals must navigate.
-Neither are the rich behavioural repertoires addressed that animals may exhibit in a foraging context, and their evolution is almost entirely ignored.
-We take a spatially explicit, individual-based simulation approach to model the evolution of individual movement and foraging strategies, and its consequences for population distributions in three simple foraging scenarios of increasing behavioural complexity.
-%%
-We show that broad equilibrium conditions are reached within only a few generations.
-This equilibrium obscures ever-changing conditions including the constant redistribution of individuals as they harvest prey-items and steal from each other.
-Individual movement decisions evolve such that populations can track resource gradients even in the absence of direct cues of landscape quality.
-We show that kleptoparasitism as a foraging strategy is able to rapidly invade a population due to pre-adaptations in the movement mechanism.
-%%
-Phenomenological models of intake rate in relation to competitors and prey-items misrepresent the underlying behavioural mechanisms, and are thus an unreliable guide to evolutionary trajectories.
-However, these models show that kleptoparasitic foragers are an endogeneously evolved third trophic level whose intake depends on harvesting primary consumers and competition with other kleptoparasites.
-%%
-The behavioural complexity of multiple foraging strategies, a handling time for prey-items, as well as the difficulty of detecting resource gradients in the landscape, result in individuals undermatching their landscape.
-As a result, populations with low behavioural complexity can still deviate easily from the ideal free distribution.
+The climate crisis and global change will drastically affect animal habitats and thus, distributions.
+Predicting and managing population distributions is likely to be key to ensuring species survive the Anthropocene.
+Classical individual-to-population models of distributions are rarely mechanistic, and do not account for rapidly changing landscapes, individual variation within animal populations, or the effects of ecological conditions on the evolution of movement rules.
+Modern individual-based simulation models (IBMs) overcome these challenges by allowing multiple runs of the `tape of life' with both ecological and evolutionary mechanisms.
+Here, we take a spatially explicit, IBM approach to model the evolution of individual movement rules in the context of optimal foraging on a landscape with discrete prey items.
+We implement three plausible scenarios of how individuals are allowed to forage: (1) only forage, (2) only steal from other individuals, or only forage, and (3) condition foraging or stealing on environmental cues.
+We examined the evolved movement rules and population distributions of each scenario in relation to landscape productivity, in order to distill insights for ecological modelling.
+
+First, we show that all three scenarios lead to activity distribution equilibria, and stealing, or kleptoparasitism evolves when permitted. 
+Differences in activity distributions among scenarios are more evident on high-productivity landscapes.
+Second, individual movement rules evolve to distinguish between successful and unsuccessful foragers; this pre-adaptation is essential to the persistence of fixed and conditional kleptoparasitism.
+Third, the functional response of intake to the presence of competitor individuals depends on competitor strategy.
+Fourth, individuals caught on `clueless plateaus' without movement cues lead to populations not equalising intake rates across landscape quality gradients.
+Finally, the effect of kleptoparasitism is to reduce prey extraction from the landscape and restore underlying spatial structure.
+
+Our study shows how IBMs can be used to gain insights into the ecological and evolutionary mechanisms behind individual-to-population distribution models.
+
 
 \newpage{}
 
@@ -349,25 +351,25 @@ With growing forager densities, exploitative, scramble competition for prey item
 When kleptoparasites accumulate, however, interference competition results in both lower extraction (as only foragers extract prey) as well as lower intake, as the same item is repeatedly passed between individuals in stealing interactions.
 Thus we show that taking the type of competition, and behavioural variation among individuals more generally into account is crucial to correctly understand the consequences of multiple competing individuals foraging on the same patch (or in the same group/in proximity to each other).
 
-\subsection{Aggregative Response and Population Distribution}
+% \subsection{Aggregative Response and Population Distribution}
 
-Predicting the distribution of a population on a heterogeneous landscape is among the key goals of spatial ecology.
-While the ideal undertaking of such an endeavour involves fine-scale measurement of prey availability and predator densities, it is often much more realistic to find the aggregative response of individuals to a relatively static indicator of landscape quality.
-Our simulation data allowed us compare and contrast these approaches, and we examined the aggregative response of individuals in relation to both the number of discrete food items, as well as the underlying landscape productivity.
+% Predicting the distribution of a population on a heterogeneous landscape is among the key goals of spatial ecology.
+% While the ideal undertaking of such an endeavour involves fine-scale measurement of prey availability and predator densities, it is often much more realistic to find the aggregative response of individuals to a relatively static indicator of landscape quality.
+% Our simulation data allowed us compare and contrast these approaches, and we examined the aggregative response of individuals in relation to both the number of discrete food items, as well as the underlying landscape productivity.
 
-\subsubsection{Aggregative Response of Predators to Prey}
+% \subsubsection{Aggregative Response of Predators to Prey}
 
-The aggregative response of predators to prey item density is strongly non-linear, and depends on the behavioural strategy as well as the regrowth rate.
-%%
-In scenario 1, at the reference $r_{max}$ of 0.1, predator density shows a humped response to predator density. 
-This arises from individual preference for cells with more prey items, and the consumption of prey by predators; prey are unlikely to accumulate on cells which are occupied by many predators.
-%%
-In scenario 2 at $r_{max}$ = 0.1, forager density is invariant with prey density except at very high prey densities, where predators are reduced.
-This latter is once again due to the feedback of predators on prey.
-However, kleptoparasite density increases nonlinearly with prey density, with many more kleptoparasites present at high prey densities than foragers.
-The ratio of kleptoparasites to foragers at high prey densities is signficantly higher at low $r_{max}$, in part due to the relatively greater prevalence of kleptoparasitism overall when landscape productivity is low.
-%%
-In scenario 3 for $r_{max}$ = 0.1, forager and kleptoparasite densities respond similarly to prey density, with a roughly 2:1 ratio of foragers to kleptoparasites.
+% The aggregative response of predators to prey item density is strongly non-linear, and depends on the behavioural strategy as well as the regrowth rate.
+% %%
+% In scenario 1, at the reference $r_{max}$ of 0.1, predator density shows a humped response to predator density. 
+% This arises from individual preference for cells with more prey items, and the consumption of prey by predators; prey are unlikely to accumulate on cells which are occupied by many predators.
+% %%
+% In scenario 2 at $r_{max}$ = 0.1, forager density is invariant with prey density except at very high prey densities, where predators are reduced.
+% This latter is once again due to the feedback of predators on prey.
+% However, kleptoparasite density increases nonlinearly with prey density, with many more kleptoparasites present at high prey densities than foragers.
+% The ratio of kleptoparasites to foragers at high prey densities is signficantly higher at low $r_{max}$, in part due to the relatively greater prevalence of kleptoparasitism overall when landscape productivity is low.
+% %%
+% In scenario 3 for $r_{max}$ = 0.1, forager and kleptoparasite densities respond similarly to prey density, with a roughly 2:1 ratio of foragers to kleptoparasites.
 
 \subsection{Population Distribution in Relation to Productivity}
 
