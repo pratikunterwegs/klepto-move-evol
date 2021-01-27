@@ -145,3 +145,49 @@ ggsave(fig_strategy_gen,
 )
 ```
 
+### Performance of each scenario in handling proportion
+
+```{r}
+# get last 10 generations
+data_equi = data[gen > max(gen) - 10, ]
+
+# look at handling and fitness
+data_equi = data[variable == "handling",]
+
+# boxplot handling time
+ggplot(data_equi)+
+  geom_boxplot(aes(factor(regrowth), value, col = sim_type,
+                   group = interaction(sim_type, regrowth)),
+               outlier.size = 0)+
+  scale_colour_manual(
+    values = qualitative_hcl(3, "Set2", l = 50, rev = T)
+  )
+
+# boxplot fitness
+fig_strategy_fitness = ggplot(data_equi)+
+  geom_jitter(aes(factor(regrowth), 
+                  pop_fitness, col = sim_type,
+                   group = interaction(sim_type, regrowth)),
+              size = 0.1, alpha = 0.2,
+              shape = 1,
+              # width = 0.05,
+              position = position_dodge(width = 0.75))+
+  geom_boxplot(aes(factor(regrowth), pop_fitness, col = sim_type),
+               outlier.shape = NA)+
+  scale_colour_manual(
+    values = qualitative_hcl(3, "Dynamic", l = 50, rev = T)
+  )+
+  kleptomoveMS::theme_custom()+
+  labs(x = "regrowth rate",
+       y = "total population intake (prey items)")
+
+```
+
+```{r}
+ggsave(
+  fig_strategy_fitness,
+  filename = "figures/fig_03_strategy_fitness.png",
+  height = 4, width = 6
+)
+```
+
