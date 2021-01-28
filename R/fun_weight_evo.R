@@ -87,14 +87,11 @@ get_weights_timeline <- function(generations,
                                  max_w_val = 1.01,
                                  steps = 50) {
   
-  if(length(which_weight) == 1 & is.na(which_weight)) {
+  if(all(is.na(which_weight))) {
     seq_weights <- seq(config_list[["agents.ann.weights"]])[-1]
   } else {
     seq_weights = which_weight
   }
-  
-  # get weights sequence but exclude 1st weight
-
   # get data per generation
   weight_data_gen <- lapply(generations, function(g) {
 
@@ -114,10 +111,16 @@ get_weights_timeline <- function(generations,
 
     # bind the list
     weight_data <- data.table::rbindlist(weight_data)
+    
+    # assertthat::assert_that(
+    #   is.data.table(weight_data),
+    #   message(sprintf("not a data table, has class %s", class(weight_data)[1]))
+    # )
+    
     # set datatable
     data.table::setDT(weight_data)
     # add generation
-    weight_data[, gen := g]
+    weight_data$gen = g
 
     return(weight_data)
   })
