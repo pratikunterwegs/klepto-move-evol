@@ -13,7 +13,7 @@ get_weights_prop(
 )
 }
 \arguments{
-\item{gen_data}{A list object produced by \code{generation}.}
+\item{gen_data}{A list object produced by \code{generation()}.}
 
 \item{weight_w}{The weight identity to be retrieved.}
 

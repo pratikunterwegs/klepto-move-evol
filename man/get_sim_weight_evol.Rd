@@ -4,14 +4,27 @@
 \alias{get_sim_weight_evol}
 \title{Get weight evolution data for a simulation replicate.}
 \usage{
-get_sim_weight_evol(data_folder, weight_names = c(), ...)
+get_sim_weight_evol(
+  data_folder,
+  generations,
+  which_weight,
+  min_w_val = -1.01,
+  max_w_val = 1.01,
+  steps = 50
+)
 }
 \arguments{
 \item{data_folder}{Where the \code{sourceMe.R} file should be sourced from.}
 
-\item{weight_names}{The weight names.}
+\item{generations}{Which generations, a numeric vector.}
 
-\item{...}{Argumentns pass to \code{get_weights_timeline}.}
+\item{which_weight}{Which weights, a numeric vector or \code{NA} for all.}
+
+\item{min_w_val}{The minimum scaled weight value.}
+
+\item{max_w_val}{The maximum scaled weight value.}
+
+\item{steps}{The bins between min and max scaled weight values.}
 }
 \value{
 A data.table of weight evolution

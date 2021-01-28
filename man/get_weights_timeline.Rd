@@ -4,15 +4,28 @@
 \alias{get_weights_timeline}
 \title{Get weight proportions across generations.}
 \usage{
-get_weights_timeline(generations, config_list = config, ...)
+get_weights_timeline(
+  generations,
+  config_list = config,
+  which_weight = seq(2, 8),
+  min_w_val = -1.01,
+  max_w_val = 1.01,
+  steps = 50
+)
 }
 \arguments{
 \item{generations}{A sequence of generations.}
 
-\item{config_list}{The config list object which must have at least
-the number of weights per agent.}
+\item{config_list}{The config list object which must have at least}
 
-\item{...}{Arguments passed to \code{get_weights_prop}.}
+\item{which_weight}{Which weights, a numeric vector or \code{NA} for all.}
+
+\item{min_w_val}{The minimum scaled weight value.}
+
+\item{max_w_val}{The maximum scaled weight value.}
+
+\item{steps}{The bins between min and max scaled weight values.
+the number of weights per agent.}
 }
 \value{
 A data.table of the weight proportions over the generations provided.

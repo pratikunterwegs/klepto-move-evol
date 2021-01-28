@@ -4,7 +4,7 @@
 \alias{theme_custom}
 \title{Custom theme with grey background}
 \usage{
-theme_custom(grid = FALSE)
+theme_custom(grid = FALSE, ...)
 }
 \arguments{
 \item{grid}{Show panel grid major?}
