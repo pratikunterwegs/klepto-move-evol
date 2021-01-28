@@ -7,7 +7,7 @@
 ^docs$
 ^pkgdown$
 ^doc$
-^data$
+^data/.+$
 ^sim_output$
 ^Meta$
 ^codemeta\.json$
