@@ -185,6 +185,8 @@ get_weights_timeline <- function(generations,
 
     # bind the list
     weight_data <- data.table::rbindlist(weight_data)
+    # set datatable
+    data.table::setDT(weight_data)
     # add generation
     weight_data[, gen := g]
 
