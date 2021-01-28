@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 
 # Prepare node weight evolution data
 
@@ -45,12 +50,17 @@ fwrite(data, file = "data/results/data_weight_evolution.csv")
 # read parameter combinations
 param_combinations <- fread("data/results/data_param_combinations.csv")
 
+get_sim_weight_evol(data_folder = param_combinations$folder_path[1],
+                    generations = seq(1, 100, 10),
+                    which_weight = c(3, 5, 7))
+
 # get weight evolution every 10 generation
 # from each simulation
 temp_gen_data <- lapply(param_combinations$folder_path, 
                         function(x) {
                           get_sim_weight_evol(data_folder = x,
-                                              generations = seq(1, 100, 10))
+                                              generations = seq(1, 100, 10),
+                                              which_weight = c(3, 5, 7))
                         }
 )
 ```
