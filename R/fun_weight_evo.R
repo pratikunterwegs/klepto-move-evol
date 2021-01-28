@@ -171,17 +171,17 @@ get_weights_timeline <- function(generations,
 
     # get overall behaviour
     # knowing LAST 4 WEIGHTS ARE STRATEGY
-    weight_behaviour <- get_overall_behaviour(
-      gen_data = G,
-      which_weights = data.table::last(seq_weights, 4)
-    )
-    # add gen
-    weight_behaviour[, gen := g]
-
-    # add overall individuals
-    weight_individuals <- get_overall_movement(gen_data = G)
-
-    weight_individuals[, gen := g]
+    # weight_behaviour <- get_overall_behaviour(
+    #   gen_data = G,
+    #   which_weights = data.table::last(seq_weights, 4)
+    # )
+    # # add gen
+    # weight_behaviour[, gen := g]
+    # 
+    # # add overall individuals
+    # weight_individuals <- get_overall_movement(gen_data = G)
+    # 
+    # weight_individuals[, gen := g]
 
     # bind the list
     weight_data <- data.table::rbindlist(weight_data)
