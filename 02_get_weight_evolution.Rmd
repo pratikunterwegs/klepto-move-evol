@@ -1,0 +1,70 @@
+
+# Prepare node weight evolution data
+
+## Load libraries
+
+```{r}
+# load libs
+library(data.table)
+library(ggplot2)
+library(kleptomoveMS)
+```
+
+## Run function over data
+
+```{r}
+# read parameter combinations
+param_combinations <- fread("data/results/data_param_combinations.csv")
+
+# get weight evolution every 10 generation
+# from each simulation
+temp_gen_data <- lapply(param_combinations$folder_path, 
+                        function(x) {
+                          get_sim_weight_evol(data_folder = x,
+                                              generations = c(seq(1, 999, 25),
+                                                              990:998))
+                        }
+)
+```
+
+## Write sparse and final generation range sequence to file
+
+```{r}
+# bind with parameters
+data <- param_combinations
+data[, wt_data := temp_gen_data]
+
+# unnest
+data <- data[, unlist(wt_data, recursive = F),
+             by = list(sim_type, replicate, regrowth)]
+fwrite(data, file = "data/results/data_weight_evolution.csv")
+```
+
+## Prepare data for intial generations
+
+```{r}
+# read parameter combinations
+param_combinations <- fread("data/results/data_param_combinations.csv")
+
+# get weight evolution every 10 generation
+# from each simulation
+temp_gen_data <- lapply(param_combinations$folder_path, 
+                        function(x) {
+                          get_sim_weight_evol(data_folder = x,
+                                              generations = seq(0, 100, 1)
+                        }
+)
+```
+
+## Write sparse and final generation range sequence to file
+
+```{r}
+# bind with parameters
+data <- copy(param_combinations)
+data[, wt_data := temp_gen_data]
+
+# unnest
+data <- data[, unlist(wt_data, recursive = F),
+             by = list(sim_type, replicate, regrowth)]
+fwrite(data, file = "data/results/data_early_0_100_weight_evolution.csv")
+```
