@@ -6,12 +6,16 @@
 #' @return None
 #' @export
 theme_custom <- function(grid = FALSE, ...) {
-  this_theme <- ggplot2::theme_test(...) +
+  this_theme <- ggplot2::theme_classic(...) +
     ggplot2::theme(
       legend.position = "none",
-      panel.background = ggplot2::element_rect(
-        fill = "grey99"
-      )
+      axis.ticks.length = ggplot2::unit(1.5, units = "mm"),
+      axis.line = ggplot2::element_line(
+        colour = "black",
+        size = 0.3)
+      # panel.background = ggplot2::element_rect(
+      #   fill = "grey99"
+      # )
     )
 
   if (grid) {
