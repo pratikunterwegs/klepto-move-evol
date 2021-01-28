@@ -96,26 +96,30 @@ subfig_strategy_gen <- lapply(data_0.1, function(df) {
 ### Plot fitness
 
 ```{r}
-data_summary = data[(regrowth == 0.1) &
-                      (gen %% 10 == 0 | gen < 100)]
-data_summary = unique(data_summary, 
-                      by = c("sim_type", "replicate",
-                             "pop_fitness"))
+data_summary <- data[(regrowth == 0.1) &
+  (gen %% 10 == 0 | gen < 100)]
+data_summary <- unique(data_summary,
+  by = c(
+    "sim_type", "replicate",
+    "pop_fitness"
+  )
+)
 data_summary <- split(data_summary, by = "sim_type")
 
-subfig_fitness = lapply(data_summary, function(df) {
-  ggplot(df)+
-  geom_line(aes(gen, pop_fitness,
-                group = interaction(sim_type, replicate)),
-            col = "grey20"
-  )+
-  kleptomoveMS::theme_custom(grid = F, base_size = 8) +
-  coord_fixed(ylim = c(10, 55), ratio = 0.5) +
-  scale_x_sqrt(breaks = c(0, 10, 100, 500, 1000)) +
-  labs(
-    y = "pop. intake",
-    x = "generations"
-  )
+subfig_fitness <- lapply(data_summary, function(df) {
+  ggplot(df) +
+    geom_line(aes(gen, pop_fitness,
+      group = interaction(sim_type, replicate)
+    ),
+    col = "grey20"
+    ) +
+    kleptomoveMS::theme_custom(grid = F, base_size = 8) +
+    coord_fixed(ylim = c(10, 55), ratio = 0.5) +
+    scale_x_sqrt(breaks = c(0, 10, 100, 500, 1000)) +
+    labs(
+      y = "pop. intake",
+      x = "generations"
+    )
 })
 ```
 
@@ -124,8 +128,10 @@ subfig_fitness = lapply(data_summary, function(df) {
 # make figure
 fig_strategy_gen <-
   wrap_plots(
-    append(subfig_strategy_gen[c("foragers", "obligate", "facultative")],
-           subfig_fitness[c("foragers", "obligate", "facultative")])
+    append(
+      subfig_strategy_gen[c("foragers", "obligate", "facultative")],
+      subfig_fitness[c("foragers", "obligate", "facultative")]
+    )
   ) +
     plot_annotation(
       tag_levels = "a",
@@ -149,45 +155,68 @@ ggsave(fig_strategy_gen,
 
 ```{r}
 # get last 10 generations
-data_equi = data[gen > max(gen) - 10, ]
+data_equi <- data[gen > max(gen) - 10, ]
 
 # look at handling and fitness
-data_equi = data[variable == "handling",]
+data_equi <- data[variable == "handling", ]
 
 # boxplot handling time
-ggplot(data_equi)+
-  geom_boxplot(aes(factor(regrowth), value, col = sim_type,
-                   group = interaction(sim_type, regrowth)),
-               outlier.size = 0)+
-  scale_colour_manual(
-    values = qualitative_hcl(3, "Set2", l = 50, rev = T)
-  )
-
+data_equi_summary <-
+  data_equi[, unlist(lapply(.SD, function(x) {
+    list(
+      median = median(x),
+      sd = sd(x)
+    )
+  }), recursive = F),
+  .SDcols = c("pop_fitness"),
+  by = c("sim_type", "regrowth")
+  ]
 # boxplot fitness
-fig_strategy_fitness = ggplot(data_equi)+
-  geom_jitter(aes(factor(regrowth), 
-                  pop_fitness, col = sim_type,
-                   group = interaction(sim_type, regrowth)),
-              size = 0.1, alpha = 0.2,
-              shape = 1,
-              # width = 0.05,
-              position = position_dodge(width = 0.75))+
-  geom_boxplot(aes(factor(regrowth), pop_fitness, col = sim_type),
-               outlier.shape = NA)+
-  scale_colour_manual(
-    values = qualitative_hcl(3, "Dynamic", l = 50, rev = T)
-  )+
-  kleptomoveMS::theme_custom()+
-  labs(x = "regrowth rate",
-       y = "total population intake (prey items)")
-
+fig_strategy_fitness <-
+  ggplot(data_equi) +
+  geom_line(
+    data = data_equi_summary,
+    aes(factor(regrowth),
+      y = pop_fitness.median,
+      col = sim_type,
+      group = sim_type
+    ),
+    lwd = 0.2,
+    position = position_dodge(width = 0.25)
+  ) +
+  geom_pointrange(
+    data = data_equi_summary,
+    aes(factor(regrowth),
+      y = pop_fitness.median,
+      ymin = pop_fitness.median -
+        pop_fitness.sd,
+      ymax = pop_fitness.median +
+        pop_fitness.sd,
+      fill = sim_type,
+      shape = sim_type
+    ),
+    position = position_dodge(width = 0.25)
+  ) +
+  scale_fill_manual(
+    values = sequential_hcl(3, palette = "Viridis")
+      #qualitative_hcl(3, "Cold", l = 70, rev = T)
+  ) +
+  scale_shape_manual(
+    values = c(21, 24, 22)
+  ) +
+  theme_custom(base_size = 8) +
+  # kleptomoveMS::theme_custom()+
+  labs(
+    x = "regrowth rate",
+    y = "total population intake (prey items)"
+  )
 ```
 
 ```{r}
 ggsave(
   fig_strategy_fitness,
   filename = "figures/fig_03_strategy_fitness.png",
-  height = 4, width = 6
+  height = 3, width = 3
 )
 ```
 
