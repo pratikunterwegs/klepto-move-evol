@@ -22,7 +22,7 @@ data$sim_type <- factor(data$sim_type,
 
 ```{r}
 # basic plot
-fig_strategy_gen <-
+# fig_strategy_gen <-
   ggplot(data[sim_type != "foragers" &
     (gen %% 10 == 0 | gen < 100)]) +
   geom_line(aes(gen, value,
@@ -75,8 +75,12 @@ subfig_strategy_gen <- lapply(data_0.1, function(df) {
         variable
       )
     ),
-    size = 0.5
+    size = 0.1
     ) +
+    geom_point(aes(gen, value,
+      col = variable),
+      size = 0.2,
+      shape = 1)+
     scale_color_manual(
       values = qualitative_hcl(3, "Set2", l = 40, rev = T)
     ) +
@@ -84,7 +88,7 @@ subfig_strategy_gen <- lapply(data_0.1, function(df) {
       labels = scales::percent,
       breaks = seq(0, 0.75, 0.25)
     ) +
-    kleptomoveMS::theme_custom(grid = F, base_size = 8) +
+    kleptomoveMS::theme_custom(base_size = 8) +
     coord_cartesian(ylim = c(0, 0.75)) +
     scale_x_sqrt(breaks = c(0, 10, 100, 500, 1000)) +
     labs(
@@ -111,7 +115,15 @@ subfig_fitness <- lapply(data_summary, function(df) {
     geom_line(aes(gen, pop_fitness,
       group = interaction(sim_type, replicate)
     ),
-    col = "grey20"
+    col = "grey20",
+    size = 0.1
+    ) +
+    geom_point(aes(gen, pop_fitness,
+      group = interaction(sim_type, replicate)
+    ),
+    col = "grey20",
+    size = 0.2,
+    shape = 1
     ) +
     kleptomoveMS::theme_custom(grid = F, base_size = 8) +
     coord_fixed(ylim = c(10, 55), ratio = 0.5) +
