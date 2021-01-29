@@ -140,7 +140,7 @@ subplots_fig3 = lapply(data_plot, function(df) {
 })
 
 figure_3 =
-  wrap_plots(subplots_fig3[c("foragers", "obligate", "random", "facultative")])+
+  wrap_plots(subplots_fig3[c("obligate", "random", "facultative")])+
     plot_annotation(
       tag_levels = "a",
       tag_prefix = "(",
