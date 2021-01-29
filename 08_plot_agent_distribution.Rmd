@@ -50,7 +50,10 @@ More plotting preparation.
 
 ```{r}
 # remove random
-data <- data[sim_type != "random" & regrowth == 0.1, ]
+data <- data[regrowth == 0.1, ]
+
+# remove intake etc
+data = data[layer_type != "intake", ]
 
 # split the data by growth rate
 data_plot <- split(data, by = c("sim_type", "layer_type"))
@@ -68,59 +71,68 @@ data_plot <- data_plot[c(
 ```
 
 ```{r}
+# prepare palette
+pal = values = qualitative_hcl(3, "Set2", l = 40, rev = T)
+```
+
+
+```{r}
 subplots <-
   Map(
     function(df) {
       if (!unique(df$layer)[[1]] == "items") {
         pal <- c(
-          sequential_hcl(1, "Reds", rev = F),
-          sequential_hcl(1, "PuBu", rev = F)
+          pal[3], pal[1]
         )
+        shapes = c(2, 1)
       } else {
-        pal <- sequential_hcl(1, "Greens 2", rev = F)
+        pal <- pal[2]
+        shapes = 0
       }
+      
+      # limits
+      if (df$layer_type == "strategy count") {
+        y_lim = c(0, 0.15)
+        y_axis = "# individuals"
+      } else if (df$layer_type == "per_capita_intake") {
+        y_lim = c(0, 0.15)
+        y_axis = "intake rate"
+      } else {
+        y_lim = c(0, 5)
+        y_axis = "# prey items"
+      }
+      
 
       ggplot(df) +
-        geom_point(aes(cap, med_val,
-          # ymin = med_val - sd_val,
-          # ymax = med_val + sd_val,
+        geom_line(aes(cap, mean_val,
           col = interaction(regrowth, layer),
-          group = interaction(regrowth, replicate, gen)
+          group = interaction(regrowth, replicate, gen, layer)
         ),
         show.legend = F,
-        width = 0.001,
-        # size = 0.2,
-        shape = 1
+        size = 0.1
         ) +
         geom_point(aes(cap, mean_val,
-          # ymin = med_val - sd_val,
-          # ymax = med_val + sd_val,
           col = interaction(regrowth, layer),
-          group = interaction(regrowth, replicate, gen)
+          group = interaction(regrowth, replicate, gen),
+          shape = layer
         ),
         show.legend = F,
-        width = 0.001,
-        alpha = 0.2,
-        # size = 0.2,
-        shape = 4
+        alpha = 0.5
         ) +
-        facet_grid(~layer, scales = "free") +
+        scale_shape_manual(
+          values = shapes
+        )+
         scale_colour_manual(
           values = pal,
         ) +
-        theme_test(base_family = "serif") +
-        theme(
-          panel.background = element_rect(
-            fill = "grey95"
-          )
-        ) +
+        kleptomoveMS::theme_custom(base_size = 8)+
         coord_cartesian(
-          ylim = c(0, NA),
+          ylim = y_lim,
           expand = T
         ) +
         labs(
-          x = "quality",
-          y = "value"
+          x = "cell quality",
+          y = y_axis
         )
     },
     data_plot
@@ -128,84 +140,20 @@ subplots <-
 ```
 
 ```{r}
-fig_agent_dist <- wrap_plots(subplots) +
+figure_05 <-
+  wrap_plots(subplots) +
   plot_annotation(
     tag_levels = "a",
     tag_prefix = "(",
     tag_suffix = ")"
-  )
+  ) &
+  theme(plot.tag = element_text(
+    face = "bold",
+    size = 8
+  ))
 
-fig_agent_dist
-ggsave(fig_agent_dist,
-  filename = "figures/fig_06_agent_dist.png"
-)
-```
-
-
-Make the overall figure and save it.
-
-```{r echo=FALSE, eval=FALSE}
-# make a list of plots
-plot_list <- lapply(data_plot, function(df) {
-  ggplot(df) +
-    geom_hline(yintercept = 0, col = "grey", lwd = 0.2) +
-    geom_vline(xintercept = 0, col = "grey", lwd = 0.2) +
-    # geom_errorbar(aes(cap,
-    #                 ymin = mean_val - sd_val,
-    #                 ymax = mean_val + sd_val,
-    #                 group = interaction(layer, replicate, regrowth)),
-    #             alpha = 0.5,
-    #             show.legend = F,
-    #             position = position_dodge(width = 0.2),
-    #             col = df$colour)+
-    # geom_line(aes(cap, mean_val,
-    #                group = interaction(layer, replicate, regrowth)),
-    #            position = position_dodge(width = 0.2),
-    #            col = df$colour,
-    #           lwd = 0.2)+
-    geom_jitter(aes(cap, mean_val,
-      shape = layer,
-      col = layer,
-      group = interaction(layer, replicate, regrowth)
-    ),
-    # size = 0.5,
-    # position = position_dodge(width = 0.2),
-    # colour = df$colour,
-    # colour = "white",
-    show.legend = F
-    ) +
-    facet_grid(regrowth ~ sim_type,
-      as.table = F,
-      scales = "free_y",
-      labeller = label_both
-    ) +
-    scale_shape_manual(values = c(21, 24)) +
-    # coord_cartesian(ylim = c(0, NA))+
-    theme_test() +
-    theme(
-      legend.position = "top",
-      axis.text.y = element_text(size = 6),
-      axis.title.y = element_blank()
-    ) +
-    labs(
-      x = "grid cell quality",
-      y = "value",
-      colour = "value",
-      title = sprintf(
-        "%s",
-        unique(df$layer_type)
-      )
-    )
-})
-
-plot_dist <- patchwork::wrap_plots(plot_list[c(
-  "strategy count",
-  "intake",
-  "items", "per_capita_intake"
-)])
-
-ggsave(plot_dist,
-  filename = "figures/fig_agent_item_distribution.png",
-  dpi = 300, height = 10, width = 12
+ggsave(figure_05,
+  filename = "figures/fig_05_agent_distribution.png",
+  width = 5, height = 5
 )
 ```
