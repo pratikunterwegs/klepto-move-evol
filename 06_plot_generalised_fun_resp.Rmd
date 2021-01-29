@@ -110,14 +110,6 @@ fig_fun_response <-
   theme(plot.tag = element_text(face = "bold"))
 ```
 
-```{r}
-ggsave(fig_fun_response,
-  filename = "figures/fig_fun_response_strategy.png",
-  dpi = 150,
-  height = 8, width = 8
-)
-```
-
 ## Functional Response to Different Strategies
 
 ### Get data
@@ -183,9 +175,6 @@ fig_resp_forager <- wrap_plots(subfig_resp_forager[
     tag_suffix = ")"
   ) &
   theme(plot.tag = element_text(face = "bold"))
-
-# save
-ggsave(fig_resp_forager, filename = "figures/fig_funresp_foragers.png")
 ```
 
 ### Plot: Functional response ~ kleptoparasites
@@ -220,9 +209,6 @@ fig_resp_klepts <- wrap_plots(subfig_resp_klept[
     tag_suffix = ")"
   ) &
   theme(plot.tag = element_text(face = "bold"))
-
-# save
-ggsave(fig_resp_forager, filename = "figures/fig_funresp_klepts.png")
 ```
 
 ## Compare total and strategy-wise total functional response
