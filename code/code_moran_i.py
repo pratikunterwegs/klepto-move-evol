@@ -73,6 +73,10 @@ def get_prop_plateau (x, dim, layer):
     return p_plateau
 
 
+# run over files
+img_gen['p_clueless'] = img_gen['path'].apply(get_prop_plateau, dim=128, layer=3)
+
+
 # supplement code
 # test import by showing the n/2th landscape
 plt.imshow(imageio.imread(img_gen['path'][100])[:,:,3], cmap="inferno")
