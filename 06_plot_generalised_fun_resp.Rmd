@@ -32,88 +32,6 @@ get_lower <- function(x) {
 ```
 
 
-## Functional response of intake to items
-
-```{r}
-data <- fread("data/results/data_funresp_intake_items.csv")
-
-# get specific regrowths
-data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
-```
-
-```{r}
-# get mean, median and sd for intake by strategy, rep, and growth
-# as well as sim type
-data_intake_items <- data[variable != "pc_intake_total", 
-                          unlist(lapply(.SD, multsum), recursive = F),
-                          .SDcols = c("value"),
-                          by = c("sim_type", "regrowth",
-                                 "items", "variable")]
-
-# convert to number
-data_intake_items[, item_num := get_lower(items)]
-
-# scale by max items
-data_intake_items[, item_num := scales::rescale(
-  item_num
-),
-by = c("sim_type", "regrowth")]
-```
-
-d### Plot: Intake ~ items
-
-```{r}
-# split and plot
-data_intake_items <- split(data_intake_items, by = "sim_type")
-
-subfig_intake_items <- 
-  lapply(data_intake_items, function(df){
-  ggplot(df)+
-  geom_point(aes(item_num, value.median,
-                 col = variable),
-             size = 0.2,
-             shape = 1,
-             show.legend = F)+
-  coord_cartesian(ylim = c(0, 0.2),
-                  xlim = c(0, NA))+
-  # scale_x_sqrt()+
-  # scale_y_sqrt()+
-  facet_grid(sim_type ~ regrowth, scales = "fixed")+
-  scale_colour_discrete_diverging(palette = "Blue-Red 2",
-                                  rev = F)+
-    labs(
-      x = "# prey items",
-      y = "per-capita intake"
-    )
-})
-
-# collect figures
-fig_intake_items <- 
-  wrap_plots(subfig_intake_items[c(
-  "foragers",
-  "obligate",
-  "facultative"
-)],
-ncol = 1)
-
-# view figure
-fig_intake_items <- 
-  fig_intake_items +
-  plot_annotation(
-    tag_levels = "a",
-    tag_prefix = "(",
-    tag_suffix = ")"
-  ) &
-  theme(plot.tag = element_text(face = "bold"))
-```
-
-```{r}
-ggsave(fig_intake_items,
-  filename = "figures/fig_intake_items.png",
-  dpi = 150
-)
-```
-
 ## Functional Response of Intake to All Predators
 
 ### Get data
@@ -123,7 +41,7 @@ ggsave(fig_intake_items,
 data <- fread("data/results/data_funresp_agents.csv")
 
 # get specific regrowths
-data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
+data <- data[regrowth %in% c(0.001, 0.01, 0.1, 0.25), ]
 ```
 
 ### Summarise data over generations
@@ -162,7 +80,7 @@ subfig_fun_response <-
                  shape = 1,
                  show.legend = F)+
       facet_grid(sim_type ~ regrowth)+
-      theme_grey(base_size = 12)+
+      kleptomoveMS::theme_custom(base_size = 8)+
       coord_cartesian(ylim = c(0, 0.25),
                       xlim = c(0, 0.75))+
       scale_colour_discrete_diverging(palette = "Blue-Red 2",
@@ -180,8 +98,6 @@ fig_fun_response <- wrap_plots(subfig_fun_response[c(
   "facultative"
 )],
 ncol = 1)
-
-fig_fun_response
 
 # view figure
 fig_fun_response <- 
@@ -209,7 +125,7 @@ ggsave(fig_fun_response,
 ```{r}
 data <- fread("data/results/data_funresp_strategy.csv")
 # get specific regrowths
-data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
+data <- data[regrowth %in% c(0.001, 0.01, 0.1, 0.25), ]
 ```
 
 ### Subset data and summarise
@@ -248,7 +164,7 @@ subfig_resp_forager <- lapply(data_resp_forager, function(df) {
              shape = 1,
              show.legend = F)+
       facet_grid(sim_type ~ regrowth)+
-      theme_grey(base_size = 12)+
+      kleptomoveMS::theme_custom(base_size = 8)+
       coord_cartesian(xlim = c(0, 0.75),
                       ylim = c(0, 0.3))+
       scale_colour_discrete_diverging(palette = "Blue-Red 2",
@@ -285,7 +201,7 @@ subfig_resp_klept <-
              shape = 1,
              show.legend = F)+
       facet_grid(sim_type ~ regrowth)+
-      theme_grey(base_size = 12)+
+      kleptomoveMS::theme_custom(base_size = 8)+
       coord_cartesian(xlim = c(0, 0.75),
                       ylim = c(0, 0.3))+
       scale_colour_discrete_diverging(palette = "Blue-Red 2",
@@ -353,7 +269,7 @@ subfig_funresp_total <-
       scale_x_sqrt()+
       scale_y_sqrt()+
       facet_grid(~ sim_type)+
-      theme_grey(base_size = 12)+
+      kleptomoveMS::theme_custom(base_size = 8)+
       coord_cartesian(xlim = c(0, 0.75),
                       ylim = c(0, 0.3))+
       scale_colour_manual(values = pal)+
@@ -386,7 +302,7 @@ subfig_resp_forager <- lapply(data_resp_forager, function(df) {
       facet_grid(~ sim_type)+
       scale_x_sqrt()+
       scale_y_sqrt()+
-      theme_grey(base_size = 12)+
+      kleptomoveMS::theme_custom(base_size = 8)+
       coord_cartesian(xlim = c(0, 0.75),
                       ylim = c(0, 0.3))+
       scale_colour_discrete_diverging(palette = "Blue-Red 2",
@@ -418,7 +334,7 @@ subfig_resp_klept <-
       scale_x_sqrt()+
       scale_y_sqrt()+
       facet_grid(~ sim_type)+
-      theme_grey(base_size = 12)+
+      kleptomoveMS::theme_custom(base_size = 8)+
       coord_cartesian(xlim = c(0, 0.75),
                       ylim = c(0, 0.3))+
       scale_colour_discrete_diverging(palette = "Blue-Red 2",
@@ -458,46 +374,5 @@ ggsave(
   figure_functional_response,
   filename = "figures/fig_04_functional_response.png"
 )
-```
-
-## Aggregative response: Agents ~ items
-
-```{r}
-data = fread("data/results/data_funresp_predators_items.csv")
-# get specific regrowths
-data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
-
-# summarise
-data_predators_prey = data[variable != "total_agents", 
-                           unlist(lapply(.SD, multsum), recursive = F),
-                           .SDcols = c("value"),
-                           by = c("sim_type", "regrowth",
-                                  "items", "variable")]
-
-# get lower
-data_predators_prey[, item_num := get_lower(items)]
-
-# scale item num
-data_predators_prey[, item_num_scaled := scales::rescale(item_num),
-                    by = c("sim_type", "regrowth")]
-
-# drop NA
-data_predators_prey <- na.omit(data_predators_prey)
-```
-
-```{r}
-ggplot(data_predators_prey)+
-  geom_jitter(aes(item_num_scaled, value.median,
-                 col = variable),
-              alpha = 0.5,
-             size = 0.2, shape = 1)+
-  facet_grid(sim_type ~ regrowth)+
-  # scale_y_sqrt()+
-  # scale_x_continuous(breaks = seq(0,1,0.2))+
-  coord_cartesian(ylim = c(0, 0.15))+
-  scale_colour_discrete_diverging(palette = "Blue-Red 2",
-                                      rev = F)
-
-ggsave(filename = "figures/fig_aggegrative_response.png")
 ```
 
