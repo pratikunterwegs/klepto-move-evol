@@ -50,10 +50,12 @@ More plotting preparation.
 
 ```{r}
 # remove random
-data <- data[regrowth == 0.1, ]
+data <- data[regrowth %in% c(0.001, 0.01, 0.05, 0.1, 0.25), ]
 
 # remove intake etc
-data = data[layer_type != "intake", ]
+data = data[!layer_type %in% c("intake", "per_capita_intake"), ]
+
+data[, qual := cap * regrowth]
 
 # split the data by growth rate
 data_plot <- split(data, by = c("sim_type", "layer_type"))
@@ -66,7 +68,8 @@ library(stringr)
 data_plot <- data_plot[c(
   str_which(names(data_plot), "forager"),
   str_which(names(data_plot), "obligate"),
-  str_which(names(data_plot), "facul")
+  str_which(names(data_plot), "facul"),
+  str_which(names(data_plot), "random")
 )]
 ```
 
@@ -84,7 +87,7 @@ subplots <-
         pal <- c(
           pal[3], pal[1]
         )
-        shapes = c(2, 1)
+        shapes = c(1)
       } else {
         pal <- pal[2]
         shapes = 0
@@ -104,35 +107,39 @@ subplots <-
       
 
       ggplot(df) +
-        geom_line(aes(cap, mean_val,
+        geom_line(aes(qual, mean_val,
           col = interaction(regrowth, layer),
           group = interaction(regrowth, replicate, gen, layer)
         ),
-        show.legend = F,
-        size = 0.1
+        show.legend = F
         ) +
-        geom_point(aes(cap, mean_val,
-          col = interaction(regrowth, layer),
-          group = interaction(regrowth, replicate, gen),
-          shape = layer
-        ),
-        show.legend = F,
-        alpha = 0.5
-        ) +
+        # geom_point(aes(cap, mean_val,
+        #   col = interaction(regrowth, layer),
+        #   group = interaction(regrowth, replicate, gen),
+        #   shape = layer
+        # ),
+        # show.legend = F,
+        # alpha = 0.5
+        # ) +
         scale_shape_manual(
-          values = shapes
+          values = rep(shapes, each = length(unique(df$regrowth)))
         )+
         scale_colour_manual(
-          values = pal,
+          values = rep(pal, each = length(unique(df$regrowth)))
         ) +
-        kleptomoveMS::theme_custom(base_size = 8)+
+        # facet_grid(~regrowth)+
+        kleptomoveMS::theme_custom(base_size = 8
+                                   )+
+        theme(title = element_text(size=6))+
         coord_cartesian(
           ylim = y_lim,
+          xlim = c(0, 0.8),
           expand = T
         ) +
         labs(
-          x = "cell quality",
-          y = y_axis
+          x = "cell r (cap * regrowth)",
+          y = y_axis,
+          title = unique(df$sim_type)
         )
     },
     data_plot
@@ -141,7 +148,7 @@ subplots <-
 
 ```{r}
 figure_05 <-
-  wrap_plots(subplots) +
+  wrap_plots(subplots, ncol = 2) +
   plot_annotation(
     tag_levels = "a",
     tag_prefix = "(",
@@ -154,6 +161,6 @@ figure_05 <-
 
 ggsave(figure_05,
   filename = "figures/fig_05_agent_distribution.png",
-  width = 5, height = 5
+  width = 3, height = 6
 )
 ```
