@@ -1,4 +1,4 @@
-#### code to summarise simulation landscapes with Moran's I ####
+# code for landscape gradients and moran i
 
 #### importing libraries and paths
 # check python path
@@ -11,90 +11,111 @@ for p in sys.path:
 import pandas as pd  # similar to dplyr! yay!
 import os  # has list dir functions etc
 import numpy as np  # some matrix functions
+import re
 from scipy import misc
 import matplotlib.pyplot as plt
+import imageio  # library to read images
 
 # check the current working directory
 os.getcwd()
-currentWd = p  # os.path.dirname(os.path.abspath(__file__)) #os.getcwd()
-
-# check again
-print(currentWd)
-
 # gather image output
-outputFolder = os.path.join(currentWd, "bin/settings")  # os.path.abspath("output")
+output_folder = os.path.join(os.getcwd(), "data/results/images/")  # os.path.abspath("output")
 # check for the right folder
-if "bin" not in outputFolder:
+if "images" not in output_folder:
     raise Exception('seems like the wrong output folder...')
 
 #### list files and filter by name
 # gather contents of the folder
-imgFiles = list()
-for root, directories, filenames in os.walk(outputFolder):
+img_files = list()
+for root, directories, filenames in os.walk(output_folder):
     for filename in filenames:
-        imgFiles.append(os.path.join(root, filename))
+        img_files.append(os.path.join(root, filename))
 
 # filter filenames to match foodlandscape
-imgFiles = list(filter(lambda x: "foodlandscape" in x, imgFiles))
+img_files = list(filter(lambda x: "landscape" in x, img_files))
 
 
 # function to get image generation and rep number
-def funcImgNames (x):
+def get_image_generation (x):
     assert "str" in str(type(x)), "input doesn't seem to be a filepath"
-    assert "foodlandscape" in x, "input is not a foodlandscape"
-    names = ((x.split("foodlandscape")[1]).split(".")[0]).split("sim")
-    return names
+    assert "landscape" in x, "input is not a landscape"
+    name = ((x.split("landscape")[1]))
+    generation = int(re.findall(r'(\d{5})', name)[0])
+    return generation
 
 
 # get the image identity to match to parameters later
-imgId = list(map(funcImgNames, imgFiles))
+img_gen = list(map(get_image_generation, img_files))
 # make a pd df
-imgId = pd.DataFrame(imgId, columns=['gen','sim'])
+img_gen = pd.DataFrame({
+    'gen': img_gen,
+    'path': img_files
+})
 # make gen integer
-imgId['gen'] = pd.to_numeric(imgId['gen'])
-# identify numbers where image corresponds to gen > 400
-imgId['listnumber'] = np.arange(0, imgId.shape[0], 1)
-# imgId = imgId.query('gen < 1000')
+img_gen['gen'] = pd.to_numeric(img_gen['gen'])
 
-# subset images to process
-imgFilesToProcess = [imgFiles[i] for i in imgId.listnumber]
 
+# function to read images, get gradient, and count non zero
+# takes a 2d array
+def get_prop_plateau (x, dim, layer):
+    assert "landscape" in x, "input is not a landscape"
+    image = imageio.imread(x)[:,:,layer]
+    assert image.ndim == 2, "get_prop_plateau: not a 2d array"
+    gradient = np.gradient(image)
+    mag = np.sqrt(gradient[0]**2 + gradient[1]**2)
+    mag = mag[mag == 0]
+    p_plateau = len(mag) / (dim**2)
+    return p_plateau
+
+
+# run over files
+img_gen['p_clueless'] = img_gen['path'].apply(get_prop_plateau, dim=128, layer=3)
+
+
+# supplement code
 # test import by showing the n/2th landscape
-plt.imshow(misc.imread(imgFilesToProcess[27*3])[:,:,1], cmap="inferno")
+# plt.imshow(imageio.imread(img_gen['path'][100])[:,:,3], cmap="inferno")
+# plt.colorbar()
+
+# gradient = np.gradient(imageio.imread(img_gen['path'][100])[:,:,3])
+# mag = np.sqrt(gradient[0]**2 + gradient[1]**2)
+# plt.imshow(mag)
+# plt.colorbar()
+
+# # test on kernels32
+# land = imageio.imread("data/data_parameters/kernels32.png")[:,:,3]
+# plt.imshow(land)
+# gradient = np.gradient(land)
+# ## plot gradient
+# mag = np.sqrt(gradient[0]**2 + gradient[1]**2)
+# plt.imshow(mag, cmap="plasma")
+# plt.colorbar()
 
 
-#### read the images in using a function and access the second channel (green)
-import pysal.lib
-from pysal.explore.esda.moran import Moran
+# read the images in using a function and access the second channel (green)
+import libpysal as lps
+import esda
 
 # get image size, assuming square
 landsize = (512)  # this should be set manually
-# create a spatial weights matrix
-w = pysal.lib.weights.lat2W(landsize, landsize)
-
 
 # function to read image and calculate Moran I
-def funcReadAndMoran (x):
+def get_moran_i (x, dim, layer):
+    # create a spatial weights matrix
+    w = lps.weights.lat2W(dim, dim)
     assert "str" in str(type(x)), "input doesn't seem to be a filepath"
-    image = misc.imread(x)
-    image = image[:, :, 1]  # selects the second channel which is green
-    assert "array" in str(type(image)), "input doesn't seem to be an array"
+    image = imageio.imread(x)[:,:,layer]  # selects the second channel (1) which is green
+    assert "Array" in str(type(image)), "input doesn't seem to be an array"
     assert len(image.shape) == 2, "non 2-d array, input must be a 2d array"
-    mi = Moran(image, w)
+    mi = esda.Moran(image, w)
     del image
     return mi.I
 
 
 # read in images and do Moran I
-imgMoran = list(map(funcReadAndMoran, imgFilesToProcess))
-
-# get as numpy array
-dfarray = np.asarray(imgMoran)
-
-# add array as pd df
-imgId['morani'] = dfarray
+img_gen['moran_i'] = img_gen['path'].apply(get_moran_i, dim=128, layer=3)
 
 # write to csv
-imgId.to_csv(path_or_buf="landMoranVals_no_k.csv")
+img_gen.to_csv(path_or_buf="data/results/test_data_moran_i.csv")
 
 # ends here
