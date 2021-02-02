@@ -79,22 +79,22 @@ img_gen['p_clueless'] = img_gen['path'].apply(get_prop_plateau, dim=128, layer=3
 
 # supplement code
 # test import by showing the n/2th landscape
-plt.imshow(imageio.imread(img_gen['path'][100])[:,:,3], cmap="inferno")
-plt.colorbar()
+# plt.imshow(imageio.imread(img_gen['path'][100])[:,:,3], cmap="inferno")
+# plt.colorbar()
 
-gradient = np.gradient(imageio.imread(img_gen['path'][100])[:,:,3])
-mag = np.sqrt(gradient[0]**2 + gradient[1]**2)
-plt.imshow(mag)
-plt.colorbar()
+# gradient = np.gradient(imageio.imread(img_gen['path'][100])[:,:,3])
+# mag = np.sqrt(gradient[0]**2 + gradient[1]**2)
+# plt.imshow(mag)
+# plt.colorbar()
 
-# test on kernels32
-land = imageio.imread("data/data_parameters/kernels32.png")[:,:,3]
-plt.imshow(land)
-gradient = np.gradient(land)
-## plot gradient
-mag = np.sqrt(gradient[0]**2 + gradient[1]**2)
-plt.imshow(mag, cmap="plasma")
-plt.colorbar()
+# # test on kernels32
+# land = imageio.imread("data/data_parameters/kernels32.png")[:,:,3]
+# plt.imshow(land)
+# gradient = np.gradient(land)
+# ## plot gradient
+# mag = np.sqrt(gradient[0]**2 + gradient[1]**2)
+# plt.imshow(mag, cmap="plasma")
+# plt.colorbar()
 
 
 # read the images in using a function and access the second channel (green)
@@ -108,7 +108,7 @@ w = pysal.lib.weights.lat2W(landsize, landsize)
 
 
 # function to read image and calculate Moran I
-def funcReadAndMoran (x):
+def get_moran_i (x):
     assert "str" in str(type(x)), "input doesn't seem to be a filepath"
     image = misc.imread(x)
     image = image[:, :, 1]  # selects the second channel which is green
