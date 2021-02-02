@@ -18,11 +18,6 @@ import imageio  # library to read images
 
 # check the current working directory
 os.getcwd()
-current_wd = p  # os.path.dirname(os.path.abspath(__file__)) #os.getcwd()
-
-# check again
-print(current_wd)
-
 # gather image output
 output_folder = os.path.join(os.getcwd(), "data/results/images/")  # os.path.abspath("output")
 # check for the right folder
@@ -109,9 +104,8 @@ def get_moran_i (x, dim, layer):
     # create a spatial weights matrix
     w = lps.weights.lat2W(dim, dim)
     assert "str" in str(type(x)), "input doesn't seem to be a filepath"
-    image = imageio.imread(x)
-    image = image[:, :, layer]  # selects the second channel (1) which is green
-    assert "array" in str(type(image)), "input doesn't seem to be an array"
+    image = imageio.imread(x)[:,:,layer]  # selects the second channel (1) which is green
+    assert "Array" in str(type(image)), "input doesn't seem to be an array"
     assert len(image.shape) == 2, "non 2-d array, input must be a 2d array"
     mi = esda.Moran(image, w)
     del image
@@ -119,7 +113,7 @@ def get_moran_i (x, dim, layer):
 
 
 # read in images and do Moran I
-img_gen['moran_i'] = img_gen['path'].apply(get_moran_i, dim=128, layer=1)
+img_gen['moran_i'] = img_gen['path'].apply(get_moran_i, dim=128, layer=3)
 
 # write to csv
 img_gen.to_csv(path_or_buf="data/results/test_data_moran_i.csv")
