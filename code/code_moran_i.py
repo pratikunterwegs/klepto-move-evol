@@ -103,15 +103,14 @@ from pysal.explore.esda.moran import Moran
 
 # get image size, assuming square
 landsize = (512)  # this should be set manually
-# create a spatial weights matrix
-w = pysal.lib.weights.lat2W(landsize, landsize)
-
 
 # function to read image and calculate Moran I
-def get_moran_i (x):
+def get_moran_i (x, dim, layer):
+    # create a spatial weights matrix
+    w = pysal.lib.weights.lat2W(dim, dim)
     assert "str" in str(type(x)), "input doesn't seem to be a filepath"
-    image = misc.imread(x)
-    image = image[:, :, 1]  # selects the second channel which is green
+    image = imageio.imread(x)
+    image = image[:, :, layer]  # selects the second channel (1) which is green
     assert "array" in str(type(image)), "input doesn't seem to be an array"
     assert len(image.shape) == 2, "non 2-d array, input must be a 2d array"
     mi = Moran(image, w)
@@ -120,15 +119,9 @@ def get_moran_i (x):
 
 
 # read in images and do Moran I
-imgMoran = list(map(funcReadAndMoran, imgFilesToProcess))
-
-# get as numpy array
-dfarray = np.asarray(imgMoran)
-
-# add array as pd df
-imgId['morani'] = dfarray
+img_gen['moran_i'] = img_gen['path'].apply(get_moran_i, dim=128, layer=1)
 
 # write to csv
-imgId.to_csv(path_or_buf="landMoranVals_no_k.csv")
+img_gen.to_csv(path_or_buf="data/results/test_data_moran_i.csv")
 
 # ends here
