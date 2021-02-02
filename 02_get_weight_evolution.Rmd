@@ -59,7 +59,7 @@ get_sim_weight_evol(data_folder = param_combinations$folder_path[1],
 temp_gen_data <- lapply(param_combinations$folder_path, 
                         function(x) {
                           get_sim_weight_evol(data_folder = x,
-                                              generations = seq(1, 100, 10),
+                                              generations = seq(1, 100, 1),
                                               which_weight = c(3, 5, 7))
                         }
 )
