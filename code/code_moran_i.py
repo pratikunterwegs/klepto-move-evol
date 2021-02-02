@@ -98,8 +98,8 @@ img_gen['p_clueless'] = img_gen['path'].apply(get_prop_plateau, dim=128, layer=3
 
 
 # read the images in using a function and access the second channel (green)
-import pysal.lib
-from pysal.explore.esda.moran import Moran
+import libpysal as lps
+import esda
 
 # get image size, assuming square
 landsize = (512)  # this should be set manually
@@ -107,13 +107,13 @@ landsize = (512)  # this should be set manually
 # function to read image and calculate Moran I
 def get_moran_i (x, dim, layer):
     # create a spatial weights matrix
-    w = pysal.lib.weights.lat2W(dim, dim)
+    w = lps.weights.lat2W(dim, dim)
     assert "str" in str(type(x)), "input doesn't seem to be a filepath"
     image = imageio.imread(x)
     image = image[:, :, layer]  # selects the second channel (1) which is green
     assert "array" in str(type(image)), "input doesn't seem to be an array"
     assert len(image.shape) == 2, "non 2-d array, input must be a 2d array"
-    mi = Moran(image, w)
+    mi = esda.Moran(image, w)
     del image
     return mi.I
 
