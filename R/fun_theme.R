@@ -13,7 +13,7 @@ theme_custom <- function(grid = FALSE, ...) {
       axis.line = ggplot2::element_line(
         colour = "black",
         size = 0.3),
-      strip.background = element_rect(colour = NA,
+      strip.background = ggplot2::element_rect(colour = NA,
                                       fill = "lightgrey")
       # panel.background = ggplot2::element_rect(
       #   fill = "grey99"
