@@ -47,11 +47,11 @@ data/*
 !data/data.csv
 !data/results/data_funresp_gen_coefs.csv
 
-sim_output/*
-!sim_output/00_data_exists.txt
-!sim_output/data_parameters/
-!sim_output/data.csv
-!sim_output/results/data_funresp_gen_coefs.csv
+data_sim/*
+!data_sim/00_data_exists.txt
+!data_sim/data_parameters/
+!data_sim/data.csv
+!data_sim/results/data_funresp_gen_coefs.csv
 
 # any word files
 *.docx
