@@ -14,10 +14,12 @@ library(kleptomoveMS)
 
 ```{r}
 # read parameter combinations
-data = fread("data/results/data_param_combinations.csv")
+data = fread("data_sim/results/data_param_combinations.csv")
+
+data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
 
 # no random
-data = data[sim_type != "random", ]
+# data = data[sim_type != "random", ]
 ```
 
 ```{r}
@@ -34,5 +36,5 @@ data = data[, unlist(summary_data, recursive = F),
 
 ```{r}
 # save data
-fwrite(data, file = "data/results/data_strategy_gen.csv")
+fwrite(data, file = "data_sim/results/data_strategy_gen.csv")
 ```
