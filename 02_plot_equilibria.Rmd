@@ -13,16 +13,19 @@ library(patchwork)
 ```
 
 ```{r}
-data <- fread("data/results/data_strategy_gen.csv")
+data <- fread("data_sim/results/data_strategy_gen.csv")
 # rearrange
 data$sim_type <- factor(data$sim_type,
-  levels = c("foragers", "obligate", "facultative")
+  levels = c("foragers", "obligate", "facultative", "random")
 )
+
+# remove random
+data = data[sim_type != "random",]
 ```
 
 ```{r}
 # basic plot
-# fig_strategy_gen <-
+fig_strategy_gen <-
   ggplot(data[sim_type != "foragers" &
     (gen %% 10 == 0 | gen < 100)]) +
   geom_line(aes(gen, value,
@@ -40,7 +43,7 @@ data$sim_type <- factor(data$sim_type,
   scale_color_manual(
     values = qualitative_hcl(3, "Set2", l = 40, rev = T)
   ) +
-  theme_custom(grid = T) +
+  kleptomoveMS::theme_custom(grid = F) +
   scale_x_log10() +
   labs(
     y = "proportion of population",
@@ -55,16 +58,16 @@ ggsave(fig_strategy_gen,
 )
 ```
 
-### Plot for regrowth = 0.1
+### Plot for regrowth = 0.01
 
 ```{r}
-data_0.1 <- data[(gen %% 10 == 0 | gen < 100) & regrowth == 0.1]
+data_0.01 <- data[(gen %% 10 == 0 | gen < 100) & regrowth == 0.01]
 
 # split
-data_0.1 <- split(data_0.1, by = "sim_type")
+data_0.01 <- split(data_0.01, by = "sim_type")
 
 # subfigures
-subfig_strategy_gen <- lapply(data_0.1, function(df) {
+subfig_strategy_gen <- lapply(data_0.01, function(df) {
   ggplot(df) +
     geom_line(aes(gen, value,
       col = variable,
@@ -100,7 +103,7 @@ subfig_strategy_gen <- lapply(data_0.1, function(df) {
 ### Plot fitness
 
 ```{r}
-data_summary <- data[(regrowth == 0.1) &
+data_summary <- data[(regrowth == 0.01) &
   (gen %% 10 == 0 | gen < 100)]
 data_summary <- unique(data_summary,
   by = c(
@@ -190,6 +193,7 @@ data_fitness_summary <-
   .SDcols = c("pop_fitness"),
   by = c("sim_type", "regrowth")
   ]
+
 # boxplot fitness
 fig_strategy_fitness <-
   ggplot() +
@@ -237,7 +241,7 @@ fig_strategy_fitness <-
   scale_x_continuous(breaks = c(0.001,
                                 0.05,
                                 0.1, 0.25))+
-  theme_custom(base_size = 8) +
+  kleptomoveMS::theme_custom(base_size = 8) +
   # kleptomoveMS::theme_custom()+
   labs(
     x = "regrowth rate",
