@@ -20,10 +20,11 @@ library(colorspace)
 
 ```{r}
 # read back in
-data <- fread("data/results/data_early_0_100_weight_evolution.csv")
+data <- fread("data_sim/results/data_early_0_100_weight_evolution.csv")
+# data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
 
 # select growth rates of 0.001, 0.01, 0.1, 0.25
-focus_r = c(0.001, 0.01, 0.1, 0.25)
+focus_r = c(0.001, 0.01, 0.05)
 data = data[regrowth %in% focus_r,]
 
 # handle weight value ranges and use UPPER bound
@@ -140,7 +141,7 @@ subplots_fig3 = lapply(data_plot, function(df) {
 })
 
 figure_3 =
-  wrap_plots(subplots_fig3[c("obligate", "random", "facultative")])+
+  wrap_plots(subplots_fig3[c("foragers", "obligate", "random", "facultative")])+
     plot_annotation(
       tag_levels = "a",
       tag_prefix = "(",
