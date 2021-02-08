@@ -19,6 +19,9 @@ data$sim_type <- factor(data$sim_type,
   levels = c("foragers", "obligate", "facultative", "random")
 )
 
+# remove excess growth
+data = data[regrowth <= 0.1,]
+
 # remove random
 data = data[sim_type != "random",]
 ```
@@ -171,7 +174,7 @@ ggsave(fig_strategy_gen,
 
 ```{r}
 # get last 10 generations
-data_equi <- data[gen > max(gen) - 10, ]
+data_equi <- data[gen > max(gen) - 10 & regrowth <= 0.05, ]
 
 # look at handling and fitness
 cols_we_want = setdiff(
@@ -262,7 +265,8 @@ ggsave(
 ```{r}
 # get the stealing and foraging over regrowth rates
 data_strategy_summary = data_equi[variable %in% c("stealing",
-                                                  "foraging")]
+                                                  "foraging") &
+                                    regrowth <= 0.05, ]
 
 # summarise proportion per sim type and growth rate
 data_strategy_summary = 
@@ -282,7 +286,7 @@ data_strategy_summary = split(data_strategy_summary,
 
 ```{r}
 # define palette
-pal = qualitative_hcl(3, "Set2", l = 40, rev = T)
+pal = qualitative_hcl(3, "Set2", l = 50, rev = T)
 
 subfigures_strategy_growth = Map(function(df, name) {
   yaxis_name = sprintf("%% %s", name)
@@ -340,7 +344,7 @@ all_plots = append(line_plots, point_plots)
 
 ```{r}
 # wrap all figures
-figure_2 = 
+figure_2 =
   wrap_plots(all_plots) +
     plot_annotation(
       tag_levels = "a",
