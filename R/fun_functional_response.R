@@ -12,10 +12,10 @@ bin_vec <- function(x, binsize) {
   maxx <- max(x, na.rm = TRUE)
 
   # handle bad maxx
-  if (maxx == 0 | is.infinite(maxx) | is.nan(maxx) | is.na(maxx)) {
+  if (any(maxx == 0, is.infinite(maxx), is.nan(maxx), is.na(maxx))) {
     maxx <- 1
   }
-
+  message(maxx)
   seqx <- seq(0, maxx, by = binsize)
 
   cut(x, breaks = seqx, include.lowest = T)
@@ -134,16 +134,23 @@ do_read_data <- function(
 
   # bind within list elements
   data_proc <- lapply(data_proc, data.table::rbindlist)
+  
+  # check for data.table inside list
+  assertthat::assert_that(
+    all(vapply(data_proc, data.table::is.data.table, FUN.VALUE = T)),
+    msg = "data_read: not all data.tables"
+  )
 
   # assign name
   data_proc <- Map(function(df, name) {
-    df[, variable := name]
+    df$variable = name
+    return(df)
   }, data_proc, names(data_proc))
 
   # change names
   data_proc <- lapply(data_proc, function(df) {
     data.table::setnames(df, old = "value", new = unique(df$variable))
-    df[, c("variable") := NULL]
+    data.table::set(df, i = NULL, j = "variable", NULL)
   })
 
   data_proc <- Reduce(function(dt1, dt2) {
@@ -169,6 +176,8 @@ do_read_data <- function(
 #' @return A data.table with the functional response over cells grouped
 #' by items and total number of agents.
 #' @export
+#' 
+#' @import data.table
 #'
 get_functional_response <-
   function(response = c(
@@ -204,8 +213,11 @@ get_functional_response <-
     )
 
     # floor drivers to the nearest floor value
+    # data.table::set(data_proc, i = NULL,
+    #     j = drivers,
+    #     value = lapply(data_proc[drivers], bin_vec, binsize = round_value))
     data_proc[, (drivers) := lapply(.SD, bin_vec, binsize = round_value),
-      .SD = drivers
+      .SDcols = drivers
     ]
 
     # subset data for driver and response columnsd
@@ -221,7 +233,7 @@ get_functional_response <-
     # get mean intake rate per unique driver and gen value
     data_fun_response <-
       data_fun_response[, lapply(.SD, mean),
-        .SD = c("value"),
+        .SDcols = c("value"),
         by = c(drivers, "variable", "gen")
       ]
 
