@@ -4,7 +4,7 @@
 \alias{get_strategy_gen}
 \title{Get strategy counts over generations.}
 \usage{
-get_strategy_gen(filepath)
+get_strategy_gen(filepath, n_agents = 10000, n_time = 400)
 }
 \arguments{
 \item{filepath}{The filepath to data. Must contain a \code{sourceMe.R}.}
