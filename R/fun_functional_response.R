@@ -15,7 +15,6 @@ bin_vec <- function(x, binsize) {
   if (any(maxx == 0, is.infinite(maxx), is.nan(maxx), is.na(maxx))) {
     maxx <- 1
   }
-  message(maxx)
   seqx <- seq(0, maxx, by = binsize)
 
   cut(x, breaks = seqx, include.lowest = T)
