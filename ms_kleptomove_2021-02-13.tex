@@ -2,6 +2,7 @@
 \usepackage[sc]{mathpazo} %Like Palatino with extensive math support
 \usepackage{fullpage}
 \usepackage{amsmath}
+\usepackage[normalem]{ulem}
 \RequirePackage[authoryear,sectionbib,sort]{natbib}
 \bibliographystyle{amnatnat}
 \linespread{1.7}
@@ -79,7 +80,7 @@
 
 \section{Abstract}
 
-Predicting and managing population distributions is likely to be key to ensuring species survive the Anthropocene.
+\sout{Predicting and managing population distributions is likely to be key to ensuring species survive the Anthropocene.
 Classical individual-to-population models of distributions are rarely mechanistic, and do not account for rapidly changing landscapes, individual variation within animal populations, or the effects of ecological conditions on the evolution of movement rules.
 Modern individual-based simulation models (IBMs) overcome these challenges by allowing multiple runs of the `tape of life' with both ecological and evolutionary mechanisms.
 Here, we take a spatially explicit, IBM approach to model the evolution of individual movement rules in the context of optimal foraging on a landscape with discrete prey items.
@@ -95,7 +96,7 @@ Finally, the effect of kleptoparasitism is to reduce prey extraction from the la
 %%
 Our study shows how IBMs can be used to gain insights into the ecological and evolutionary mechanisms behind individual-to-population distribution models.
 Furthermore, the evolution of directed movement is a key prerequisite for the establishment of behaviours that allow animals to exploit discrete, unpredictable resources.
-Mechanistic models of intermediate complexity should seriously be considered for predictive modelling populations which are expected to have many degrees of behavioural freedom.
+Mechanistic models of intermediate complexity should seriously be considered for predictive modelling populations which are expected to have many degrees of behavioural freedom.}
 
 \section{Introduction}
 
@@ -121,7 +122,7 @@ An increasingly powerful individual-to-population approach is individual-based s
 IBMs take a bottom-up view to encode many thousands of unique individuals with decision making mechanisms, and allow these individuals to move about and interact with their environment, and each other \citep{huston1988,deangelis2019}.
 In this way, simple movement and behavioural rules can give rise to complex, population-scale emergent effects across spatial and conceptual scales, including localised population dynamics \citep{stillman2010}, small-scale group-foraging \citep{amano2006}, intermediate-scale disease-spread \citep{scherer2020,jeltsch1997}, and large-scale mass migration \citep{guttal2010}.
 Conceptual and computational advances in IBMs \citep[][]{deangelis2018,deangelis2005} allow us to simulate a range of scenarios in unprecedented detail, and make general, testable predictions for population-level phenomena \citep[e.g.][]{spiegel2017}.
-IBMs have mostly been employed to tackle the issue of spatial scale and complexity in animal movement \citep{spiegel2017}, they are equally well suited to modelling its evolution \citep{netz2020,guttal2010,getz2016,getz2015}.
+IBMs have mostly been employed to tackle the issue of spatial scale and complexity in animal movement \citep{spiegel2017}, and they are equally well suited to modelling its evolution \citep{netz2020,guttal2010,getz2016,getz2015}.
 It is important to include just enough realism and complexity in IBMs, so as to obtain interpretable outcomes for both populations and landscapes, at ecological and evolutionary scales.
 For instance, \citeauthor{getz2015}'s (2015, 2016) work models unrealistic evolutionary processes, and \citeauthor{netz2020}'s multi-trophic model yields complex dynamics in which eco-evolutionary processes are difficult to disentangle.
 
@@ -134,7 +135,7 @@ Encoding kleptoparasitism as a consistent, inherited behaviour, versus condition
 Recording the attributes of every individual over the population's history allows us to examine how movement responses evolve, and their effects on population behaviour at ecological timescales.
 Finally, modelling a heterogeneous landscape allows the quantification of population distributions in relation to landscape quality, as well as landscape change (e.g. resource patchiness) [some citation here] in relation to the population's evolutionary trajectory.
 
-Presenting the outcomes of such a model here, we show that --- 1. Consistent population-scale activity equilibria are often reached even in complex models of ecology and evolution, --- 2. The evolution of behaviour requiring individual interactions (e.g. kleptoparasitism) lags the evolution of movement towards individuals. This movement is itself only evolved when direct landscape quality cues are lacking, --- 3. The functional response of intake in relation to competitor individuals depends on the behavioural strategies of competitors, and not only on their number, --- 4. The aggregative response of individuals in relation to landscape quality is strongly determined by their behavioural strategy, --- 5. The evolution of kleptoparasitism, indirectly facilitated by resource-scarce landscapes, reduces resource harvesting and restores pre-existing spatial-structure in the prey landscape.
+Presenting the outcomes of such a model here, we show that --- 1. Consistent population-scale activity equilibria are often reached even in complex models of ecology and evolution, --- 2. The evolution of behaviour requiring individual interactions (e.g. kleptoparasitism) lags the evolution of movement towards individuals. This movement is itself only evolved when other individuals are the best cues to long-term landscape quality, --- 3. The functional response of intake in relation to competitor individuals depends on the behavioural strategies of competitors, and not only on their number, --- 4. The aggregative response of individuals in relation to landscape quality is strongly determined by their behavioural strategy, --- 5. The evolution of kleptoparasitism, indirectly facilitated by resource-scarce landscapes, reduces resource harvesting and restores pre-existing spatial-structure in the prey landscape.
 
 % The journal does not have numbered sections in the main portion of
 % articles. Please refrain from using section references (à la
