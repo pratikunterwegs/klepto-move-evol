@@ -29,7 +29,7 @@
 %
 % (Thanks to Vlastimil Krivan for pointing this out to us!)
 
-\title{Animal Movement in the Presence of Competition: Insights from Individual Based Modelling}
+\title{Individual-to-population processes in the ecology and evolution of animal movement}
 
 % This version of the LaTeX template was last updated on
 % November 8, 2019.
@@ -99,21 +99,42 @@ Mechanistic models of intermediate complexity should seriously be considered for
 
 \section{Introduction}
 
-\paragraph{something movement ecology and lacking theory}
+The proximate, ecological causes and consequences of animal movement are now understood in unprecedented detail, but the ultimate causes and large-scale consequences are poorly understood.
+Animals, moving in response to internal and external stimuli, are key components of their ecosystems \citep{nathan2008,jeltsch2013}.
+The consequences of myriad individual movement responses to local environmental cues result in large-scale emergent phenomena such as population distributions, community assembly, and landscape change \citep{jeltsch2013,schlagel2020}.
+For instance, variation in dispersal movements between two species of bluebird \textit{Sialia sp.}, caused by differences in aggressiveness, results in unexpected cascading effects on inter-specific competition for habitat, and consequently on community composition \citep{duckworth2007}.
+Similarly, there are strong feedbacks between the movement of consumers and their landscapes; while megafauna such as American bison \textit{Bison bison} engineer their ecosystems by facilitating plant growth and nutrient transfer \citep[][]{geremia2019,geremia2020,leroux2018}, predators can structure the same landscapes indirectly by affecting the movement of herbivores \citep[the landscape of fear;][]{leroux2018,kohl2018,brown1999}.
+Yet movement behaviour leaves few clues as to its origins, and its long-term effects on populations and landscapes are yet more challenging to measure at an evolutionary scale.
+This makes studying the ultimate evolutionary causes, and the long-term and large-scale consequences of animal movement, especially suitable for modelling studies.
 
-something about animal distributions and why they are important --- emergent/emerged field of movement ecology --- theory on animal movement still short of the resolution of data now available --- analytical models for individual distribution were developed to fit or inspired by very large scale/coarse sampling --- do not take into account complex behavioural mechanisms, or individual differences
+Modelling the population-level outcomes of individual movement has long been studied within the framework of the archetypal individual-to-population model, \citeauthor{fretwell1970}'s (1970) ideal free distribution concept (IFD).
+The IFD implicitly assumes an evolutionary rationale for optimal movement, that individuals wish to maximise their intake (here serving as a proxy for fitness) on a resource landscape.
+Despite many extensions \citep[][]{tregenza1995,bernstein1988,cressman2006,meer1997}, and observed robustness \citep{sutherland1996} the IFD model is clearly unrealistic.
+Two conceptual shortcomings --- no depletion by consumers and a static resource landscape, and the lack of an evolutionary component --- are especially grave.
+Consumption by (mobile) animals can both facilitate \citep{geremia2019,leroux2018} and catastrophically alter resource landcapes [add grazers regime shift paper, elephant wp closure paper, geese grazing paper some bay in north america].
+This is especially true when resources such as prey individuals are themselves mobile in response to consumption \citep{kohl2018}.
+A population's evolutionary history on a landscape is also likely to shape individual responses to environmental cues at ecological timescales, as these are mostly drawn from a repertoire transmitted between generations.
+For instance, ungulate populations occupying a habitat for generations track resource waves better than those recently translocated into a novel habitat, as resource tracking improves over evolutionary time \citep[][]{jesmer2018}.
+These elements of biological realism rarely make for tractable analytical models, requiring a different approach.
 
-\paragraph{something about movement lacking evolutionary basis}
+An increasingly powerful individual-to-population approach is individual-based simulation modelling (IBM) \citep{deangelis2005,deangelis2018,grimm2017,railsback2020,huston1988}.
+IBMs take a bottom-up view to encode many thousands of unique individuals with decision making mechanisms, and allow these individuals to move about and interact with their environment, and each other \citep{huston1988,deangelis2019}.
+In this way, simple movement and behavioural rules can give rise to complex, population-scale emergent effects across spatial and conceptual scales, including localised population dynamics \citep{stillman2010}, small-scale group-foraging \citep{amano2006}, intermediate-scale disease-spread \citep{scherer2020,jeltsch1997}, and large-scale mass migration \citep{guttal2010}.
+Conceptual and computational advances in IBMs \citep[][]{deangelis2018,deangelis2005} allow us to simulate a range of scenarios in unprecedented detail, and make general, testable predictions for population-level phenomena \citep[e.g.][]{spiegel2017}.
+IBMs have mostly been employed to tackle the issue of spatial scale and complexity in animal movement \citep{spiegel2017}, they are equally well suited to modelling its evolution \citep{netz2020,guttal2010,getz2016,getz2015}.
+It is important to include just enough realism and complexity in IBMs, so as to obtain interpretable outcomes for both populations and landscapes, at ecological and evolutionary scales.
+For instance, \citeauthor{getz2015}'s (2015, 2016) work models unrealistic evolutionary processes, and \citeauthor{netz2020}'s multi-trophic model yields complex dynamics in which eco-evolutionary processes are difficult to disentangle.
 
-why do animals evolve to move the way they do --- animal movement is entirely about correlation between proximate cues and short-term outcomes --- evolutionary thinking is lacking and mostly related to game theory (habitat selection games) --- ignores the stochasticity of real individuals, also behavioural mechanisms, and individual differences (i suppose)
+Optimal foraging on a heterogeneous resource landscape is a scenario well suited to exploring individual-to-population processes in the ecology and evolution of animal movement.
+The extensive literature on models in a foraging context, and their wide appeal provides a rich seam of inspiration \citep{vahl2005,vahl2005a,tregenza1995,sutherland1996,bernstein1988,cressman2006,garay2015}, and suggests broad applicability to real systems \citep{stillman2010,sutherland1996}.
+Furthermore, an intermediate level of mechanistic complexity is easily included through several biologically plausible considerations: (1) discrete, depletable prey items with a handling time, (2) interference competition in the form of kleptoparasitism, and (3) interference as a fixed or conditional response.
+Modelling discrete prey items which can be removed introduces exploitation competition, addressing an important shortcoming in analytical models \citep[][]{fretwell1970,cressman2006,garay2015}.
+A handling time per item allows individuals to be susceptible to interference in the form of kleptoparasitism, which is a behavioural strategy common across animal taxa \citep[][]{iyengar2008}.
+Encoding kleptoparasitism as a consistent, inherited behaviour, versus conditioning it on local environmental cues allows a comparison between plastic and implastic populations [a nice citation here?].
+Recording the attributes of every individual over the population's history allows us to examine how movement responses evolve, and their effects on population behaviour at ecological timescales.
+Finally, modelling a heterogeneous landscape allows the quantification of population distributions in relation to landscape quality, as well as landscape change (e.g. resource patchiness) [some citation here] in relation to the population's evolutionary trajectory.
 
-\paragraph{the individual absed modelling approach}
-
-why individual based simulation modelling --- increase in computational power --- allows modelling the mechanisms underlying the behaviour of large numbers of individuals --- can give rise to complex emergent phenomena (examples) --- IBMs often different results from analytical models
-
-\paragraph{what we have done}
-
-we chose a classic scenario that has the potential to span conceptual and spatial scales (individual foraging with different kinds of competition) --- we implemented a plausible individual based model and compared the results to predictions from the literature --- we find that --- 1. behavioural mechanisms are very important for the observed ecological outcomes, but ecological equilibria are often reached, --- 2. the ecology of moving with very reduced cues selects for the evolution of a second cue channel (moving towards handlers), which in turn makes the ecological phenomenon of kleptoparasitism possible, --- 3. functional response of intake depends on the behavioural strategies of nearby competitors, and not only on their number, --- 4. the aggregative response is better determined from a stable indicator of landscape productivity due to non-independence of short term prey abundance but the IFD breaks down with Kleptoparasitism, --- 5. kleptoparasitism has a similar landscape effect as predation (maybe supplement)
+Presenting the outcomes of such a model here, we show that --- 1. Consistent population-scale activity equilibria are often reached even in complex models of ecology and evolution, --- 2. The evolution of behaviour requiring individual interactions (e.g. kleptoparasitism) lags the evolution of movement towards individuals. This movement is itself only evolved when direct landscape quality cues are lacking, --- 3. The functional response of intake in relation to competitor individuals depends on the behavioural strategies of competitors, and not only on their number, --- 4. The aggregative response of individuals in relation to landscape quality is strongly determined by their behavioural strategy, --- 5. The evolution of kleptoparasitism, indirectly facilitated by resource-scarce landscapes, reduces resource harvesting and restores pre-existing spatial-structure in the prey landscape.
 
 % The journal does not have numbered sections in the main portion of
 % articles. Please refrain from using section references (à la
