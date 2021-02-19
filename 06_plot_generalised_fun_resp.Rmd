@@ -12,9 +12,6 @@ library(ggplot2)
 library(colorspace)
 library(patchwork)
 
-# custom functions
-source("code/functional_response.R")
-
 # summary function
 multsum <- function(x) {
   list(mean = mean(x),
@@ -38,10 +35,10 @@ get_lower <- function(x) {
 
 ```{r}
 # read general fun response and split by sim type
-data <- fread("data/results/data_funresp_agents.csv")
+data <- fread("data_sim/results/data_funresp_agents.csv")
 
 # get specific regrowths
-data <- data[regrowth %in% c(0.001, 0.01, 0.1, 0.25), ]
+data <- data[regrowth %in% c(0.001, 0.01, 0.05), ]
 ```
 
 ### Summarise data over generations
@@ -76,7 +73,7 @@ subfig_fun_response <-
     ggplot(df[])+
       geom_point(aes(total_agents_num, value.mean,
                      col = variable),
-                 size = 0.5,
+                 # size = 0.5,
                  shape = 1,
                  show.legend = F)+
       facet_grid(sim_type ~ regrowth)+
@@ -92,7 +89,8 @@ subfig_fun_response <-
   })
 
 # wrap figures together
-fig_fun_response <- wrap_plots(subfig_fun_response[c(
+fig_fun_response <-
+  wrap_plots(subfig_fun_response[c(
   "foragers",
   "obligate",
   "facultative"
@@ -115,9 +113,9 @@ fig_fun_response <-
 ### Get data
 
 ```{r}
-data <- fread("data/results/data_funresp_strategy.csv")
+data <- fread("data_sim/results/data_funresp_strategy.csv")
 # get specific regrowths
-data <- data[regrowth %in% c(0.001, 0.01, 0.1, 0.25), ]
+data <- data[regrowth %in% c(0.001, 0.01, 0.05), ]
 ```
 
 ### Subset data and summarise
@@ -166,7 +164,8 @@ subfig_resp_forager <- lapply(data_resp_forager, function(df) {
 })
 
 # wrap
-fig_resp_forager <- wrap_plots(subfig_resp_forager[
+fig_resp_forager <-
+  wrap_plots(subfig_resp_forager[
   c("foragers", "obligate", "facultative")
 ], ncol = 1)+
   plot_annotation(
@@ -213,12 +212,12 @@ fig_resp_klepts <- wrap_plots(subfig_resp_klept[
 
 ## Compare total and strategy-wise total functional response
 
-### Process response to all agents at r_max = 0.1
+### Process response to all agents at r_max = 0.01
 
 ```{r}
 # collect data at rmax = 0.1
 data_funresp_total <- lapply(data_summary, function(x) {
-  x[, tag := "by strategy"][regrowth == 0.1, ]
+  x[, tag := "by strategy"][regrowth == 0.01, ]
 })
 
 # fix names
@@ -268,12 +267,12 @@ subfig_funresp_total <-
   })
 ```
 
-### Process response to strategies at r_max = 0.1
+### Process response to strategies at r_max = 0.01
 
 ```{r}
 # same for foragers
 subfig_resp_forager <- lapply(data_resp_forager, function(df) {
-  df <- df[regrowth == 0.1,]
+  df <- df[regrowth == 0.01,]
   ggplot(df)+
     geom_errorbar(aes(foragers_num,
                         ymin = value.mean - value.sd,
@@ -305,7 +304,7 @@ subfig_resp_forager <- subfig_resp_forager[
 # subset and remake figure
 subfig_resp_klept <- 
   lapply(data_resp_klept, function(df) {
-    df <- df[regrowth == 0.1, ]
+    df <- df[regrowth == 0.01, ]
     ggplot(df)+
       geom_errorbar(aes(klepts_num,
                         ymin = value.mean - value.sd,
@@ -341,7 +340,7 @@ subfig_resp_klept <- subfig_resp_klept[
 subfig_all <- append(subfig_funresp_total,
                      values = append(subfig_resp_forager,
                                      subfig_resp_klept))
-figure_functional_response <- 
+figure_functional_response <-
   wrap_plots(
   subfig_all,
   design = "ABC\nDEF\n#GH"
