@@ -13,6 +13,8 @@ library(glue)
 library(ggplot2)
 library(data.table)
 
+library(kleptomoveMS)
+
 library(colorspace)
 ```
 
@@ -20,7 +22,7 @@ Read the capacity layer.
 
 ```{r}
 # read in the capacity
-capacity <- png::readPNG("data/data_parameters/kernels32.png")[, , 1]
+capacity <- png::readPNG("data_sim/data_parameters/kernels32.png")[, , 1]
 
 max_capacity <- 5L
 
@@ -94,7 +96,7 @@ data <- crossing(
 # get folders
 data$folder_path <- glue_data(
   .x = data,
-  "data/sim_{sim_type}_rep_{replicate}_\\
+  "data_sim/sim_{sim_type}_rep_{replicate}_\\
                                       gro_{regrowth}"
 )
 ```
@@ -104,7 +106,7 @@ Summarise the data and read it in, using the helper functions.
 ```{r}
 # get data
 data$data_summary <- lapply(data$folder_path,
-  get_sim_summary,
+  get_agent_distribution,
   capacity_matrix = capacity
 )
 
@@ -113,5 +115,5 @@ data <- unnest(data,
   cols = "data_summary"
 )
 
-fwrite(data, "data/results/data_agent_distribution.csv")
+fwrite(data, "data_sim/results/data_agent_distribution.csv")
 ```
