@@ -1,0 +1,179 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Landscape effects
+
+```{r}
+library(data.table)
+library(ggplot2)
+library(colorspace)
+library(patchwork)
+```
+
+## Read p clueless
+
+```{r}
+# focus r
+focus_r = c(0.01)
+
+# read clueless data
+data = fread("data_sim/results/data_p_clueless.csv")
+data[, path :=  NULL]
+data = data[regrowth %in% focus_r,]
+data[, sim_type := ifelse(sim_type == "forager", "foragers", sim_type)]
+
+# remove v1
+data[, V1 := NULL]
+
+# remove random
+data = data[sim_type != "random"]
+```
+
+## Read weight evol
+
+```{r}
+data_wt = fread("data_sim/results/data_early_0_100_weight_evolution.csv")
+
+# select growth rates of 0.001, 0.01, 0.1, 0.25
+data_wt = data_wt[regrowth %in% focus_r,]
+
+# handle weight value ranges and use UPPER bound
+data_wt[, weight_num := 
+       stringi::stri_extract_last(weight_value, 
+                                  regex = "[-0-9]+\\.\\d{2}")]
+# assign numeric
+data_wt[, weight_num := as.numeric(weight_num)]
+
+# remove random
+data_wt = data_wt[sim_type != "random"]
+
+# reorder data factors
+data_wt$sim_type = factor(data_wt$sim_type,
+                          levels = c("foragers", "obligate", "facultative"))
+```
+
+### Klept bias
+
+```{r}
+klept_bias = data_wt[weight_id == 5 & weight_num < 0 & sim_type != "facultative", ]
+klept_bias = klept_bias[, list(klept_strategy = sum(weight_prop)),
+                        by = c("sim_type", "replicate", "regrowth", "gen")]
+```
+
+### Handler strategy
+
+```{r}
+handler_strategy = data_wt[sim_type == "facultative" & weight_id == 7 & weight_num < 0,]
+handler_strategy = handler_strategy[, list(klept_strategy = sum(weight_prop)),
+                        by = c("sim_type", "replicate", "regrowth", "gen")]
+```
+
+### Merge weight strategy
+
+```{r}
+data_wt = rbindlist(list(klept_bias, handler_strategy))
+```
+
+
+## Read proportion strategy data
+
+```{r}
+# get data
+data_strat = fread("data_sim/results/data_strategy_gen.csv")
+data_strat= data_strat[sim_type != "random"]
+
+# subset for klept prop
+data_strat = data_strat[variable == "stealing" &
+                          regrowth %in% focus_r, ]
+
+# dcast
+data_strat = dcast(data_strat, sim_type + replicate + 
+                     regrowth + gen + pop_fitness + conflicts ~ variable,
+                   value.var = "value")
+
+# join with land data
+data_strat = merge(data_strat, data, 
+                   by = c("gen", "replicate", "regrowth", "sim_type"),
+                   all.y = TRUE)
+
+# join with data_wt
+data_strat = merge(data_strat, data_wt)
+
+# melt
+data = copy(data_strat)
+
+data = melt(data, 
+            id.vars = c("gen", "replicate", 
+                        "regrowth", "sim_type"))
+
+# set factor order
+data$sim_type = factor(data$sim_type,
+                          levels = c("foragers", "obligate", "facultative"))
+
+# remove variables
+data = data[variable %in% 
+              c("stealing", "p_clueless", "klept_strategy"), ]
+
+# set factor
+data$variable = factor(data$variable,
+                       levels = c("p_clueless", "klept_strategy", "stealing"))
+
+# split data
+data = split(data, by = "sim_type")
+```
+
+
+```{r}
+# make subplots
+subplots = lapply(data, function(df) {
+  
+ggplot(df)+
+  geom_path(aes(gen, value,
+                col = variable,
+                group = interaction(replicate, variable)))+
+  scale_colour_discrete_diverging(
+    palette = "Red-Green",
+    # l1 = 50,
+    l2 = 50,
+    rev = T
+  )+
+  facet_grid( ~ sim_type)+
+  coord_cartesian(xlim = c(0, 75))+
+  kleptomoveMS::theme_custom()+
+  theme(
+    # legend.position = "top"
+  )+
+  labs(
+    x = "Generation",
+    y = NULL
+  )
+})
+
+
+# wrap plots
+figure_6 =
+wrap_plots(subplots[c("foragers", 
+                      "obligate", "facultative")])+
+    plot_annotation(
+      tag_levels = "a",
+      tag_prefix = "(",
+      tag_suffix = ")"
+    ) &
+    theme(plot.tag = element_text(
+      face = "bold",
+      size = 8
+    ))
+```
+
+```{r}
+ggsave(
+  figure_6,
+  height = 3,
+  width = 6,
+  filename = "figures/fig_06_landscape_effect.png"
+)
+```
+
