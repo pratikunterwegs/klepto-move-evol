@@ -119,25 +119,24 @@ subplots_fig3 = lapply(data_plot, function(df) {
              colour = "grey")+
   geom_line(aes(gen, value,
                  col = variable == "pref_handlers",
-                 group = interaction(sim_type, replicate, regrowth, variable)),
-             size = 0.1)+
-  geom_point(aes(gen, value,
-                 col = variable == "pref_handlers"),
-             size = 0.1,
-             shape = 1)+
+                 group = interaction(sim_type, replicate, regrowth, variable)))+
+  # geom_point(aes(gen, value,
+  #                col = variable == "pref_handlers"),
+  #            size = 0.1,
+  #            shape = 1)+
   scale_colour_discrete_diverging(
-    palette = "Blue-Yellow 2", rev = T
+    palette = "Blue-Yellow", rev = T
   )+
   scale_x_sqrt(breaks = c(1, 10, 25, 50, 100))+
   scale_y_continuous(labels = scales::percent)+
-  coord_cartesian(ylim = c(0, 1))+
+  coord_equal(ylim = c(0, 1), 
+              ratio = 10)+
   facet_grid(~ regrowth,
              labeller = label_both)+
   kleptomoveMS::theme_custom(base_size = 8)+
   theme(title = element_text(size = 8))+
   labs(x = "generation",
-         y = "% population",
-       title = unique(df$sim_type))
+         y = "% population")
 })
 
 figure_3 =
@@ -158,7 +157,7 @@ figure_3 =
 ggsave(
   figure_3,
   filename = "figures/fig_03_preadaptation.png",
-  width = 8, height = 5
+  width = 8, height = 4
 )
 ```
 
