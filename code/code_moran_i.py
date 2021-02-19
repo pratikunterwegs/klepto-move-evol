@@ -35,24 +35,25 @@ for root, directories, filenames in os.walk(output_folder):
 img_files = list(filter(lambda x: "png" in x and "rep" in x, img_files))
 
 
-# function to get image generation and rep number
+# function to get image generation
 def get_image_generation (x):
     assert "str" in str(type(x)), "input doesn't seem to be a filepath"
-    # assert "landscape" in x, "input is not a landscape"
-    # name = ((x.split("landscape")[1]))
     generation = int(re.findall(r'(\d{5})', x)[0])
     return generation
 
 
+# get sim type
+def get_image_data (x):
+    assert "str" in str(type(x)), "input doesn't seem to be a filepath"
+    sim_type = re.findall(r'(obligate|facultative|forager|random)', x)[0]
+    sim_gen = int(re.findall(r'(\d{5})', x)[0])
+    sim_rmax = float([re.split('/|_', x)[i] for i in [12]][0]) # unfortunately hardcoded
+    return [sim_type, sim_gen, sim_rmax, x]
+
 # get the image identity to match to parameters later
-img_gen = list(map(get_image_generation, img_files))
-# make a pd df
-img_gen = pd.DataFrame({
-    'gen': img_gen,
-    'path': img_files
-})
-# make gen integer
-img_gen['gen'] = pd.to_numeric(img_gen['gen'])
+img_data = list(map(get_image_data, img_files))
+# make data frame
+img_data = pd.DataFrame.from_records(img_data, columns=['sim_type','gen','regrowth','path'])
 
 
 # function to read images, get gradient, and count non zero
@@ -69,9 +70,9 @@ def get_prop_plateau (x, dim, layer):
 
 
 # run over files
-img_gen['p_clueless'] = img_gen['path'].apply(get_prop_plateau, dim=512, layer=3)
+img_data['p_clueless'] = img_data['path'].apply(get_prop_plateau, dim=512, layer=3)
 
-img_gen.to_csv("data_sim/results/test_clueless.csv")
+img_data.to_csv("data_sim/results/test_clueless.csv")
 
 # supplement code
 # test import by showing the n/2th landscape
