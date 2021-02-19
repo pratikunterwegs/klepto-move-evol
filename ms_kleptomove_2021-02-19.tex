@@ -80,23 +80,25 @@
 
 \section{Abstract}
 
-\sout{Predicting and managing population distributions is likely to be key to ensuring species survive the Anthropocene.
-Classical individual-to-population models of distributions are rarely mechanistic, and do not account for rapidly changing landscapes, individual variation within animal populations, or the effects of ecological conditions on the evolution of movement rules.
-Modern individual-based simulation models (IBMs) overcome these challenges by allowing multiple runs of the `tape of life' with both ecological and evolutionary mechanisms.
-Here, we take a spatially explicit, IBM approach to model the evolution of individual movement rules in the context of optimal foraging on a landscape with discrete prey items.
-We implement three plausible scenarios of how individuals are allowed to forage: (1) only forage, (2) only steal from other individuals, or only forage, and (3) condition foraging or stealing on environmental cues.
-We examined the evolved movement rules and population distributions of each scenario in relation to landscape productivity, in order to distill insights for ecological modelling.
-%%
-First, we show that all three scenarios lead to activity distribution equilibria, and stealing, or kleptoparasitism evolves when permitted. 
-% Differences in activity distributions among scenarios are more evident on high-productivity landscapes.
-Second, individual movement rules evolve to distinguish between successful and unsuccessful foragers; this pre-adaptation is essential to the persistence of fixed and conditional kleptoparasitism.
-Third, the functional response of intake to the presence of competitor individuals depends on competitor strategy.
-Fourth, individuals caught on `clueless plateaus' without movement cues lead to populations not equalising intake rates across landscape quality gradients.
-Finally, the effect of kleptoparasitism is to reduce prey extraction from the landscape and restore underlying spatial structure.
-%%
-Our study shows how IBMs can be used to gain insights into the ecological and evolutionary mechanisms behind individual-to-population distribution models.
-Furthermore, the evolution of directed movement is a key prerequisite for the establishment of behaviours that allow animals to exploit discrete, unpredictable resources.
-Mechanistic models of intermediate complexity should seriously be considered for predictive modelling populations which are expected to have many degrees of behavioural freedom.}
+To be added.
+
+% \sout{Predicting and managing population distributions is likely to be key to ensuring species survive the Anthropocene.
+% Classical individual-to-population models of distributions are rarely mechanistic, and do not account for rapidly changing landscapes, individual variation within animal populations, or the effects of ecological conditions on the evolution of movement rules.
+% Modern individual-based simulation models (IBMs) overcome these challenges by allowing multiple runs of the `tape of life' with both ecological and evolutionary mechanisms.
+% Here, we take a spatially explicit, IBM approach to model the evolution of individual movement rules in the context of optimal foraging on a landscape with discrete prey items.
+% We implement three plausible scenarios of how individuals are allowed to forage: (1) only forage, (2) only steal from other individuals, or only forage, and (3) condition foraging or stealing on environmental cues.
+% We examined the evolved movement rules and population distributions of each scenario in relation to landscape productivity, in order to distill insights for ecological modelling.
+% %%
+% First, we show that all three scenarios lead to activity distribution equilibria, and stealing, or kleptoparasitism evolves when permitted. 
+% % Differences in activity distributions among scenarios are more evident on high-productivity landscapes.
+% Second, individual movement rules evolve to distinguish between successful and unsuccessful foragers; this pre-adaptation is essential to the persistence of fixed and conditional kleptoparasitism.
+% Third, the functional response of intake to the presence of competitor individuals depends on competitor strategy.
+% Fourth, individuals caught on `clueless plateaus' without movement cues lead to populations not equalising intake rates across landscape quality gradients.
+% Finally, the effect of kleptoparasitism is to reduce prey extraction from the landscape and restore underlying spatial structure.
+% %%
+% Our study shows how IBMs can be used to gain insights into the ecological and evolutionary mechanisms behind individual-to-population distribution models.
+% Furthermore, the evolution of directed movement is a key prerequisite for the establishment of behaviours that allow animals to exploit discrete, unpredictable resources.
+% Mechanistic models of intermediate complexity should seriously be considered for predictive modelling populations which are expected to have many degrees of behavioural freedom.}
 
 \section{Introduction}
 
@@ -110,18 +112,17 @@ This makes studying the ultimate evolutionary causes, and the long-term and larg
 
 Modelling the population-level outcomes of individual movement has long been studied within the framework of the archetypal individual-to-population model, \citeauthor{fretwell1970}'s (1970) ideal free distribution concept (IFD).
 The IFD implicitly assumes an evolutionary rationale for optimal movement, that individuals wish to maximise their intake (here serving as a proxy for fitness) on a resource landscape.
-Despite many extensions \citep[][]{tregenza1995,bernstein1988,cressman2006,meer1997}, and observed robustness \citep{sutherland1996} the IFD model is clearly unrealistic.
-Two conceptual shortcomings --- no depletion by consumers and a static resource landscape, and the lack of an evolutionary component --- are especially grave.
-Consumption by (mobile) animals can both facilitate \citep{geremia2019,leroux2018} and catastrophically alter resource landcapes [add grazers regime shift paper, elephant wp closure paper, geese grazing paper some bay in north america].
-This is especially true when resources such as prey individuals are themselves mobile in response to consumption \citep{kohl2018}.
+The IFD concept's many extensions accommodate depletion, migration dynamics, and limitations on movement \citep[][]{tregenza1995,bernstein1988,cressman2006,meer1997,matsumura2010}.
+However, the oversimplification of both consumer-resource dynamics and the evolution of movement strategies \citep[e.g.][]{cressman2006} make for serious conceptual shortcoming.
+We already know that resource consumption by (mobile) animals can in some cases facilitate the regeneration of these resources \citep[][; see also \citealt{kotanen2013}]{geremia2019,leroux2018}, while in others catastrophically degrading them \citep{siero2019,koppel2008,dekoppel1997,kotanen2013}.
 A population's evolutionary history on a landscape is also likely to shape individual responses to environmental cues at ecological timescales, as these are mostly drawn from a repertoire transmitted between generations.
 For instance, ungulate populations occupying a habitat for generations track resource waves better than those recently translocated into a novel habitat, as resource tracking improves over evolutionary time \citep[][]{jesmer2018}.
-These elements of biological realism rarely make for tractable analytical models, requiring a different approach.
+These elements of biological realism, whether in isolation or combined, rarely make for tractable analytical models, requiring a different approach.
 
 An increasingly powerful individual-to-population approach is individual-based simulation modelling (IBM) \citep{deangelis2005,deangelis2018,grimm2017,railsback2020,huston1988}.
 IBMs take a bottom-up view to encode many thousands of unique individuals with decision making mechanisms, and allow these individuals to move about and interact with their environment, and each other \citep{huston1988,deangelis2019}.
-In this way, simple movement and behavioural rules can give rise to complex, population-scale emergent effects across spatial and conceptual scales, including localised population dynamics \citep{stillman2010}, small-scale group-foraging \citep{amano2006}, intermediate-scale disease-spread \citep{scherer2020,jeltsch1997}, and large-scale mass migration \citep{guttal2010}.
-Conceptual and computational advances in IBMs \citep[][]{deangelis2018,deangelis2005} allow us to simulate a range of scenarios in unprecedented detail, and make general, testable predictions for population-level phenomena \citep[e.g.][]{spiegel2017}.
+In this way, simple movement and behavioural rules can give rise to complex, population-scale emergent effects across spatial and conceptual scales, including localised population dynamics \citep{stillman2010}, small-scale group-foraging \citep{amano2006,zurell2015}, intermediate-scale disease-spread \citep{scherer2020,jeltsch1997}, and large-scale mass migration \citep{guttal2010}.
+Conceptual and computational advances in IBMs \citep[][]{deangelis2018,deangelis2005} allow us to simulate a range of scenarios in unprecedented detail, and make general, testable predictions for population-level phenomena \citep[e.g. animal space use, or life-history strategies; see][]{spiegel2017,schaefer2018}.
 IBMs have mostly been employed to tackle the issue of spatial scale and complexity in animal movement \citep{spiegel2017}, and they are equally well suited to modelling its evolution \citep{netz2020,guttal2010,getz2016,getz2015}.
 It is important to include just enough realism and complexity in IBMs, so as to obtain interpretable outcomes for both populations and landscapes, at ecological and evolutionary scales.
 For instance, \citeauthor{getz2015}'s (2015, 2016) work models unrealistic evolutionary processes, and \citeauthor{netz2020}'s multi-trophic model yields complex dynamics in which eco-evolutionary processes are difficult to disentangle.
@@ -137,14 +138,9 @@ Finally, modelling a heterogeneous landscape allows the quantification of popula
 
 Presenting the outcomes of such a model here, we show that --- 1. Consistent population-scale activity equilibria are often reached even in complex models of ecology and evolution, --- 2. The evolution of behaviour requiring individual interactions (e.g. kleptoparasitism) lags the evolution of movement towards individuals. This movement is itself only evolved when other individuals are the best cues to long-term landscape quality, --- 3. The functional response of intake in relation to competitor individuals depends on the behavioural strategies of competitors, and not only on their number, --- 4. The aggregative response of individuals in relation to landscape quality is strongly determined by their behavioural strategy, --- 5. The evolution of kleptoparasitism, indirectly facilitated by resource-scarce landscapes, reduces resource harvesting and restores pre-existing spatial-structure in the prey landscape.
 
-% The journal does not have numbered sections in the main portion of
-% articles. Please refrain from using section references (à la
-% section~\ref{section:CountingOwlEggs}), and refer to sections by name
-% (e.g. section ``Counting Owl Eggs'').
-
 \section{Methods: Simulation Model of Movement-Behaviour Co-Evolution}
 
-Our model is an individual-based evolutionary simulation whose most basic components --- the environment size and shape, its gridded structure and each cell's capacity to hold multiple individuals, as well as the discrete conception of time within and between generations --- is taken from Netz et al. \textit{in prep.}.
+Our model is an individual-based evolutionary simulation whose most basic components --- the environment size and shape, its gridded structure and each cell's capacity to hold multiple individuals, as well as the discrete conception of time within and between generations --- is taken from \citet{netz2020}.
 We conceptualised the model and the scenarios around the behaviour of waders (\textit{Charadrii}, and especially oystercatchers \textit{Haematopus sp.}), which are extensively studied in an optimal foraging context \citep[e.g. ][]{vahl2005, vahl2005a, vahl2005b, ENS1990219}.
 We simulated a fixed population with a fixed size of 10,000 individuals moving on a landscape of 512\textsuperscript{2} grid cells, with the landscape wrapped at the boundaries so that individuals passing beyond the bounds at one end re-appear on the diametrically opposite side.
 Individuals have a lifetime of $T$ timesteps, with $T$ set to 400 by default.
@@ -222,7 +218,7 @@ We modelled relative prey immobility and extrinsically driven abundance by assig
 We modelled clustering in the abundance of prey by having the distribution of $r$ across the grid cells take the form of 1,024 uniformly distributed resource peaks with $r$ declining from the centre of each peak to its periphery (Figure X).
 Effectively, the cell at the centre of each patch generates a prey item five times more frequently than the cells at the edges.
 % Thus for a simulation-specific baseline $r_{max}$ = 0.03, the central cell of a resource peak  would have an $r_{centre} = 0.03$, and generate 3 items every 100 timesteps, compared with $r_{edge} = 0.006$, or 0.6 items generated in 100 timesteps.
-We ran the simulation across a range of $r_{max}$ values (0.001 -- 0.25), which we considered a sufficiently broad range.
+We ran the simulation across a range of $r_{max}$ values (0.001 -- 0.05), which we considered a sufficiently broad range.
 Cells in our landscape were modelled as having a carrying capacity $K$ of 5 prey items, and while a cell is at carrying capacity its $r$ is 0.
 %%
 We modelled near-perfect intermediate-range perception but uncertain short-range acquisition of prey by allowing individuals to perceive all prey items $G$ in a cell, but giving individuals which choose a forager strategy only a probability of finding one of these prey.
@@ -285,21 +281,10 @@ Similarly, weights at or near +1 represent the greatest evolved preference for o
 
 In our simulation, individuals perceive and respond to the standing stock of prey items on a cell rather than its productivity, which they cannot sense directly.
 This standing stock is unpredictable due to consumption by other individuals, and the movement (and consumption) of individuals is also unpredictable.
-To understand the consequences of evolved movement rules, we must investigate how individual intake varies with the presence of items and other individuals.
-Determining the functional response of intake to competitors, and the distribution of predators relative to prey \textit{sensu} \citet{meer1997} is a prevalent method in spatial ecology.
+We determined how the evolved movement rules shaped the functional response of intake to competitors, the distribution of predators relative to the landscape's regrowth rate \textit{sensu} \citet{meer1997}, and the distribution of prey-items in relation to landscape quality.
 %%
-Over the final ten generations of each simulation run, we summed the number of individuals and items on each cell, as well as the total intake on the cell.
-We were able to record the number of individuals following a forager and kleptoparasite strategy, as well as intake due to foraging or stealing, separately.
-This allowed us to determine the average per-capita, per-strategy intake on each cell, which we plotted against the number of competing individuals on the cell (Figure X).
-Additionally, we plotted the average number of individuals following each strategy against the number of prey items on the cell (Figure Y).
-In both cases, we used data only from the second half of each generation so as to capture the system in a state of ecological equilibrium.
-
-While recognising that individuals move in response to their rapidly-changing prey landscape, it is useful to determine how individuals distribute along more slowly-changing productivity gradients; 
-this is because these may often be easier to measure in the real world.
-The ideal free distribution (IFD) and the matching rule robustly predict that individuals should distribute themselves such that intake rates are equalised over patches of similar productivity.
-The large volume of pseduo-ecological data generated by our simulation allowed us to test whether intake rates were indeed equalised over the productivity gradient.
-Having previously calculated the average numbers of each strategy, and the average per-captia intake for each strategy on each cell, we plotted both against the productivity of the cell (Figure Z).
-Here too, we used data only from the second half of each generation to approximate ecological equilibrium.
+Over the final ten generations of each simulation run, we counted the number of individuals and their strategy on each cell, as well as the intake due to foraging and stealing, separately.
+This allowed us to determine the average per-capita, per-strategy intake on each cell, which we plotted against the number of competing individuals on the cell, and the cell regrowth rate (Figure X).
 
 \subsubsection{Landscape Effects of Kleptoparasitism}
 
