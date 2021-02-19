@@ -69,7 +69,7 @@ data$data_summary <- lapply(data$folder_path, function(x) {
 data_summary <- unnest(data,
                cols = "data_summary")
 # write file
-fwrite(data_summary, file = "data/results/data_funresp_agents.csv")
+fwrite(data_summary, file = "data_sim/results/data_funresp_agents.csv")
 ```
 
 ## Functional response: PC Intake ~ klepts and foragers
@@ -94,7 +94,7 @@ data_summary <- unnest(data,
                cols = "data_summary")
 
 # write to file
-fwrite(data_summary, file = "data/results/data_funresp_strategy.csv")
+fwrite(data_summary, file = "data_sim/results/data_funresp_strategy.csv")
 ```
 
 ## Functional response: PC Intake ~ items
@@ -119,7 +119,7 @@ data_summary <- unnest(data,
                cols = "data_summary")
 
 # write to file
-fwrite(data_summary, file = "data/results/data_funresp_intake_items.csv")
+fwrite(data_summary, file = "data_sim/results/data_funresp_intake_items.csv")
 ```
 
 ## Functional response: All agents, klepts, foragers ~ items
