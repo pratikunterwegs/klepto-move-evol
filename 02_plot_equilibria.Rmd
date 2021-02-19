@@ -208,7 +208,7 @@ fig_strategy_fitness <-
       group = sim_type
     ),
     # lwd = 0.2,
-    position = position_dodge(width = 0.01)
+    position = position_dodge(width = 0.005)
   ) +
   geom_errorbar(
     data = data_fitness_summary,
@@ -219,7 +219,7 @@ fig_strategy_fitness <-
         pop_fitness.sd,
       group = sim_type),
     lwd = 0.2,
-    position = position_dodge(width = 0.01)
+    position = position_dodge(width = 0.005)
   )+
   geom_point(
     data = data_fitness_summary,
@@ -228,22 +228,22 @@ fig_strategy_fitness <-
       fill = sim_type,
       shape = sim_type
     ),
-    position = position_dodge(width = 0.01)
+    size = 2,
+    position = position_dodge(width = 0.005)
   ) +
   scale_fill_manual(
-    values = sequential_hcl(3, palette = "Viridis",
-                            rev = T)
+    values = c("maroon", "dodgerblue", "gold")
   ) +
   scale_colour_manual(
-    values = sequential_hcl(3, palette = "Viridis",
-                            rev = T)
+    values = c("maroon", "dodgerblue", "gold")
   ) +
   scale_shape_manual(
     values = c(21, 24, 22)
   ) +
   scale_x_continuous(breaks = c(0.001,
-                                0.05,
-                                0.1, 0.25))+
+                                0.01,
+                                0.025,
+                                0.05))+
   kleptomoveMS::theme_custom(base_size = 8) +
   # kleptomoveMS::theme_custom()+
   labs(
@@ -286,7 +286,7 @@ data_strategy_summary = split(data_strategy_summary,
 
 ```{r}
 # define palette
-pal = qualitative_hcl(3, "Set2", l = 50, rev = T)
+pal = qualitative_hcl(3, "Set2", l = 70, rev = T)
 
 subfigures_strategy_growth = Map(function(df, name) {
   yaxis_name = sprintf("%% %s", name)
