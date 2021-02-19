@@ -291,7 +291,7 @@ get_agent_distribution <- function(data_folder,
         # setDT(le2)
         le2[, gen := name]
         le2[, list(
-          mean_val = stats::mean(value, na.rm = TRUE),
+          mean_val = mean(value, na.rm = TRUE),
           med_val = stats::median(value, na.rm = TRUE),
           sd_val = stats::sd(value, na.rm = TRUE)
         ),
