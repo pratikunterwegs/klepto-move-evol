@@ -19,10 +19,10 @@ import imageio  # library to read images
 # check the current working directory
 os.getcwd()
 # gather image output
-output_folder = os.path.join(os.getcwd(), "data/results/images/")  # os.path.abspath("output")
+output_folder = os.path.join(os.getcwd(), "data_sim/")  # os.path.abspath("output")
 # check for the right folder
-if "images" not in output_folder:
-    raise Exception('seems like the wrong output folder...')
+# if "images" not in output_folder:
+#     raise Exception('seems like the wrong output folder...')
 
 #### list files and filter by name
 # gather contents of the folder
@@ -32,15 +32,15 @@ for root, directories, filenames in os.walk(output_folder):
         img_files.append(os.path.join(root, filename))
 
 # filter filenames to match foodlandscape
-img_files = list(filter(lambda x: "landscape" in x, img_files))
+img_files = list(filter(lambda x: "png" in x and "rep" in x, img_files))
 
 
 # function to get image generation and rep number
 def get_image_generation (x):
     assert "str" in str(type(x)), "input doesn't seem to be a filepath"
-    assert "landscape" in x, "input is not a landscape"
-    name = ((x.split("landscape")[1]))
-    generation = int(re.findall(r'(\d{5})', name)[0])
+    # assert "landscape" in x, "input is not a landscape"
+    # name = ((x.split("landscape")[1]))
+    generation = int(re.findall(r'(\d{5})', x)[0])
     return generation
 
 
@@ -58,7 +58,7 @@ img_gen['gen'] = pd.to_numeric(img_gen['gen'])
 # function to read images, get gradient, and count non zero
 # takes a 2d array
 def get_prop_plateau (x, dim, layer):
-    assert "landscape" in x, "input is not a landscape"
+    # assert "landscape" in x, "input is not a landscape"
     image = imageio.imread(x)[:,:,layer]
     assert image.ndim == 2, "get_prop_plateau: not a 2d array"
     gradient = np.gradient(image)
@@ -69,8 +69,9 @@ def get_prop_plateau (x, dim, layer):
 
 
 # run over files
-img_gen['p_clueless'] = img_gen['path'].apply(get_prop_plateau, dim=128, layer=3)
+img_gen['p_clueless'] = img_gen['path'].apply(get_prop_plateau, dim=512, layer=3)
 
+img_gen.to_csv("data_sim/results/test_clueless.csv")
 
 # supplement code
 # test import by showing the n/2th landscape
@@ -113,9 +114,9 @@ def get_moran_i (x, dim, layer):
 
 
 # read in images and do Moran I
-img_gen['moran_i'] = img_gen['path'].apply(get_moran_i, dim=128, layer=3)
+img_gen['moran_i'] = img_gen['path'].apply(get_moran_i, dim=512, layer=3)
 
 # write to csv
-img_gen.to_csv(path_or_buf="data/results/test_data_moran_i.csv")
+img_gen.to_csv(path_or_buf="data_sim/results/test_data_moran_i.csv")
 
 # ends here
