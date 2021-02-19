@@ -171,7 +171,7 @@ wrap_plots(subplots[c("foragers",
 ```{r}
 ggsave(
   figure_6,
-  height = 3,
+  height = 2.5,
   width = 6,
   filename = "figures/fig_06_landscape_effect.png"
 )
