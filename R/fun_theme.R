@@ -6,15 +6,18 @@
 #' @return None
 #' @export
 theme_custom <- function(grid = FALSE, ...) {
-  this_theme <- ggplot2::theme_classic(...) +
+  this_theme <- ggplot2::theme_test(...) +
     ggplot2::theme(
       legend.position = "none",
       axis.ticks.length = ggplot2::unit(1.5, units = "mm"),
-      axis.line = ggplot2::element_line(
-        colour = "black",
-        size = 0.3),
-      strip.background = ggplot2::element_rect(colour = NA,
-                                      fill = "lightgrey")
+      # axis.line = ggplot2::element_line(
+      #   colour = "black",
+      #   size = 0.3),
+      strip.background = ggplot2::element_rect(
+        colour = "grey20",
+        fill = "lightgrey",
+        size = 0.3
+      )
       # panel.background = ggplot2::element_rect(
       #   fill = "grey99"
       # )
