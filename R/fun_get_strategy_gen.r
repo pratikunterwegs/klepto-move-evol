@@ -17,8 +17,8 @@ get_strategy_gen <- function(filepath,
 
   # get summary
   data <- summary()
-  data = data[["agents"]]
-  data = as.data.frame(data)
+  data <- data[["agents"]]
+  data <- as.data.frame(data)
   data.table::setDT(data)
 
   # how many agents and timesteps
@@ -26,20 +26,22 @@ get_strategy_gen <- function(filepath,
   # n_time <- config$T
 
   assertthat::assert_that(is.data.table(data),
-                          msg = "strategy_gen: not a data table")
+    msg = "strategy_gen: not a data table"
+  )
 
   assertthat::assert_that(nrow(data) > 1,
-                          msg = "strategy_gen: empty datatable")
+    msg = "strategy_gen: empty datatable"
+  )
 
   # get stealing
-  data$stealing = (n_agents * n_time) - (data$foraging + data$handling)
-  
+  data$stealing <- (n_agents * n_time) - (data$foraging + data$handling)
+
   data <- data[, c(
     "pop fitness", "foraging",
     "stealing", "handling", "conflicts"
   )]
 
-  data$gen = seq(nrow(data))
+  data$gen <- seq(nrow(data))
 
   # remove last gen
   data <- data[data$gen < max(data$gen), ]
@@ -48,7 +50,7 @@ get_strategy_gen <- function(filepath,
   data <- data.table::melt(data, id.vars = c("gen", "pop_fitness", "conflicts"))
 
   # data[, value := value / sum(value), by = "gen"]
-  data$value = data$value / (n_agents * n_time)
+  data$value <- data$value / (n_agents * n_time)
 
   return(data)
 }

@@ -16,10 +16,10 @@ read_landscape <- function(landscape_file, layer, crop_dim,
 
   # read the layer-th layer
   land <- png::readPNG(landscape_file)[, , layer]
-  
+
   # multiply by carrying capacity
-  land = land * max_K
-  
+  land <- land * max_K
+
   # crop to square matrix of size dim
   land <- land[seq(crop_dim), seq(crop_dim)]
 

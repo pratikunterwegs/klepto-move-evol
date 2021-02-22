@@ -133,7 +133,7 @@ do_read_data <- function(
 
   # bind within list elements
   data_proc <- lapply(data_proc, data.table::rbindlist)
-  
+
   # check for data.table inside list
   assertthat::assert_that(
     all(vapply(data_proc, data.table::is.data.table, FUN.VALUE = T)),
@@ -142,7 +142,7 @@ do_read_data <- function(
 
   # assign name
   data_proc <- Map(function(df, name) {
-    df$variable = name
+    df$variable <- name
     return(df)
   }, data_proc, names(data_proc))
 
@@ -175,7 +175,7 @@ do_read_data <- function(
 #' @return A data.table with the functional response over cells grouped
 #' by items and total number of agents.
 #' @export
-#' 
+#'
 #' @import data.table
 #'
 get_functional_response <-

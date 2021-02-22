@@ -86,11 +86,10 @@ get_weights_timeline <- function(generations,
                                  min_w_val = -1.01,
                                  max_w_val = 1.01,
                                  steps = 50) {
-  
-  if(all(is.na(which_weight))) {
+  if (all(is.na(which_weight))) {
     seq_weights <- seq(config_list[["agents.ann.weights"]])[-1]
   } else {
-    seq_weights = which_weight
+    seq_weights <- which_weight
   }
   # get data per generation
   weight_data_gen <- lapply(generations, function(g) {
@@ -101,7 +100,7 @@ get_weights_timeline <- function(generations,
     # get weight data as a list
     weight_data <- lapply(seq_weights, function(w) {
       weight_dt <- get_weights_prop(
-        gen_data = G, 
+        gen_data = G,
         weight_w = w,
         min_w_val = min_w_val,
         max_w_val = max_w_val,
@@ -111,16 +110,16 @@ get_weights_timeline <- function(generations,
 
     # bind the list
     weight_data <- data.table::rbindlist(weight_data)
-    
+
     # assertthat::assert_that(
     #   is.data.table(weight_data),
     #   message(sprintf("not a data table, has class %s", class(weight_data)[1]))
     # )
-    
+
     # set datatable
     data.table::setDT(weight_data)
     # add generation
-    weight_data$gen = g
+    weight_data$gen <- g
 
     return(weight_data)
   })
@@ -156,11 +155,12 @@ get_sim_weight_evol <- function(data_folder,
 
   # get generation weights
   weight_data_gen <- get_weights_timeline(generations,
-                                          config_list = config,
-                                          which_weight = which_weight,
-                                          min_w_val = -1.01,
-                                          max_w_val = 1.01,
-                                          steps = 50)
+    config_list = config,
+    which_weight = which_weight,
+    min_w_val = -1.01,
+    max_w_val = 1.01,
+    steps = 50
+  )
 
   # # get named vector corresponding to weights
   # # this is reall silly but oh well
