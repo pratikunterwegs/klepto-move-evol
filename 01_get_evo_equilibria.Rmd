@@ -14,7 +14,7 @@ library(kleptomoveMS)
 
 ```{r}
 # read parameter combinations
-data = fread("data_sim/results/data_param_combinations.csv")
+data <- fread("data_sim/results/data_param_combinations.csv")
 
 data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
 
@@ -24,14 +24,17 @@ data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
 
 ```{r}
 # get strategy, fitness and conflicts over gens
-data[, summary_data := lapply(folder_path,
-                              get_strategy_gen)]
+data[, summary_data := lapply(
+  folder_path,
+  get_strategy_gen
+)]
 ```
 
 ```{r}
 # unlist
-data = data[, unlist(summary_data, recursive = F),
-            by = c("sim_type", "replicate", "regrowth")]
+data <- data[, unlist(summary_data, recursive = F),
+  by = c("sim_type", "replicate", "regrowth")
+]
 ```
 
 ```{r}

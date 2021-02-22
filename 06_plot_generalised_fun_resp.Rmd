@@ -14,16 +14,19 @@ library(patchwork)
 
 # summary function
 multsum <- function(x) {
-  list(mean = mean(x),
-       median = median(x),
-       sd = sd(x))
+  list(
+    mean = mean(x),
+    median = median(x),
+    sd = sd(x)
+  )
 }
 
 # get lower value
 get_lower <- function(x) {
   as.double(
-    stringi::stri_extract_first(x, 
-                             regex = "[0-9]+\\.\\d*")
+    stringi::stri_extract_first(x,
+      regex = "[0-9]+\\.\\d*"
+    )
   )
 }
 ```
@@ -47,9 +50,12 @@ data <- data[regrowth %in% c(0.001, 0.01, 0.05), ]
 # get mean, median and sd for intake by strategy, rep, and growth
 # as well as sim type
 data_summary <- data[, unlist(lapply(.SD, multsum), recursive = F),
-                     .SDcols = c("value"),
-                     by = c("sim_type", "regrowth",
-                            "total_agents", "variable")]
+  .SDcols = c("value"),
+  by = c(
+    "sim_type", "regrowth",
+    "total_agents", "variable"
+  )
+]
 
 # split off total from strategy specific
 data_total_intake <- data_summary[variable == "pc_intake_total", ]
@@ -70,18 +76,24 @@ data_summary <- split(data_summary, by = "sim_type")
 # make each figure
 subfig_fun_response <-
   lapply(data_summary, function(df) {
-    ggplot(df[])+
+    ggplot(df[]) +
       geom_point(aes(total_agents_num, value.mean,
-                     col = variable),
-                 # size = 0.5,
-                 shape = 1,
-                 show.legend = F)+
-      facet_grid(sim_type ~ regrowth)+
-      kleptomoveMS::theme_custom(base_size = 8)+
-      coord_cartesian(ylim = c(0, 0.25),
-                      xlim = c(0, 0.75))+
-      scale_colour_discrete_diverging(palette = "Blue-Red 2",
-                                      rev = F)+
+        col = variable
+      ),
+      # size = 0.5,
+      shape = 1,
+      show.legend = F
+      ) +
+      facet_grid(sim_type ~ regrowth) +
+      kleptomoveMS::theme_custom(base_size = 8) +
+      coord_cartesian(
+        ylim = c(0, 0.25),
+        xlim = c(0, 0.75)
+      ) +
+      scale_colour_discrete_diverging(
+        palette = "Blue-Red 2",
+        rev = F
+      ) +
       labs(
         x = "# predators",
         y = "per-capita intake"
@@ -91,21 +103,22 @@ subfig_fun_response <-
 # wrap figures together
 fig_fun_response <-
   wrap_plots(subfig_fun_response[c(
-  "foragers",
-  "obligate",
-  "facultative"
-)],
-ncol = 1)
+    "foragers",
+    "obligate",
+    "facultative"
+  )],
+  ncol = 1
+  )
 
 # view figure
-fig_fun_response <- 
+fig_fun_response <-
   fig_fun_response +
-  plot_annotation(
-    tag_levels = "a",
-    tag_prefix = "(",
-    tag_suffix = ")"
-  ) &
-  theme(plot.tag = element_text(face = "bold"))
+    plot_annotation(
+      tag_levels = "a",
+      tag_prefix = "(",
+      tag_suffix = ")"
+    ) &
+    theme(plot.tag = element_text(face = "bold"))
 ```
 
 ## Functional Response to Different Strategies
@@ -122,20 +135,26 @@ data <- data[regrowth %in% c(0.001, 0.01, 0.05), ]
 
 ```{r}
 # forager data
-data_resp_forager <- data[variable != "pc_intake_total", 
-                          unlist(lapply(.SD, multsum), recursive = F),
-                          .SDcols = c("value"),
-                          by = c("sim_type", "replicate", "regrowth",
-                                 "variable", "foragers")]
+data_resp_forager <- data[variable != "pc_intake_total",
+  unlist(lapply(.SD, multsum), recursive = F),
+  .SDcols = c("value"),
+  by = c(
+    "sim_type", "replicate", "regrowth",
+    "variable", "foragers"
+  )
+]
 data_resp_forager[, foragers_num := get_lower(foragers)]
 
 # klept data
 data_resp_klept <- data[variable != "pc_intake_total" &
-                          sim_type != "foragers", 
-                          unlist(lapply(.SD, multsum), recursive = F),
-                          .SDcols = c("value"),
-                          by = c("sim_type", "replicate", "regrowth",
-                                 "variable", "klepts")]
+  sim_type != "foragers",
+unlist(lapply(.SD, multsum), recursive = F),
+.SDcols = c("value"),
+by = c(
+  "sim_type", "replicate", "regrowth",
+  "variable", "klepts"
+)
+]
 data_resp_klept[, klepts_num := get_lower(klepts)]
 
 # split and append
@@ -148,32 +167,40 @@ data_resp_klept <- split(data_resp_klept, by = "sim_type")
 ```{r}
 # make subfigures
 subfig_resp_forager <- lapply(data_resp_forager, function(df) {
-  ggplot(df)+
-  geom_point(aes(foragers_num, value.mean,
-                 col = variable),
-             shape = 1,
-             show.legend = F)+
-      facet_grid(sim_type ~ regrowth)+
-      kleptomoveMS::theme_custom(base_size = 8)+
-      coord_cartesian(xlim = c(0, 0.75),
-                      ylim = c(0, 0.3))+
-      scale_colour_discrete_diverging(palette = "Blue-Red 2",
-                                      rev = F)+
-        labs(x = "# foragers",
-             y = "per-capita intake")
+  ggplot(df) +
+    geom_point(aes(foragers_num, value.mean,
+      col = variable
+    ),
+    shape = 1,
+    show.legend = F
+    ) +
+    facet_grid(sim_type ~ regrowth) +
+    kleptomoveMS::theme_custom(base_size = 8) +
+    coord_cartesian(
+      xlim = c(0, 0.75),
+      ylim = c(0, 0.3)
+    ) +
+    scale_colour_discrete_diverging(
+      palette = "Blue-Red 2",
+      rev = F
+    ) +
+    labs(
+      x = "# foragers",
+      y = "per-capita intake"
+    )
 })
 
 # wrap
 fig_resp_forager <-
   wrap_plots(subfig_resp_forager[
-  c("foragers", "obligate", "facultative")
-], ncol = 1)+
-  plot_annotation(
-    tag_levels = "a",
-    tag_prefix = "(",
-    tag_suffix = ")"
-  ) &
-  theme(plot.tag = element_text(face = "bold"))
+    c("foragers", "obligate", "facultative")
+  ], ncol = 1) +
+    plot_annotation(
+      tag_levels = "a",
+      tag_prefix = "(",
+      tag_suffix = ")"
+    ) &
+    theme(plot.tag = element_text(face = "bold"))
 ```
 
 ### Plot: Functional response ~ kleptoparasites
@@ -181,27 +208,35 @@ fig_resp_forager <-
 ```{r}
 # now klepts
 # make subfigures
-subfig_resp_klept <- 
+subfig_resp_klept <-
   lapply(data_resp_klept, function(df) {
-  ggplot(df)+
-  geom_point(aes(klepts_num, value.mean,
-                 col = variable),
-             shape = 1,
-             show.legend = F)+
-      facet_grid(sim_type ~ regrowth)+
-      kleptomoveMS::theme_custom(base_size = 8)+
-      coord_cartesian(xlim = c(0, 0.75),
-                      ylim = c(0, 0.3))+
-      scale_colour_discrete_diverging(palette = "Blue-Red 2",
-                                      rev = F)+
-        labs(x = "# kleptoparasites",
-             y = "per-capita intake")
-})
+    ggplot(df) +
+      geom_point(aes(klepts_num, value.mean,
+        col = variable
+      ),
+      shape = 1,
+      show.legend = F
+      ) +
+      facet_grid(sim_type ~ regrowth) +
+      kleptomoveMS::theme_custom(base_size = 8) +
+      coord_cartesian(
+        xlim = c(0, 0.75),
+        ylim = c(0, 0.3)
+      ) +
+      scale_colour_discrete_diverging(
+        palette = "Blue-Red 2",
+        rev = F
+      ) +
+      labs(
+        x = "# kleptoparasites",
+        y = "per-capita intake"
+      )
+  })
 
 # wrap
 fig_resp_klepts <- wrap_plots(subfig_resp_klept[
   c("obligate", "facultative")
-], ncol = 1)+
+], ncol = 1) +
   plot_annotation(
     tag_levels = "a",
     tag_prefix = "(",
@@ -221,49 +256,57 @@ data_funresp_total <- lapply(data_summary, function(x) {
 })
 
 # fix names
-data_funresp_total <- data_funresp_total[c("foragers", 
-                                           "obligate", "facultative")]
-names(data_funresp_total) <- sprintf('%s_strat', names(data_funresp_total))
+data_funresp_total <- data_funresp_total[c(
+  "foragers",
+  "obligate", "facultative"
+)]
+names(data_funresp_total) <- sprintf("%s_strat", names(data_funresp_total))
 ```
 
 ```{r}
-subfig_funresp_total <- 
+subfig_funresp_total <-
   lapply(data_funresp_total, function(df) {
-    
+
     # fix pal
     if (length(unique(df$variable)) == 2) {
       pal <- diverge_hcl(n = 2, palette = "Blue-Red 2")
     } else {
       pal <- "black"
     }
-    
+
     # make plot
-    subfig <- 
-      ggplot(df)+
+    subfig <-
+      ggplot(df) +
       geom_errorbar(aes(total_agents_num,
-                        ymin = value.mean - value.sd,
-                        ymax = value.mean + value.sd,
-                        col = variable),
-                    show.legend = F,
-                    size = 0.1)+
+        ymin = value.mean - value.sd,
+        ymax = value.mean + value.sd,
+        col = variable
+      ),
+      show.legend = F,
+      size = 0.1
+      ) +
       geom_point(aes(total_agents_num, value.mean,
-                     col = variable),
-                 shape = 1,
-                 # size = 0.5,
-                 show.legend = F)+
-      scale_x_sqrt()+
-      scale_y_sqrt()+
-      facet_grid(~ sim_type)+
-      kleptomoveMS::theme_custom(base_size = 8)+
-      coord_cartesian(xlim = c(0, 0.75),
-                      ylim = c(0, 0.3))+
-      scale_colour_manual(values = pal)+
+        col = variable
+      ),
+      shape = 1,
+      # size = 0.5,
+      show.legend = F
+      ) +
+      scale_x_sqrt() +
+      scale_y_sqrt() +
+      facet_grid(~sim_type) +
+      kleptomoveMS::theme_custom(base_size = 8) +
+      coord_cartesian(
+        xlim = c(0, 0.75),
+        ylim = c(0, 0.3)
+      ) +
+      scale_colour_manual(values = pal) +
       labs(
         x = "# all individuals",
         y = "per-capita intake"
       )
-      
-      return(subfig)
+
+    return(subfig)
   })
 ```
 
@@ -272,28 +315,38 @@ subfig_funresp_total <-
 ```{r}
 # same for foragers
 subfig_resp_forager <- lapply(data_resp_forager, function(df) {
-  df <- df[regrowth == 0.01,]
-  ggplot(df)+
+  df <- df[regrowth == 0.01, ]
+  ggplot(df) +
     geom_errorbar(aes(foragers_num,
-                        ymin = value.mean - value.sd,
-                        ymax = value.mean + value.sd,
-                        col = variable),
-                    show.legend = F,
-                    size = 0.1)+
-  geom_point(aes(foragers_num, value.mean,
-                 col = variable),
-             shape = 1,
-             show.legend = F)+
-      facet_grid(~ sim_type)+
-      scale_x_sqrt()+
-      scale_y_sqrt()+
-      kleptomoveMS::theme_custom(base_size = 8)+
-      coord_cartesian(xlim = c(0, 0.75),
-                      ylim = c(0, 0.3))+
-      scale_colour_discrete_diverging(palette = "Blue-Red 2",
-                                      rev = F)+
-        labs(x = "# foragers",
-             y = "per-capita intake")
+      ymin = value.mean - value.sd,
+      ymax = value.mean + value.sd,
+      col = variable
+    ),
+    show.legend = F,
+    size = 0.1
+    ) +
+    geom_point(aes(foragers_num, value.mean,
+      col = variable
+    ),
+    shape = 1,
+    show.legend = F
+    ) +
+    facet_grid(~sim_type) +
+    scale_x_sqrt() +
+    scale_y_sqrt() +
+    kleptomoveMS::theme_custom(base_size = 8) +
+    coord_cartesian(
+      xlim = c(0, 0.75),
+      ylim = c(0, 0.3)
+    ) +
+    scale_colour_discrete_diverging(
+      palette = "Blue-Red 2",
+      rev = F
+    ) +
+    labs(
+      x = "# foragers",
+      y = "per-capita intake"
+    )
 })
 
 # fix name order
@@ -302,55 +355,67 @@ subfig_resp_forager <- subfig_resp_forager[
 ]
 
 # subset and remake figure
-subfig_resp_klept <- 
+subfig_resp_klept <-
   lapply(data_resp_klept, function(df) {
     df <- df[regrowth == 0.01, ]
-    ggplot(df)+
+    ggplot(df) +
       geom_errorbar(aes(klepts_num,
-                        ymin = value.mean - value.sd,
-                        ymax = value.mean + value.sd,
-                        col = variable),
-                    show.legend = F,
-                    size = 0.1)+
+        ymin = value.mean - value.sd,
+        ymax = value.mean + value.sd,
+        col = variable
+      ),
+      show.legend = F,
+      size = 0.1
+      ) +
       geom_point(aes(klepts_num, value.mean,
-                     col = variable),
-                 shape = 1,
-                 show.legend = F)+
-      scale_x_sqrt()+
-      scale_y_sqrt()+
-      facet_grid(~ sim_type)+
-      kleptomoveMS::theme_custom(base_size = 8)+
-      coord_cartesian(xlim = c(0, 0.75),
-                      ylim = c(0, 0.3))+
-      scale_colour_discrete_diverging(palette = "Blue-Red 2",
-                                      rev = F)+
-      labs(x = "# kleptoparasites",
-           y = "per-capita intake")
+        col = variable
+      ),
+      shape = 1,
+      show.legend = F
+      ) +
+      scale_x_sqrt() +
+      scale_y_sqrt() +
+      facet_grid(~sim_type) +
+      kleptomoveMS::theme_custom(base_size = 8) +
+      coord_cartesian(
+        xlim = c(0, 0.75),
+        ylim = c(0, 0.3)
+      ) +
+      scale_colour_discrete_diverging(
+        palette = "Blue-Red 2",
+        rev = F
+      ) +
+      labs(
+        x = "# kleptoparasites",
+        y = "per-capita intake"
+      )
   })
 
 subfig_resp_klept <- subfig_resp_klept[
   c("obligate", "facultative")
 ]
-
 ```
 
 ### Combine figures
 
 ```{r}
 subfig_all <- append(subfig_funresp_total,
-                     values = append(subfig_resp_forager,
-                                     subfig_resp_klept))
+  values = append(
+    subfig_resp_forager,
+    subfig_resp_klept
+  )
+)
 figure_functional_response <-
   wrap_plots(
-  subfig_all,
-  design = "ABC\nDEF\n#GH"
-)+
-  plot_annotation(
-    tag_levels = "a",
-    tag_prefix = "(",
-    tag_suffix = ")"
-  ) &
-  theme(plot.tag = element_text(face = "bold"))
+    subfig_all,
+    design = "ABC\nDEF\n#GH"
+  ) +
+    plot_annotation(
+      tag_levels = "a",
+      tag_prefix = "(",
+      tag_suffix = ")"
+    ) &
+    theme(plot.tag = element_text(face = "bold"))
 ```
 
 ```{r}
