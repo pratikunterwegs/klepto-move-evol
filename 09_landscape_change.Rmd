@@ -7,7 +7,9 @@ editor_options:
 # Landscape effects
 
 ```{r}
+# to handle data and plot
 library(data.table)
+library(glue)
 library(ggplot2)
 library(colorspace)
 library(patchwork)
@@ -127,6 +129,10 @@ data = split(data, by = "sim_type")
 
 
 ```{r}
+# fix palettes to be same as previously used
+this_red = colorspace::qualitative_hcl(3, "Set2", l = 40, rev = T)[3]
+this_yellow = colorspace::diverging_hcl(3, palette = "Blue-Yellow")[3]
+
 # make subplots
 subplots = lapply(data, function(df) {
   
@@ -134,14 +140,23 @@ ggplot(df)+
   geom_path(aes(gen, value,
                 col = variable,
                 group = interaction(replicate, variable)))+
-  scale_colour_discrete_diverging(
-    palette = "Red-Green",
-    # l1 = 50,
-    l2 = 50,
-    rev = T
+  geom_vline(
+    xintercept = c(10, 40),
+    size = 0.2,
+    lty = 2,
   )+
-  facet_grid( ~ sim_type)+
-  coord_cartesian(xlim = c(0, 75))+
+  scale_colour_manual(
+    values = c(
+      "p_clueless" = "black",
+      "stealing" = this_red,
+      "klept_strategy" = this_yellow
+    )
+  )+
+  scale_y_continuous(
+    labels = scales::percent
+  )+
+  coord_cartesian(xlim = c(0, 75),
+                  ylim = c(0, 1))+
   kleptomoveMS::theme_custom()+
   theme(
     # legend.position = "top"
@@ -152,11 +167,121 @@ ggplot(df)+
   )
 })
 
+# work on adding lines at different levels
 
-# wrap plots
+```
+
+## Show landscape for each sim type
+
+Here we show a landscape with and without clues at 1, 10, and 40th generation for $r_{max}$ = 0.01.
+
+### Items landscape
+
+```{r}
+# list folders
+paths = list.dirs("data_sim/for_landscape/", recursive = F)
+
+# select gens
+gens_for_figure = stringr::str_pad(c(10, 40),width = 5, pad = "0")
+
+# get paths for files
+landscape_data = CJ(gen = gens_for_figure,
+                    path = paths)
+
+# add sim_type
+landscape_data[, sim_type := rep(c("facultative", "foragers", "obligate"), 2)]
+
+# get paths
+landscape_data$image = glue_data(landscape_data, "{path}/{gen}.png")
+
+# get data
+landscape_data$data = lapply(landscape_data$image, 
+                             kleptomoveMS::read_landscape,
+                             layer = 4,
+                             crop_dim = 25,
+                             type = "items")
+
+# convert gen to numeric
+landscape_data[, gen := as.numeric(gen)]
+
+# unlst
+landscape_items = landscape_data[, unlist(data, recursive = F), 
+                                by = c("sim_type", "gen")]
+```
+
+### Gradient landscape
+
+
+```{r}
+# get data
+landscape_data$data = lapply(landscape_data$image, 
+                             kleptomoveMS::read_landscape,
+                             layer = 4,
+                             crop_dim = 25,
+                             type = "gradient")
+# unlst
+landscape_gradient = landscape_data[, unlist(data, recursive = F), 
+                                by = c("sim_type", "gen")]
+```
+
+### Merge landscapes
+
+```{r}
+# landscape overall
+landscape = merge(landscape_items, landscape_gradient)
+
+# melt
+landscape = melt(landscape, id.vars = c("sim_type", "gen", "x", "y"))
+
+# split by sim_type
+landscape = split(landscape, by = c("sim_type", "variable"))
+```
+
+
+### Plot landscape
+
+```{r}
+subplot_land = lapply(landscape, function(df) {
+  
+  pal = sequential_hcl(5, palette = "Terrain", rev = T)[4]
+  # set palette
+  if (unique(df$variable) == "items") {
+    pal = sequential_hcl(5, palette = "Terrain", rev = T)
+  }
+  
+  ggplot(df)+
+    geom_tile(aes(x, y, fill = (value)),
+              show.legend = F)+
+    facet_grid(~ gen, labeller = label_both)+
+    scale_fill_gradientn(
+      colours = pal,
+      na.value = ifelse(unique(df$variable) == "items", "white", "grey20"),
+      limits = c(0.7, NA)
+    )+
+    coord_cartesian(expand = F)+
+    theme_custom()+
+    theme(axis.text = element_blank(),
+          axis.title = element_blank())
+})
+
+# arrange order
+sim_types = c("foragers", "obligate", "facultative")
+
+# figure names
+fignames = c(glue('{sim_types}.items'), glue('{sim_types}.gradient'))
+# arrange plots in order
+subplot_land = subplot_land[fignames]
+```
+
+
+## Figure 6
+
+```{r}
+# make figure 6
 figure_6 =
-wrap_plots(subplots[c("foragers", 
-                      "obligate", "facultative")])+
+wrap_plots(append(subplots[c("foragers", 
+                      "obligate", "facultative")],
+                  subplot_land))+
     plot_annotation(
       tag_levels = "a",
       tag_prefix = "(",
@@ -166,13 +291,11 @@ wrap_plots(subplots[c("foragers",
       face = "bold",
       size = 8
     ))
-```
 
-```{r}
 ggsave(
   figure_6,
-  height = 2.5,
-  width = 6,
+  height = 5,
+  width = 9,
   filename = "figures/fig_06_landscape_effect.png"
 )
 ```
