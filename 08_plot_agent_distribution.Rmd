@@ -17,7 +17,7 @@ Prepare the data for plotting.
 
 ```{r}
 data <- fread("data_sim/results/data_agent_distribution.csv")
-max_capacity = 5
+max_capacity <- 5
 ```
 
 
@@ -55,7 +55,7 @@ More plotting preparation.
 data <- data[regrowth %in% c(0.001, 0.01, 0.05), ]
 
 # remove intake etc
-data = data[!layer_type %in% c("intake", "per_capita_intake"), ]
+data <- data[!layer_type %in% c("intake", "per_capita_intake"), ]
 
 # what is the cell specific growth rate
 data[, qual := cap * regrowth]
@@ -71,14 +71,13 @@ library(stringr)
 data_plot <- data_plot[c(
   str_which(names(data_plot), "forager"),
   str_which(names(data_plot), "obligate"),
-  str_which(names(data_plot), "facul"),
-  str_which(names(data_plot), "random")
+  str_which(names(data_plot), "facul")
 )]
 ```
 
 ```{r}
 # prepare palette
-pal = values = qualitative_hcl(3, "Set2", l = 40, rev = T)
+pal <- values <- qualitative_hcl(3, "Set2", l = 40, rev = T)
 ```
 
 
@@ -90,27 +89,27 @@ subplots <-
         pal <- c(
           pal[3], pal[1]
         )
-        shapes = c(1)
+        shapes <- c(1)
       } else {
         pal <- pal[2]
-        shapes = 0
+        shapes <- 0
       }
-      
+
       # limits
       if (df$layer_type == "strategy count") {
-        y_lim = c(0, 0.15)
-        y_axis = "# individuals"
+        y_lim <- c(0, 0.15)
+        y_axis <- "# individuals"
       } else if (df$layer_type == "per_capita_intake") {
-        y_lim = c(0, 0.15)
-        y_axis = "intake rate"
+        y_lim <- c(0, 0.15)
+        y_axis <- "intake rate"
       } else {
-        y_lim = c(0, 5)
-        y_axis = "# prey items"
+        y_lim <- c(0, 5)
+        y_axis <- "# prey items"
       }
-      
+
 
       ggplot(df) +
-        geom_line(aes(cap, mean_val,
+        geom_line(aes(qual, mean_val,
           col = interaction(regrowth, layer),
           group = interaction(regrowth, replicate, gen, layer)
         ),
@@ -126,21 +125,20 @@ subplots <-
         # ) +
         scale_shape_manual(
           values = rep(shapes, each = length(unique(df$regrowth)))
-        )+
+        ) +
         scale_colour_manual(
           values = rep(pal, each = length(unique(df$regrowth)))
         ) +
-        facet_grid(~regrowth)+
-        kleptomoveMS::theme_custom(base_size = 8
-                                   )+
-        theme(title = element_text(size=6))+
+        # facet_grid(~regrowth) +
+        kleptomoveMS::theme_custom(base_size = 8) +
+        theme(title = element_text(size = 6)) +
         coord_cartesian(
           ylim = y_lim,
           # xlim = c(0, 0.05),
           expand = T
         ) +
         labs(
-          x = "cell r (cap * regrowth / K)",
+          x = "cell r",
           y = y_axis,
           title = unique(df$sim_type)
         )
@@ -152,15 +150,15 @@ subplots <-
 ```{r}
 figure_05 <-
   wrap_plots(subplots, ncol = 2) +
-  plot_annotation(
-    tag_levels = "a",
-    tag_prefix = "(",
-    tag_suffix = ")"
-  ) &
-  theme(plot.tag = element_text(
-    face = "bold",
-    size = 8
-  ))
+    plot_annotation(
+      tag_levels = "a",
+      tag_prefix = "(",
+      tag_suffix = ")"
+    ) &
+    theme(plot.tag = element_text(
+      face = "bold",
+      size = 8
+    ))
 
 ggsave(figure_05,
   filename = "figures/fig_05_agent_distribution.png",
