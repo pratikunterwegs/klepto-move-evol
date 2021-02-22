@@ -19,35 +19,45 @@ data <- fread("data/results/data_weight_evolution.csv")
 prop <- 1e-2
 
 # subset for numerous phenotypes and count per generation
-data_num_phenotype <- data[weight_prop >= prop, .N, 
-     by = list(sim_type, replicate, 
-               regrowth, gen, weight_id)]
+data_num_phenotype <- data[weight_prop >= prop, .N,
+  by = list(
+    sim_type, replicate,
+    regrowth, gen, weight_id
+  )
+]
 
 # arrange levels
 data_num_phenotype[, sim_type := factor(sim_type,
-                                        levels = c("foragers",
-                                                   "obligate",
-                                                   "facultative",
-                                                   "random"))]
+  levels = c(
+    "foragers",
+    "obligate",
+    "facultative",
+    "random"
+  )
+)]
 ```
 
 ```{r}
 # get label weights
 label_wt <- c(
   # sprintf("weight: %s", c(2:8, 99))
-  c("m(non-h)", "m(hand)", "m(food)",
-    "f(bias)", "f(non-h)", "f(hand)", "f(food)", "f(total)")
+  c(
+    "m(non-h)", "m(hand)", "m(food)",
+    "f(bias)", "f(non-h)", "f(hand)", "f(food)", "f(total)"
+  )
 )
 names(label_wt) <- c(seq(2, 8), 99)
 # plot to examine
 fig_variation <-
-  ggplot(data_num_phenotype)+
+  ggplot(data_num_phenotype) +
   geom_path(aes(gen, N,
-                col = regrowth,
-                # shape = factor(replicate),
-                group = interaction(regrowth, replicate)),
-              size = 0.5,
-            position = position_jitter(width = 0.01))+
+    col = regrowth,
+    # shape = factor(replicate),
+    group = interaction(regrowth, replicate)
+  ),
+  size = 0.5,
+  position = position_jitter(width = 0.01)
+  ) +
   # geom_jitter(aes(gen, N,
   #               col = regrowth,
   #               # shape = factor(replicate),
@@ -55,27 +65,35 @@ fig_variation <-
   #             size = 0.5,
   #             alpha = 0.5)+
   facet_grid(sim_type ~ weight_id,
-             labeller = labeller(weight_id = label_wt,
-                                 replicate = label_both))+
-  scale_colour_gradientn(colours = 
-                           rev(pals::cubicyf(10)),
-                         trans = "sqrt")+
-  coord_cartesian(ylim = c(2, NA))+
-  theme_test(base_size = 8)+
+    labeller = labeller(
+      weight_id = label_wt,
+      replicate = label_both
+    )
+  ) +
+  scale_colour_gradientn(
+    colours =
+      rev(pals::cubicyf(10)),
+    trans = "sqrt"
+  ) +
+  coord_cartesian(ylim = c(2, NA)) +
+  theme_test(base_size = 8) +
   theme(
     # axis.text = element_blank(),
     panel.grid = element_blank(),
     legend.position = "top",
     legend.key.height = unit(1, units = "mm")
-  )+
-  labs(x = "generations",
-       y = "# phenotypes (# weight values > 1% pop. size)")
+  ) +
+  labs(
+    x = "generations",
+    y = "# phenotypes (# weight values > 1% pop. size)"
+  )
 ```
 
 ```{r}
 ggsave(fig_variation,
-       filename = "figures/fig_weight_diversity.png",
-       height = 10,
-       width = 11)
+  filename = "figures/fig_weight_diversity.png",
+  height = 10,
+  width = 11
+)
 ```
 
