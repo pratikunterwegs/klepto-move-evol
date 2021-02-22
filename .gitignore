@@ -52,6 +52,7 @@ data_sim/*
 !data_sim/data_parameters/
 !data_sim/data.csv
 !data_sim/results/data_funresp_gen_coefs.csv
+data_sim/for_landscape
 
 # any word files
 *.docx
