@@ -46,14 +46,15 @@ def get_image_generation (x):
 def get_image_data (x):
     assert "str" in str(type(x)), "input doesn't seem to be a filepath"
     sim_type = re.findall(r'(obligate|facultative|forager|random)', x)[0]
-    sim_gen = int(re.findall(r'(\d{5})', x)[0])
-    sim_rmax = float([re.split('/|_', x)[i] for i in [12]][0]) # unfortunately hardcoded
-    return [sim_type, sim_gen, sim_rmax, x]
+    sim_gen = int(re.findall(r'(\d{5})', x)[1])
+    sim_rep = int(re.findall(r'rep\_(\d{3})', x)[0])
+    sim_rmax = float(re.findall(r'\d+\.\d+', x)[0]) # unfortunately hardcoded
+    return [sim_type, sim_gen, sim_rep, sim_rmax, x]
 
 # get the image identity to match to parameters later
 img_data = list(map(get_image_data, img_files))
 # make data frame
-img_data = pd.DataFrame.from_records(img_data, columns=['sim_type','gen','regrowth','path'])
+img_data = pd.DataFrame.from_records(img_data, columns=['sim_type','gen', 'replicate', 'regrowth','path'])
 
 
 # function to read images, get gradient, and count non zero
@@ -72,7 +73,7 @@ def get_prop_plateau (x, dim, layer):
 # run over files
 img_data['p_clueless'] = img_data['path'].apply(get_prop_plateau, dim=512, layer=3)
 
-img_data.to_csv("data_sim/results/test_clueless.csv")
+img_data.to_csv("data_sim/results/data_p_clueless.csv")
 
 # supplement code
 # test import by showing the n/2th landscape
