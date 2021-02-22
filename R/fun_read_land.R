@@ -6,14 +6,20 @@
 #' @param crop_dim How many rows and columns to return.
 #' @param type What to return, either "items" for the item counts, or "gradient"
 #' for the gradient in item counts.
+#' @param max_K Carrying capacity of a cell.
 #'
 #' @return A data.table of X, Y and value
 #' @export
 read_landscape <- function(landscape_file, layer, crop_dim,
-                           type = c("items", "gradient")) {
+                           type = c("items", "gradient"),
+                           max_K = 5) {
 
   # read the layer-th layer
   land <- png::readPNG(landscape_file)[, , layer]
+  
+  # multiply by carrying capacity
+  land = land * max_K
+  
   # crop to square matrix of size dim
   land <- land[seq(crop_dim), seq(crop_dim)]
 
@@ -40,7 +46,7 @@ read_landscape <- function(landscape_file, layer, crop_dim,
     return(land)
   } else if (type == "gradient") {
     # get slope in X and Y
-    grad_matrix <- pracma::gradient(land, seq(crop_dim), seq(crop_dim))
+    grad_matrix <- pracma::gradient(land, h1 = 1, h2 = 1)
     grad_x <- grad_matrix$X
     grad_y <- grad_matrix$Y
 
