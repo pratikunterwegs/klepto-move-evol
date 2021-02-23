@@ -288,7 +288,12 @@ This allowed us to determine the average per-capita, per-strategy intake on each
 
 \subsubsection{Landscape Effects of Kleptoparasitism}
 
-optional: to be added
+Anticipating that the prevalence of different foraging strategies would affect the structure of the prey-item landscape, we examined the effect of this reduced depletion on the prey-item abundances of landscape grid cells.
+We exported a snapshot of the the number of items per grid-cell at the mid-point of each generation ($t$ = 200), for each simulation run, and we visually examined how landscape patterns changed over generations.
+%%
+We then addressed a specific question: how would the ability of individuals to navigate their landscape change with the reduced depletion expected with kleptoparasitism?
+Individuals can only choose an optimal move when there are profitability differences among the various destinations.
+We quantified the cell-specific item gradient for each landscape snapshot, and then the proportion of cells where the gradient was zero, i.e., there was no difference between the cell and its neighbours in prey-item abundance (`clueless plateau', \textit{sensu} \citealt{perkins1992a}).
 
 \paragraph*{Data Availability}
 
@@ -391,7 +396,9 @@ We further find that there are appreciable differences between average and media
 
 \subsection{Landscape Effects of Kleptoparasitism}
 
-Work in progress: -- add also landscape metrics etc
+The evolution and persistence of kleptoparasitism reduces prey-item depletion compared to the foragers-only case, and allows many localised gradients of prey-item abundance to re-emerge (Fig. 6).
+In scenario 1 without kleptoparasitism, the proportion of the landscape that forms a clueless plateau rises steeply to a stable level of 75\% by generation 10 ($r_{max}$ = 0.01; Fig. 6. a, d, g).
+In scenario 2, clueless plateaus comprise $>$ 50\% of the landscape by generation 10, but then rapidly subside to $<$ 25\% by generation 20, while in scenario 3, clueless plateaus stabilise at ~50\% of the landscape.
 
 % If you have deposited data to Dryad, you should cite them somewhere in the main text (usually in the Methods or Results sections). A sentence like the following will do. All data are available in the Dryad Digital Repository (\citealt{CookEtAl2015}).
 
@@ -642,6 +649,19 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
     \textbf{()}}
     \label{Fig:AgentDistribution}
 \end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.90\textwidth]{figures/fig_06_landscape_effect.png}
+    \caption{
+        The evolution and persistence of a kleptoparasitic response (yellow lines) and stealing events (red lines) reduces item depletion (coloured cells; row 2), thus reducing `clueless plateaus' (black lines and areas; row 3). All scenarios are shown at $r_{max}$ = 0.01, and only a 25 by 25 section of the landscape is shown.
+        \textbf{(a, d, g)} Foragers deplete the item landscape until most cells have no items ([d]; white = no items, green = 5 items); the lack of items leads to large areas of the landscape with no item gradient (clueless plateaus; [g]; black areas; green areas = detectable item gradient).
+        \textbf{(b, e, h)} The emergence and persistence of stealing behaviour in scenario 2 leads to reduced depletion by foragers, and thus item regrowth ([e]), and consequently a reduction in the area of clueless plateaus within 40 generations ([h]; black areas).
+        \textbf{(c, f, i)} Scenario 3 is similar to scenario 2, except with lower reduction in depletion ([f]) and clueless plateaus ([i]).
+    }
+    \label{Fig:CluelessLandscape}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%
 % Videos
