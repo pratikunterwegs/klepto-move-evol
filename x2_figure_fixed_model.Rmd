@@ -132,7 +132,7 @@ data_land = fread("data_sim/results/data_landscape_item_count_1_50.png")
 data_land = data_land[sim_type == "obligate",]
 ```
 
-plot landscape foragers model
+plot landscape fixed model
 
 ```{r}
 fig_land_fixed =
@@ -150,7 +150,7 @@ ggplot(data_land)+
   labs(fill = "# Items")
 ```
 
-## Figure 2 Foragers model
+## Figure 3 Fixed model
 
 wrap figures together
 
