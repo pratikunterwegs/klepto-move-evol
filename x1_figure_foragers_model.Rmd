@@ -1,0 +1,134 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+load libs
+
+```{r}
+library(data.table)
+
+library(ggplot2)
+library(patchwork)
+```
+
+get data
+
+
+```{r}
+# activity data
+data_activity = fread("data_sim/results/data_strategy_gen.csv")
+data_activity = data_activity[
+  sim_type == "foragers" &
+    regrowth == 0.01 &
+    variable != "stealing"
+]
+```
+
+make so called population activity budget plot
+
+```{r}
+fig_activity =
+  ggplot(data_activity)+
+  geom_path(aes(gen, value,
+                colour = variable,
+                group = interaction(variable, replicate)))+
+  scale_colour_manual(
+    values = c(
+      foraging = "navyblue",
+      handling = "seagreen"
+    )
+  )+
+  scale_y_continuous(
+    # labels = scales::percent,
+    breaks = seq(0, 1, 0.25),
+    labels = c("0", "0.25", "0.5", "0.75", "1")
+  )+
+  scale_x_continuous(
+    breaks = c(1, seq(10, 50, 10))
+  )+
+  coord_cartesian(xlim = c(1, 50),
+                  ylim = c(0, 1),
+                  expand = F)+
+  kleptomoveMS::theme_custom(grid = T)+
+  labs(
+    x = "Generation",
+    y = "Prop. population time"
+  )
+```
+
+figure intake
+
+```{r}
+fig_intake = 
+  ggplot(unique(data_activity, 
+                by = c("gen", "replicate", "pop_fitness")))+
+  geom_path(aes(gen, pop_fitness,
+                group = replicate))+
+  scale_x_continuous(
+    breaks = c(1, seq(10, 50, 10))
+  )+
+  coord_cartesian(xlim = c(1, 50),
+                  ylim = c(0, 50),
+                  expand = F)+
+  kleptomoveMS::theme_custom(grid = T)+
+  labs(
+    x = "Generation",
+    y = "Population intake"
+  )
+```
+
+prepare landscape at 0 and 25
+
+```{r}
+# get landscape data
+data_land = fread("data_sim/results/data_landscape_item_count_1_50.png")
+data_land = data_land[sim_type == "foragers",]
+```
+
+plot landscape foragers model
+
+```{r}
+fig_land_foragers = 
+ggplot(data_land)+
+  geom_tile(aes(x, y, fill = items))+
+  facet_grid(~gen,
+             labeller = label_both)+
+  scale_fill_viridis_c(
+    limits = c(1, NA),
+    na.value = "white", 
+    direction = -1
+  )+
+  coord_cartesian(expand = F)+
+  kleptomoveMS::theme_custom(landscape = T)+
+  labs(fill = "# Items")
+```
+
+## Figure 2 Foragers model
+
+wrap figures together
+
+```{r}
+figure_2_forager_model = 
+  wrap_plots(
+  fig_activity, fig_intake, fig_land_foragers,
+  design = "AB\nCC"
+) +
+  plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(plot.tag = element_text(
+    face = "bold",
+    size = 12
+  ))
+```
+
+save figure
+
+```{r}
+ggsave(figure_2_forager_model,
+       filename = "figures/fig_02_forager_model.png",
+       height = 150, width = 130, units = "mm")
+```
+
