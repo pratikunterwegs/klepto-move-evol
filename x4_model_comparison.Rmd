@@ -15,7 +15,7 @@ library(patchwork)
 data <- fread("data_sim/results/data_strategy_gen.csv")
 # rearrange
 data$sim_type <- factor(data$sim_type,
-                        levels = c("foragers", "obligate", "facultative", "random")
+  levels = c("foragers", "obligate", "facultative", "random")
 )
 
 # remove excess growth
@@ -59,9 +59,9 @@ fig_strategy_fitness <-
   geom_line(
     data = data_fitness_summary,
     aes((regrowth),
-        y = pop_fitness.median,
-        col = sim_type,
-        group = sim_type
+      y = pop_fitness.median,
+      col = sim_type,
+      group = sim_type
     ),
     # lwd = 0.2,
     position = position_dodge(width = 0.005)
@@ -69,11 +69,11 @@ fig_strategy_fitness <-
   geom_errorbar(
     data = data_fitness_summary,
     aes(regrowth,
-        ymin = pop_fitness.median -
-          pop_fitness.sd,
-        ymax = pop_fitness.median +
-          pop_fitness.sd,
-        group = sim_type
+      ymin = pop_fitness.median -
+        pop_fitness.sd,
+      ymax = pop_fitness.median +
+        pop_fitness.sd,
+      group = sim_type
     ),
     lwd = 0.2,
     position = position_dodge(width = 0.005)
@@ -81,46 +81,46 @@ fig_strategy_fitness <-
   geom_point(
     data = data_fitness_summary,
     aes((regrowth),
-        y = pop_fitness.median,
-        fill = sim_type,
-        shape = sim_type
+      y = pop_fitness.median,
+      fill = sim_type,
+      shape = sim_type
     ),
     size = 2,
     position = position_dodge(width = 0.005)
   ) +
   scale_fill_manual(
     values = c(
-      foragers = "maroon", 
-      obligate = "dodgerblue", 
+      foragers = "maroon",
+      obligate = "dodgerblue",
       facultative = "gold"
     ),
     labels = c(
-      foragers = "Foragers", 
-      obligate = "Fixed", 
+      foragers = "Foragers",
+      obligate = "Fixed",
       facultative = "Conditional"
     )
   ) +
   scale_colour_manual(
     values = c(
-      foragers = "maroon", 
-      obligate = "dodgerblue", 
+      foragers = "maroon",
+      obligate = "dodgerblue",
       facultative = "gold"
     ),
     labels = c(
-      foragers = "Foragers", 
-      obligate = "Fixed", 
+      foragers = "Foragers",
+      obligate = "Fixed",
       facultative = "Conditional"
     )
   ) +
   scale_shape_manual(
     values = c(
-      foragers = 21, 
+      foragers = 21,
       obligate = 22,
       facultative = 24
     ),
     labels = c(
-      foragers = "Foragers", 
-      obligate = "Fixed", 
+      foragers = "Foragers",
+      obligate = "Fixed",
       facultative = "Conditional"
     )
   ) +
@@ -133,7 +133,7 @@ fig_strategy_fitness <-
   kleptomoveMS::theme_custom(grid = T) +
   theme(
     legend.position = "none"
-  )+
+  ) +
   labs(
     x = "Regrowth rate",
     y = "Population intake",
@@ -167,7 +167,7 @@ data_strategy_summary <-
 
 # split by variable
 data_strategy_summary <- split(data_strategy_summary,
-                               by = "variable"
+  by = "variable"
 )
 ```
 
@@ -178,60 +178,59 @@ pal <- c("red", "navyblue")
 subfigures_strategy_growth <- Map(function(df, name) {
   yaxis_name <- sprintf("Prop. %s", stringr::str_to_sentence(name))
   # colour <- ifelse(name == "stealing", pal[1], pal[2])
-  
+
   # plot figure
   ggplot(df) +
     geom_path(aes(regrowth, value.median,
-                  group = interaction(sim_type, variable),
-                  colour = sim_type
-    ),
-    ) +
+      group = interaction(sim_type, variable),
+      colour = sim_type
+    ), ) +
     geom_errorbar(
       aes(regrowth,
-          ymin = value.median - value.sd,
-          ymax = value.median + value.sd
+        ymin = value.median - value.sd,
+        ymax = value.median + value.sd
       ),
       lwd = 0.2
     ) +
     geom_point(aes(regrowth, value.median,
-                   shape = sim_type,
-                   fill = sim_type
+      shape = sim_type,
+      fill = sim_type
     ),
     size = 2
     ) +
     scale_fill_manual(
       values = c(
-        foragers = "maroon", 
-        obligate = "dodgerblue", 
+        foragers = "maroon",
+        obligate = "dodgerblue",
         facultative = "gold"
       ),
       labels = c(
-        foragers = "Foragers", 
-        obligate = "Fixed", 
+        foragers = "Foragers",
+        obligate = "Fixed",
         facultative = "Conditional"
       )
     ) +
     scale_colour_manual(
       values = c(
-        foragers = "maroon", 
-        obligate = "dodgerblue", 
+        foragers = "maroon",
+        obligate = "dodgerblue",
         facultative = "gold"
       ),
       labels = c(
-        foragers = "Foragers", 
-        obligate = "Fixed", 
+        foragers = "Foragers",
+        obligate = "Fixed",
         facultative = "Conditional"
       )
     ) +
     scale_shape_manual(
       values = c(
-        foragers = 21, 
+        foragers = 21,
         obligate = 22,
         facultative = 24
       ),
       labels = c(
-        foragers = "Foragers", 
-        obligate = "Fixed", 
+        foragers = "Foragers",
+        obligate = "Fixed",
         facultative = "Conditional"
       )
     ) +
@@ -245,10 +244,12 @@ subfigures_strategy_growth <- Map(function(df, name) {
       0.025,
       0.05
     )) +
-    coord_cartesian(ylim = c(0, 1),
-                    expand = T) +
+    coord_cartesian(
+      ylim = c(0, 1),
+      expand = T
+    ) +
     kleptomoveMS::theme_custom(grid = T) +
-    theme(legend.position = "bottom")+
+    theme(legend.position = "bottom") +
     labs(
       x = "Regrowth rate",
       y = yaxis_name,
@@ -274,16 +275,18 @@ point_plots <- append(
 # wrap all figures
 figure_05_model_comparison <-
   wrap_plots(point_plots) +
-  plot_annotation(
-    tag_levels = "A"
-  ) +
-  plot_layout(guides = "collect") & 
-  theme(legend.position = "bottom",
-        plot.tag = element_text(
-    face = "bold",
-    size = 12
-  ))
-  
+    plot_annotation(
+      tag_levels = "A"
+    ) +
+    plot_layout(guides = "collect") &
+    theme(
+      legend.position = "bottom",
+      plot.tag = element_text(
+        face = "bold",
+        size = 12
+      )
+    )
+
 ggsave(
   figure_05_model_comparison,
   filename = "figures/fig_05_model_comparison.png",

@@ -45,5 +45,6 @@ data_landscape <- data_landscape[, unlist(data, recursive = F),
 
 # save
 fwrite(data_landscape,
-       file = "data_sim/results/data_landscape_item_count_1_50.png")
+  file = "data_sim/results/data_landscape_item_count_1_50.png"
+)
 ```
