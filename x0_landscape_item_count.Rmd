@@ -1,0 +1,49 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r}
+library(data.table)
+library(glue)
+library(kleptomoveMS)
+```
+
+```{r}
+paths <- list.dirs("data_sim/for_landscape/", recursive = F)
+
+# select gens
+gens_for_figure <- stringr::str_pad(c(1, 50), width = 5, pad = "0")
+
+# get paths for files
+data_landscape <- CJ(
+  gen = gens_for_figure,
+  path = paths
+)
+
+# add sim_type
+data_landscape[, sim_type := rep(c("facultative", "foragers", "obligate"), 2)]
+
+# get paths
+data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
+
+# get data
+data_landscape$data <- lapply(data_landscape$image,
+  kleptomoveMS::read_landscape,
+  layer = 4,
+  crop_dim = 60,
+  type = "items"
+)
+
+# convert gen to numeric
+data_landscape[, gen := as.numeric(gen)]
+
+# unlst
+data_landscape <- data_landscape[, unlist(data, recursive = F),
+  by = c("sim_type", "gen")
+]
+
+# save
+fwrite(data_landscape,
+       file = "data_sim/results/data_landscape_item_count_1_50.png")
+```
