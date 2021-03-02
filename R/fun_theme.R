@@ -21,10 +21,10 @@ theme_custom <- function(grid = FALSE,
         colour = "grey20",
         fill = "lightgrey",
         size = 0.3
+      ),
+      panel.background = ggplot2::element_rect(
+        fill = "grey99"
       )
-      # panel.background = ggplot2::element_rect(
-      #   fill = "grey99"
-      # )
     )
 
   if (grid) {
@@ -44,7 +44,8 @@ theme_custom <- function(grid = FALSE,
         legend.key.height = ggplot2::unit(1, units = "mm"),
         axis.text = ggplot2::element_blank(),
         axis.text.y = ggplot2::element_blank(),
-        axis.title = ggplot2::element_blank()
+        axis.title = ggplot2::element_blank(),
+        axis.ticks = ggplot2::element_blank()
       )
   }
 
