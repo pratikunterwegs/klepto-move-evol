@@ -130,7 +130,7 @@ fig_strategy_fitness <-
     0.025,
     0.05
   )) +
-  kleptomoveMS::theme_custom(grid = T) +
+  kleptomoveMS::theme_custom(grid = T, base_size = 8) +
   theme(
     legend.position = "none"
   ) +
@@ -248,7 +248,7 @@ subfigures_strategy_growth <- Map(function(df, name) {
       ylim = c(0, 1),
       expand = T
     ) +
-    kleptomoveMS::theme_custom(grid = T) +
+    kleptomoveMS::theme_custom(grid = T, base_size = 8) +
     theme(legend.position = "bottom") +
     labs(
       x = "Regrowth rate",
