@@ -159,7 +159,17 @@ data <- split(data, by = "sim_type")
 ```{r}
 # make subplots
 subplots <- lapply(data, function(df) {
-  ggplot(df[gen <= 50, ]) +
+  
+  if (unique(df$sim_type) == "foragers") {
+    x_lim = c(0, 100)
+    df = df[gen <= 100, ]
+    df[variable == "klept_strategy", "value"] = NA
+  } else {
+    x_lim = c(0, 50)
+    df = df[gen <= 50, ]
+  }
+  
+  ggplot(df) +
     geom_path(aes(gen, value,
       col = variable,
       group = interaction(replicate, variable)
@@ -187,7 +197,7 @@ subplots <- lapply(data, function(df) {
       labels = c("0", "0.25", "0.5", "0.75", "1")
     ) +
     coord_cartesian(
-      xlim = c(0, 50),
+      xlim = x_lim,
       ylim = c(0, 1),
       expand = T
     ) +
