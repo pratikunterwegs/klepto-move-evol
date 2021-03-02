@@ -48,3 +48,58 @@ fwrite(data_landscape,
   file = "data_sim/results/data_landscape_item_count_1_50.png"
 )
 ```
+
+## Landscape agent count
+
+```{r}
+paths <- list.dirs("data_sim/for_landscape/", recursive = F)
+
+# select gens
+gens_for_figure <- stringr::str_pad(c(1, 50), width = 5, pad = "0")
+
+# get paths for files
+data_landscape <- CJ(
+  gen = gens_for_figure,
+  path = paths
+)
+
+# add sim_type
+data_landscape[, sim_type := rep(c("facultative", "foragers", "obligate"), 2)]
+
+# get paths
+data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
+
+# get data
+data_landscape$agent_data <- lapply(data_landscape$image,
+  kleptomoveMS::read_landscape,
+  layer = c(1, 2, 3),
+  crop_dim = 60,
+  type = "items"
+)
+
+# unlist
+# unlst
+data_landscape <- data_landscape[, unlist(agent_data, recursive = F),
+  by = c("sim_type", "gen")
+]
+
+# rename
+setnames(data_landscape, "items", "agents")
+
+# recount agents
+data_landscape[, agents := round(agents / 0.02)]
+
+# save data
+fwrite(data_landscape, file = "data_sim/results/data_agent_count_1_50.csv")
+```
+
+```{r}
+ggplot(data_landscape[agents > 0,])+
+  geom_point(aes(x, y, size = agents),
+             shape = 1)+
+  facet_grid(gen~sim_type)+
+  scale_fill_distiller(direction = 1,
+                       limits = c(1, NA),
+                       na.value = "white")
+```
+
