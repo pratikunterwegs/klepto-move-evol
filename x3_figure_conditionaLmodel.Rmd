@@ -59,9 +59,9 @@ make population activity budget plot with weight evolution
 
 ```{r}
 fig_activity <-
-  ggplot(data_activity) +
+  ggplot(data_activity[gen <= 50, ]) +
   geom_path(
-    data = data_klept_prop,
+    data = data_klept_prop[gen <= 50,],
     aes(gen, klept_strategy,
       colour = "p_klept",
       group = replicate
@@ -97,7 +97,7 @@ fig_activity <-
   coord_cartesian(
     xlim = c(1, 50),
     ylim = c(0, 1),
-    expand = F
+    expand = T
   ) +
   kleptomoveMS::theme_custom(grid = T) +
   theme(
@@ -116,7 +116,7 @@ figure intake
 
 ```{r}
 fig_intake <-
-  ggplot(unique(data_activity,
+  ggplot(unique(data_activity[gen <= 50,],
     by = c("gen", "replicate", "pop_fitness")
   )) +
   geom_path(aes(gen, pop_fitness,
@@ -128,7 +128,7 @@ fig_intake <-
   coord_cartesian(
     xlim = c(1, 50),
     ylim = c(0, 50),
-    expand = F
+    expand = T
   ) +
   kleptomoveMS::theme_custom(grid = T) +
   labs(
@@ -143,6 +143,10 @@ prepare landscape at 0 and 25
 # get landscape data
 data_land <- fread("data_sim/results/data_landscape_item_count_1_50.png")
 data_land <- data_land[sim_type == "facultative", ]
+
+# get agents
+data_agent <- fread("data_sim/results/data_agent_count_1_50.csv")
+data_agent <- data_agent[sim_type == "facultative", ]
 ```
 
 plot landscape foragers model
@@ -151,6 +155,10 @@ plot landscape foragers model
 fig_land_conditional <-
   ggplot(data_land) +
   geom_tile(aes(x, y, fill = items)) +
+  geom_point(data = data_agent[agents > 0, ],
+             aes(x, y, size = agents),
+             shape = 1,
+             stroke = 0.75)+
   facet_grid(~gen,
     labeller = label_both
   ) +
@@ -161,7 +169,7 @@ fig_land_conditional <-
   ) +
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T) +
-  labs(fill = "# Items")
+  labs(fill = "# Items", size = "# Indiv.")
 ```
 
 ## Figure 4 Conditional model
@@ -188,7 +196,7 @@ save figure
 ```{r}
 ggsave(figure_4_conditional_model,
   filename = "figures/fig_04_conditional_model.png",
-  height = 150, width = 130, units = "mm"
+  height = 150, width = 125, units = "mm"
 )
 ```
 
