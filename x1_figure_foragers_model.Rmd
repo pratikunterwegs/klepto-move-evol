@@ -15,7 +15,6 @@ library(patchwork)
 
 get data
 
-
 ```{r}
 # activity data
 data_activity <- fread("data_sim/results/data_strategy_gen.csv")
@@ -30,7 +29,7 @@ make so called population activity budget plot
 
 ```{r}
 fig_activity <-
-  ggplot(data_activity) +
+  ggplot(data_activity[gen <= 50,]) +
   geom_path(aes(gen, value,
     colour = variable,
     group = interaction(variable, replicate)
@@ -54,7 +53,7 @@ fig_activity <-
   coord_cartesian(
     xlim = c(1, 50),
     ylim = c(0, 1),
-    expand = F
+    expand = T
   ) +
   kleptomoveMS::theme_custom(grid = T) +
   theme(legend.position = "top") +
@@ -69,7 +68,7 @@ figure intake
 
 ```{r}
 fig_intake <-
-  ggplot(unique(data_activity,
+  ggplot(unique(data_activity[gen <= 50, ],
     by = c("gen", "replicate", "pop_fitness")
   )) +
   geom_path(aes(gen, pop_fitness,
@@ -81,7 +80,7 @@ fig_intake <-
   coord_cartesian(
     xlim = c(1, 50),
     ylim = c(0, 50),
-    expand = F
+    expand = T
   ) +
   kleptomoveMS::theme_custom(grid = T) +
   labs(
@@ -96,6 +95,10 @@ prepare landscape at 0 and 25
 # get landscape data
 data_land <- fread("data_sim/results/data_landscape_item_count_1_50.png")
 data_land <- data_land[sim_type == "foragers", ]
+
+# read agent data
+data_agent = fread("data_sim/results/data_agent_count_1_50.csv")[
+  sim_type == "foragers", ]
 ```
 
 plot landscape foragers model
@@ -104,6 +107,12 @@ plot landscape foragers model
 fig_land_foragers <-
   ggplot(data_land) +
   geom_tile(aes(x, y, fill = items)) +
+  
+  geom_point(data = data_agent[agents > 0, ],
+             aes(x, y, size = agents),
+             shape = 1,
+             stroke = 0.75)+
+  
   facet_grid(~gen,
     labeller = label_both
   ) +
@@ -114,7 +123,7 @@ fig_land_foragers <-
   ) +
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T) +
-  labs(fill = "# Items")
+  labs(fill = "# Items", size = "# Indiv.")
 ```
 
 ## Figure 2 Foragers model
@@ -141,7 +150,7 @@ save figure
 ```{r}
 ggsave(figure_2_forager_model,
   filename = "figures/fig_02_forager_model.png",
-  height = 150, width = 130, units = "mm"
+  height = 150, width = 125, units = "mm"
 )
 ```
 
