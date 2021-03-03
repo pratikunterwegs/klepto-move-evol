@@ -13,7 +13,7 @@ get_generation_data <- function(filepath,
   # source it
   source(toSource)
   # get summary data
-  temp_gen_data <- generation(991) # who decided to name this after a common R func?
+  temp_gen_data <- generation(991) 
 
   return(temp_gen_data)
 }
