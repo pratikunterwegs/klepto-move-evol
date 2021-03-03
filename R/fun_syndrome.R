@@ -35,16 +35,16 @@ get_pref_handler_by_strat <- function(
     # this is a matrix, discretise the klept bias and handler pref 1,1 is forager, has handler preference
     weights <- weights > 0
     
-    # table the weights, there will be four combinations
-    weight_table <- table(weights)
+    # make data tables
+    weights = data.table::as.data.table(weights)
     
-    # convert to data.table
-    weight_table <- data.table::as.data.table(weight_table)
+    # count by unique values
+    weights = weights[, .N, by = c("klept_bias", "handler_pref")]
     
     # add generation
-    weight_table$gen <- g
+    weights$gen <- g
     
-    return(weight_table)
+    return(weights)
   })
   
   # bind all the data together
