@@ -1,0 +1,104 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Behavioural syndrome
+
+```{r}
+# to handle data and plot
+library(data.table)
+library(glue)
+
+library(ggplot2)
+library(colorspace)
+library(patchwork)
+```
+
+```{r}
+# get data
+data = fread("data_sim/results/data_syndrome.csv")
+
+# klept_bias FALSE = kleptoparasite strategy
+```
+
+```{r}
+# get proportion
+data[, prop := N / sum(N), by = c("gen", "klept_bias", "regrowth", "replicate")]
+
+# group generations in tens
+data[, gen_round := round(gen, -1)]
+
+# recode variables
+data[, c("klept_bias", "handler_pref") := list(
+  factor(ifelse(klept_bias, "forager", "klept")),
+  factor(ifelse(handler_pref, "prefers handlers", "avoids handlers"),
+         levels = c("prefers handlers", "avoids handlers"))
+)]
+
+# summarise
+data_summary = data[, 
+                    list(mean_prop = mean(prop),
+                         sd_prop = sd(prop)),
+                    by = c("gen", "klept_bias", "handler_pref", "regrowth")]
+```
+
+```{r}
+ggplot(data[regrowth <= 0.02, ])+
+  # geom_ribbon(
+  #   aes(
+  #     x = gen,
+  #     # y = mean_prop,
+  #     ymin = mean_prop - sd_prop,
+  #     ymax = mean_prop + sd_prop,
+  #     fill = klept_bias,
+  #     group = interaction(klept_bias, handler_pref)
+  #   ),
+  #   alpha = 0.2
+  # )+
+  geom_line(
+    aes(
+      x = gen,
+      y = prop,
+      col = klept_bias,
+      size = handler_pref,
+      group = interaction(klept_bias, handler_pref, replicate)
+    )
+  )+
+  
+  scale_size_manual(
+    values = c(
+      "prefers handlers" = 0.5,
+      "avoids handlers" = 0.2
+    ),
+    name = "Movement",
+    breaks = c("prefers handlers", "avoids handlers")
+  )+
+  scale_colour_discrete_diverging(
+    palette = "Blue-Red 2",
+    # rev = T,
+    name = "Strategy"
+    # labels = c("Forager", "Kleptoparasite")
+  )+
+  scale_fill_discrete_diverging(
+    palette = "Tropic",
+    rev = T,
+    name = "Strategy"
+    # labels = c("Forager", "Kleptoparasite")
+  )+
+  scale_x_log10()+
+  facet_grid(cols = vars(regrowth),
+             labeller = label_both)+
+  coord_cartesian(ylim = c(0, 1),
+                  xlim = c(1, 50))+
+  labs(x = "Generation",
+       y = "Prop. handler preference")+
+  kleptomoveMS::theme_custom(grid = T)+
+  theme(legend.position = "top")
+```
+
+```{r}
+ggsave(filename = "figures/fig_syndrome.png")
+```
+
