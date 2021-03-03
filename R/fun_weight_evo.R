@@ -13,7 +13,7 @@ get_generation_data <- function(filepath,
   # source it
   source(toSource)
   # get summary data
-  temp_gen_data <- generation(991) 
+  temp_gen_data <- generation(991)
 
   return(temp_gen_data)
 }

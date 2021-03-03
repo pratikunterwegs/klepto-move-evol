@@ -16,12 +16,12 @@ read_landscape <- function(landscape_file, layer, crop_dim,
 
   # read the layer-th layer
   land <- png::readPNG(landscape_file)[, , layer]
-  
+
   # sum across layers
   if (length(dim(land)) == 3) {
-    land = rowSums(land, dims = 2)
+    land <- rowSums(land, dims = 2)
   }
-  
+
   # multiply by carrying capacity
   land <- land * max_K
 

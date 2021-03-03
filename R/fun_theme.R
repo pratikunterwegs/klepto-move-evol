@@ -5,7 +5,7 @@
 #'
 #' @return None
 #' @export
-theme_custom <- function(grid = FALSE, 
+theme_custom <- function(grid = FALSE,
                          landscape = FALSE,
                          ...) {
   this_theme <- ggplot2::theme_test(...) +
@@ -36,9 +36,9 @@ theme_custom <- function(grid = FALSE,
         )
       )
   }
-  
+
   if (landscape) {
-    this_theme = this_theme +
+    this_theme <- this_theme +
       ggplot2::theme(
         legend.position = "top",
         legend.key.height = ggplot2::unit(1, units = "mm"),
