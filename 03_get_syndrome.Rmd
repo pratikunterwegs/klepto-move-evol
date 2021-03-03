@@ -1,0 +1,47 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Prepare node weight evolution data
+
+## Load libraries
+
+```{r}
+# load libs
+library(data.table)
+library(kleptomoveMS)
+```
+
+## Run function over data
+
+```{r}
+# read parameter combinations
+param_combinations <- fread("data_sim/results/data_param_combinations.csv")
+param_combinations[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
+
+# select obligate sims
+param_combinations = param_combinations[sim_type == "obligate", ]
+# weight data
+
+syndrome_data = lapply(param_combinations$folder_path, function(path) {
+  kleptomoveMS::get_pref_handler_by_strat(
+    data_folder = path, 
+    generations = seq(1, 100),
+    weight_klept_bias = 5, 
+    weight_handler_pref = 3
+  )
+})
+
+# add to data
+data = copy(param_combinations[, c("sim_type", "replicate", "regrowth")])
+data$syndrome_data = syndrome_data
+
+# unlist
+data = data[, unlist(syndrome_data, recursive = FALSE),
+            by = c("sim_type", "replicate", "regrowth")]
+
+# save data
+fwrite(data, file = "data_sim/results/data_syndrome.csv")
+```
