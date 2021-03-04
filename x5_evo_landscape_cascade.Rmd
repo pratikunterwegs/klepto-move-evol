@@ -36,7 +36,7 @@ data[, weight_num :=
 data[, weight_num := as.numeric(weight_num)]
 
 # remove random sim
-data = data[sim_type != "random", ]
+data <- data[sim_type != "random", ]
 ```
 
 ## Prepare summary data
@@ -159,16 +159,15 @@ data <- split(data, by = "sim_type")
 ```{r}
 # make subplots
 subplots <- lapply(data, function(df) {
-  
   if (unique(df$sim_type) == "foragers") {
-    x_lim = c(0, 100)
-    df = df[gen <= 100, ]
-    df[variable == "klept_strategy", "value"] = NA
+    x_lim <- c(0, 100)
+    df <- df[gen <= 100, ]
+    df[variable == "klept_strategy", "value"] <- NA
   } else {
-    x_lim = c(0, 50)
-    df = df[gen <= 50, ]
+    x_lim <- c(0, 50)
+    df <- df[gen <= 50, ]
   }
-  
+
   ggplot(df) +
     geom_path(aes(gen, value,
       col = variable,

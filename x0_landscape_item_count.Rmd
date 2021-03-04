@@ -94,12 +94,15 @@ fwrite(data_landscape, file = "data_sim/results/data_agent_count_1_50.csv")
 ```
 
 ```{r}
-ggplot(data_landscape[agents > 0,])+
+ggplot(data_landscape[agents > 0, ]) +
   geom_point(aes(x, y, size = agents),
-             shape = 1)+
-  facet_grid(gen~sim_type)+
-  scale_fill_distiller(direction = 1,
-                       limits = c(1, NA),
-                       na.value = "white")
+    shape = 1
+  ) +
+  facet_grid(gen ~ sim_type) +
+  scale_fill_distiller(
+    direction = 1,
+    limits = c(1, NA),
+    na.value = "white"
+  )
 ```
 

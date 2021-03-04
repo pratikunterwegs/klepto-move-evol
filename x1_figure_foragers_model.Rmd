@@ -28,12 +28,16 @@ data_activity <- data_activity[
 make so called population activity budget plot
 
 ```{r}
-fig_activity <-
-  ggplot(data_activity[gen <= 50,]) +
-  geom_path(aes(gen, value,
-    colour = variable,
-    group = interaction(variable, replicate)
-  )) +
+# fig_activity <-
+ggplot(data_activity[gen <= 50, ]) +
+  geom_path(
+    aes(
+      gen, value,
+      colour = variable,
+      group = interaction(variable, replicate)
+    ),
+    size = 0.3
+  ) +
   scale_colour_manual(
     values = c(
       foraging = "navyblue",
@@ -97,8 +101,9 @@ data_land <- fread("data_sim/results/data_landscape_item_count_1_50.png")
 data_land <- data_land[sim_type == "foragers", ]
 
 # read agent data
-data_agent = fread("data_sim/results/data_agent_count_1_50.csv")[
-  sim_type == "foragers", ]
+data_agent <- fread("data_sim/results/data_agent_count_1_50.csv")[
+  sim_type == "foragers",
+]
 ```
 
 plot landscape foragers model
@@ -107,12 +112,12 @@ plot landscape foragers model
 fig_land_foragers <-
   ggplot(data_land) +
   geom_tile(aes(x, y, fill = items)) +
-  
-  geom_point(data = data_agent[agents > 0, ],
-             aes(x, y, size = agents),
-             shape = 1,
-             stroke = 0.75)+
-  
+  geom_point(
+    data = data_agent[agents > 0, ],
+    aes(x, y, size = agents),
+    shape = 1,
+    stroke = 0.75
+  ) +
   facet_grid(~gen,
     labeller = label_both
   ) +
