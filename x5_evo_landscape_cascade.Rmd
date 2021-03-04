@@ -172,10 +172,10 @@ subplots <- lapply(data, function(df) {
     geom_path(aes(gen, value,
       col = variable,
       group = interaction(replicate, variable)
-    )) +
+    ), size = 0.4) +
     scale_colour_manual(
       values = c(
-        p_clueless = "black",
+        p_clueless = "grey40",
         stealing = "red",
         klept_strategy = "darkorange",
         pref_handlers = "steelblue"
@@ -201,9 +201,6 @@ subplots <- lapply(data, function(df) {
       expand = T
     ) +
     kleptomoveMS::theme_custom(grid = T, base_size = 8) +
-    theme(
-      legend.position = "top"
-    ) +
     labs(
       x = "Generation",
       y = "Proportion",
@@ -308,8 +305,8 @@ subplot_land <- lapply(landscape, function(df) {
       na.value = ifelse(unique(df$variable) == "items", "white", "grey20"),
       limits = c(0.7, NA)
     ) +
-    coord_cartesian(expand = F) +
-    kleptomoveMS::theme_custom(landscape = T) +
+    coord_equal(expand = F) +
+    kleptomoveMS::theme_custom(landscape = T, base_size = 8) +
     theme(
       axis.text = element_blank(),
       axis.title = element_blank()
@@ -330,14 +327,14 @@ subplot_land <- subplot_land[fignames]
 
 ```{r}
 # make figure 6
-figure_6_cascade <-
+figure_8 <-
   wrap_plots(append(
     subplots[c(
       "foragers",
       "obligate", "facultative"
     )],
     subplot_land
-  )) +
+  ), byrow = F, ncol = 2) +
     plot_layout(guide = "collect") +
     plot_annotation(
       tag_levels = "A"
@@ -351,11 +348,11 @@ figure_6_cascade <-
     )
 
 ggsave(
-  figure_6_cascade,
-  height = 85,
-  width = 175,
+  figure_8,
+  height = 160,
+  width = 140,
   units = "mm",
-  filename = "figures/fig_06_cascades.png"
+  filename = "figures/fig_08.png"
 )
 ```
 
