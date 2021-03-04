@@ -273,7 +273,7 @@ point_plots <- append(
 
 ```{r}
 # wrap all figures
-figure_05_model_comparison <-
+figure_06 <-
   wrap_plots(point_plots) +
     plot_annotation(
       tag_levels = "A"
@@ -288,8 +288,8 @@ figure_05_model_comparison <-
     )
 
 ggsave(
-  figure_05_model_comparison,
-  filename = "figures/fig_05_model_comparison.png",
+  figure_06,
+  filename = "figures/fig_06.png",
   height = 75, width = 180, units = "mm"
 )
 ```
