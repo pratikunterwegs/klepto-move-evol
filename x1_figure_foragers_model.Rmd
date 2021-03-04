@@ -28,7 +28,7 @@ data_activity <- data_activity[
 make so called population activity budget plot
 
 ```{r}
-# fig_activity <-
+fig_activity <-
 ggplot(data_activity[gen <= 50, ]) +
   geom_path(
     aes(
@@ -59,7 +59,7 @@ ggplot(data_activity[gen <= 50, ]) +
     ylim = c(0, 1),
     expand = T
   ) +
-  kleptomoveMS::theme_custom(grid = T) +
+  kleptomoveMS::theme_custom(grid = T, base_size = 8) +
   theme(legend.position = "top") +
   labs(
     x = "Generation",
@@ -72,12 +72,17 @@ figure intake
 
 ```{r}
 fig_intake <-
-  ggplot(unique(data_activity[gen <= 50, ],
-    by = c("gen", "replicate", "pop_fitness")
-  )) +
-  geom_path(aes(gen, pop_fitness,
-    group = replicate
-  )) +
+  ggplot(
+    unique(data_activity[gen <= 50, ],
+           by = c("gen", "replicate", "pop_fitness")
+    )
+  ) +
+  geom_path(
+    aes(gen, pop_fitness,
+        group = replicate
+    ),
+    size = 0.3
+  ) +
   scale_x_continuous(
     breaks = c(1, seq(10, 50, 10))
   ) +
@@ -86,7 +91,7 @@ fig_intake <-
     ylim = c(0, 50),
     expand = T
   ) +
-  kleptomoveMS::theme_custom(grid = T) +
+  kleptomoveMS::theme_custom(grid = T, base_size = 8) +
   labs(
     x = "Generation",
     y = "Population intake"
@@ -97,7 +102,7 @@ prepare landscape at 0 and 25
 
 ```{r}
 # get landscape data
-data_land <- fread("data_sim/results/data_landscape_item_count_1_50.png")
+data_land <- fread("data_sim/results/data_landscape_item_count_1_50.csv")
 data_land <- data_land[sim_type == "foragers", ]
 
 # read agent data
@@ -115,8 +120,7 @@ fig_land_foragers <-
   geom_point(
     data = data_agent[agents > 0, ],
     aes(x, y, size = agents),
-    shape = 1,
-    stroke = 0.75
+    shape = 1
   ) +
   facet_grid(~gen,
     labeller = label_both
@@ -128,6 +132,7 @@ fig_land_foragers <-
   ) +
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T) +
+  theme(legend.position = "bottom")+
   labs(fill = "# Items", size = "# Indiv.")
 ```
 
@@ -154,8 +159,8 @@ save figure
 
 ```{r}
 ggsave(figure_2_forager_model,
-  filename = "figures/fig_02_forager_model.png",
-  height = 150, width = 125, units = "mm"
+  filename = "figures/fig_02.png",
+  height = 125, width = 125, units = "mm"
 )
 ```
 
