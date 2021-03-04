@@ -49,24 +49,14 @@ data_summary <- data[,
 ```
 
 ```{r}
-ggplot(data[regrowth <= 0.02, ]) +
-  # geom_ribbon(
-  #   aes(
-  #     x = gen,
-  #     # y = mean_prop,
-  #     ymin = mean_prop - sd_prop,
-  #     ymax = mean_prop + sd_prop,
-  #     fill = klept_bias,
-  #     group = interaction(klept_bias, handler_pref)
-  #   ),
-  #   alpha = 0.2
-  # )+
+fig_6 = 
+ggplot(data[regrowth == 0.01, ]) +
   geom_line(
     aes(
       x = gen,
       y = prop,
-      col = klept_bias,
-      size = handler_pref,
+      col = interaction(klept_bias, handler_pref),
+      # size = handler_pref,
       group = interaction(klept_bias, handler_pref, replicate)
     )
   ) +
@@ -78,22 +68,20 @@ ggplot(data[regrowth <= 0.02, ]) +
     name = "Movement",
     breaks = c("prefers handlers", "avoids handlers")
   ) +
-  scale_colour_discrete_diverging(
-    palette = "Blue-Red 2",
-    # rev = T,
-    name = "Strategy"
-    # labels = c("Forager", "Kleptoparasite")
-  ) +
-  scale_fill_discrete_diverging(
-    palette = "Tropic",
-    rev = T,
-    name = "Strategy"
-    # labels = c("Forager", "Kleptoparasite")
-  ) +
-  scale_x_log10() +
-  facet_grid(
-    cols = vars(regrowth),
-    labeller = label_both
+  scale_colour_manual(
+    values = c(
+      "forager.prefers handlers" = "royalblue",
+      "forager.avoids handlers" = "lightblue",
+      "klept.prefers handlers" = "darkred",
+      "klept.avoids handlers" = "indianred"
+    ),
+    name = NULL,
+    labels = c(
+      "forager.prefers handlers" = "Forager, prefers handlers",
+      "forager.avoids handlers" = "Forager, avoids handlers",
+      "klept.prefers handlers" = "Klept., prefers handlers",
+      "klept.avoids handlers" = "Klept., avoids handlers"
+    )
   ) +
   coord_cartesian(
     ylim = c(0, 1),
@@ -101,13 +89,19 @@ ggplot(data[regrowth <= 0.02, ]) +
   ) +
   labs(
     x = "Generation",
-    y = "Prop. handler preference"
+    y = "Prop. handler response"
   ) +
-  kleptomoveMS::theme_custom(grid = T) +
-  theme(legend.position = "top")
+  scale_x_log10()+
+  kleptomoveMS::theme_custom(grid = T, base_size = 8) +
+  theme(legend.position = "top",
+        legend.key.height = unit(1, units = "mm"))+
+  guides(colour = guide_legend(nrow = 2, byrow = TRUE))
 ```
 
 ```{r}
-ggsave(filename = "figures/fig_syndrome.png")
+ggsave(fig_6,
+       filename = "figures/fig_07.png",
+       width = 80,
+       height = 80, units = "mm")
 ```
 
