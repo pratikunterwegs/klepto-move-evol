@@ -99,7 +99,7 @@ fig_activity <-
     ylim = c(0, 1),
     expand = T
   ) +
-  kleptomoveMS::theme_custom(grid = T) +
+  kleptomoveMS::theme_custom(grid = T, base_size = 8) +
   theme(
     legend.position = "top",
     legend.key.height = unit(0, units = "mm")
@@ -119,9 +119,11 @@ fig_intake <-
   ggplot(unique(data_activity[gen <= 50, ],
     by = c("gen", "replicate", "pop_fitness")
   )) +
-  geom_path(aes(gen, pop_fitness,
-    group = replicate
-  )) +
+  geom_path(
+    aes(gen, pop_fitness,
+        group = replicate
+    )
+  ) +
   scale_x_continuous(
     breaks = c(1, seq(10, 50, 10))
   ) +
@@ -130,7 +132,7 @@ fig_intake <-
     ylim = c(0, 50),
     expand = T
   ) +
-  kleptomoveMS::theme_custom(grid = T) +
+  kleptomoveMS::theme_custom(grid = T, base_size = 8)+
   labs(
     x = "Generation",
     y = "Population intake"
@@ -141,7 +143,7 @@ prepare landscape at 0 and 25
 
 ```{r}
 # get landscape data
-data_land <- fread("data_sim/results/data_landscape_item_count_1_50.png")
+data_land <- fread("data_sim/results/data_landscape_item_count_1_50.csv")
 data_land <- data_land[sim_type == "facultative", ]
 
 # get agents
@@ -158,12 +160,14 @@ fig_land_conditional <-
   geom_point(
     data = data_agent[agents > 0, ],
     aes(x, y, size = agents),
-    shape = 1,
-    stroke = 0.75
+    shape = 1
   ) +
   facet_grid(~gen,
     labeller = label_both
   ) +
+  scale_size(
+    breaks = c(1,2,3,4)
+  )+
   scale_fill_viridis_c(
     limits = c(1, NA),
     na.value = "white",
@@ -171,6 +175,7 @@ fig_land_conditional <-
   ) +
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T) +
+  theme(legend.position = "bottom")+
   labs(fill = "# Items", size = "# Indiv.")
 ```
 
@@ -196,9 +201,10 @@ figure_4_conditional_model <-
 save figure
 
 ```{r}
-ggsave(figure_4_conditional_model,
-  filename = "figures/fig_04_conditional_model.png",
-  height = 150, width = 125, units = "mm"
+ggsave(
+  figure_4_conditional_model,
+  filename = "figures/fig_04.png",
+  height = 125, width = 125, units = "mm"
 )
 ```
 
