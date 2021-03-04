@@ -23,7 +23,7 @@ theme_custom <- function(grid = FALSE,
       #   size = 0.3
       # ),
       strip.background = ggplot2::element_blank(),
-      strip.text = ggplot2::element_text(face = "bold"),
+      strip.text = ggplot2::element_text(face = "bold", hjust = 0),
       panel.background = ggplot2::element_rect(
         fill = "grey99"
       )
