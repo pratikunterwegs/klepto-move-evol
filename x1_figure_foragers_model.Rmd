@@ -35,7 +35,8 @@ ggplot(data_activity[gen <= 50, ]) +
       gen, value,
       colour = variable,
       group = interaction(variable, replicate)
-    )
+    ),
+    size = 0.4
   ) +
   scale_colour_manual(
     values = c(
@@ -79,7 +80,8 @@ fig_intake <-
   geom_path(
     aes(gen, pop_fitness,
         group = replicate
-    )
+    ),
+    size = 0.4
   ) +
   scale_x_continuous(
     breaks = c(1, seq(10, 50, 10))

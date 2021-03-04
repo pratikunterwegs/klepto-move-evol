@@ -58,7 +58,8 @@ ggplot(data[regrowth == 0.01, ]) +
       col = interaction(klept_bias, handler_pref),
       # size = handler_pref,
       group = interaction(klept_bias, handler_pref, replicate)
-    )
+    ),
+    size = 0.4
   ) +
   scale_size_manual(
     values = c(

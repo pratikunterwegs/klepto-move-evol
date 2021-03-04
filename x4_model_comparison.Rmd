@@ -184,7 +184,7 @@ subfigures_strategy_growth <- Map(function(df, name) {
     geom_path(aes(regrowth, value.median,
       group = interaction(sim_type, variable),
       colour = sim_type
-    ), ) +
+    ), size = 0.4) +
     geom_errorbar(
       aes(regrowth,
         ymin = value.median - value.sd,
