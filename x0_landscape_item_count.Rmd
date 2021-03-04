@@ -13,7 +13,7 @@ library(kleptomoveMS)
 paths <- list.dirs("data_sim/for_landscape/", recursive = F)
 
 # select gens
-gens_for_figure <- stringr::str_pad(c(1, 50), width = 5, pad = "0")
+gens_for_figure <- stringr::str_pad(c(1, 10, 50), width = 5, pad = "0")
 
 # get paths for files
 data_landscape <- CJ(
@@ -22,7 +22,7 @@ data_landscape <- CJ(
 )
 
 # add sim_type
-data_landscape[, sim_type := rep(c("facultative", "foragers", "obligate"), 2)]
+data_landscape[, sim_type := rep(c("facultative", "foragers", "obligate"), 3)]
 
 # get paths
 data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
@@ -45,7 +45,7 @@ data_landscape <- data_landscape[, unlist(data, recursive = F),
 
 # save
 fwrite(data_landscape,
-  file = "data_sim/results/data_landscape_item_count_1_50.png"
+  file = "data_sim/results/data_landscape_item_count_1_50.csv"
 )
 ```
 
