@@ -20,16 +20,6 @@ library(patchwork)
 # get data
 data <- fread("data_sim/results/data_syndrome.csv")
 
-# klept_bias FALSE = kleptoparasite strategy
-```
-
-```{r}
-# get proportion
-data[, prop := N / sum(N), by = c("gen", "klept_bias", "regrowth", "replicate")]
-
-# group generations in tens
-data[, gen_round := round(gen, -1)]
-
 # recode variables
 data[, c("klept_bias", "handler_pref") := list(
   factor(ifelse(klept_bias, "forager", "klept")),
@@ -37,37 +27,33 @@ data[, c("klept_bias", "handler_pref") := list(
     levels = c("prefers handlers", "avoids handlers")
   )
 )]
-
-# summarise
-data_summary <- data[,
-  list(
-    mean_prop = mean(prop),
-    sd_prop = sd(prop)
-  ),
-  by = c("gen", "klept_bias", "handler_pref", "regrowth")
-]
 ```
 
 ```{r}
-fig_7 = 
+# get proportion
+data[, prop_per_strat := N / sum(N), 
+     by = c("gen", "klept_bias", "regrowth", "replicate")]
+
+# count handler pref per strategy as total
+# who drives the rise in handlers
+data_hp_total = copy(data)[handler_pref == "prefers handlers",]
+data_hp_total[, total_handlers := sum(N),
+              by = c("gen", "regrowth", "replicate")]
+data_hp_total[, prop_total := N / total_handlers]
+```
+
+```{r}
+fig_7a =
 ggplot(data[regrowth == 0.01, ]) +
   geom_line(
     aes(
       x = gen,
-      y = prop,
+      y = prop_per_strat,
       col = interaction(klept_bias, handler_pref),
       # size = handler_pref,
       group = interaction(klept_bias, handler_pref, replicate)
     ),
     size = 0.4
-  ) +
-  scale_size_manual(
-    values = c(
-      "prefers handlers" = 0.5,
-      "avoids handlers" = 0.2
-    ),
-    name = "Movement",
-    breaks = c("prefers handlers", "avoids handlers")
   ) +
   scale_colour_manual(
     values = c(
@@ -92,7 +78,7 @@ ggplot(data[regrowth == 0.01, ]) +
     x = "Generation",
     y = "Prop. handler response"
   ) +
-  scale_x_log10()+
+  # scale_x_log10()+
   kleptomoveMS::theme_custom(grid = T, base_size = 8) +
   theme(legend.position = "top",
         legend.key.height = unit(1, units = "mm"))+
@@ -100,9 +86,59 @@ ggplot(data[regrowth == 0.01, ]) +
 ```
 
 ```{r}
+fig7b = 
+  ggplot(data_hp_total[regrowth == 0.01 &
+                         gen <= 50])+
+  geom_line(aes(
+    gen, prop_total,
+    colour = klept_bias,
+    group = interaction(replicate, klept_bias)
+  ), size = 0.4)+
+  scale_y_continuous(
+    labels = c("0", "0.25", "0.5", "0.75", "1")
+  )+
+  scale_color_manual(
+    values = c(
+      klept = "darkred",
+      forager = "royalblue"
+    ),
+    labels = c(
+      klept = "Klept.",
+      forager = "Forager"
+    )
+  )+
+  kleptomoveMS::theme_custom(grid = T, base_size = 8)+
+  theme(legend.position = "top",
+        legend.key.height = unit(1, units = "mm"))+
+  labs(
+    x = "Generation",
+    y = "Prop. indivs. preferring handlers",
+    colour = "Strategy"
+  )
+```
+
+```{r}
+fig_7 =
+  wrap_plots(
+    fig_7a, fig7b
+  )+
+  plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(
+    plot.tag = element_text(
+      face = "bold",
+      size = 12
+    ),
+    legend.position = "top"
+  )
+```
+
+
+```{r}
 ggsave(fig_7,
        filename = "figures/fig_07.png",
-       width = 80,
+       width = 160,
        height = 80, units = "mm")
 ```
 
