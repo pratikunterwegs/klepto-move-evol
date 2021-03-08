@@ -21,11 +21,14 @@ library(patchwork)
 data <- fread("data_sim/results/data_syndrome.csv")
 
 # recode variables
-data[, c("klept_bias", "handler_pref") := list(
+data[, c("klept_bias", "handler_pref",
+         "item_pref", "nh_pref") := list(
   factor(ifelse(klept_bias, "forager", "klept")),
   factor(ifelse(handler_pref, "prefers handlers", "avoids handlers"),
     levels = c("prefers handlers", "avoids handlers")
-  )
+  ),
+  factor(ifelse(item_pref, "prefers items", "avoids items")),
+  factor(ifelse(nh_pref, "prefers nh", "avoids nh"))
 )]
 ```
 
@@ -140,5 +143,26 @@ ggsave(fig_7,
        filename = "figures/fig_07.png",
        width = 160,
        height = 80, units = "mm")
+```
+
+## Item preference by strategy
+
+```{r}
+# get total agents per klept bias and item pref (4 classes total)
+data_item_pref = copy(data)
+data_item_pref = data_item_pref[, .(totalN = sum(N)), 
+               by = c("gen", "replicate", "regrowth",
+                             "klept_bias", "nh_pref")]
+data_item_pref = data_item_pref[, prop := totalN / sum(totalN), 
+                      by = c("gen", "replicate", "regrowth", "klept_bias")]
+```
+
+```{r}
+ggplot(data_item_pref[regrowth < 0.02 & gen < 50])+
+  geom_line(aes(gen, prop,
+                col = interaction(klept_bias, nh_pref),
+                group = interaction(klept_bias, nh_pref, replicate)),
+             size = 1)+
+  facet_grid(~regrowth)
 ```
 
