@@ -42,7 +42,7 @@ get_pref_handler_by_strat <- function(
     weights <- data.table::as.data.table(weights)
 
     # count by unique values
-    weights <- weights[, .N, by = c("klept_bias", weight_of_interest)]
+    weights <- weights[, .N, by = c("klept_bias", names(weight_of_interest))]
 
     # add generation
     weights$gen <- g
