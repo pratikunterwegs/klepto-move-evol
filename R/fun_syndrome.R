@@ -14,7 +14,7 @@ get_pref_handler_by_strat <- function(
                                       data_folder,
                                       generations,
                                       weight_klept_bias,
-                                      weight_handler_pref) {
+                                      weight_of_interest) {
 
   # source 'source_me.R' in the data folder
   source(sprintf("%s/sourceMe.R", data_folder))
