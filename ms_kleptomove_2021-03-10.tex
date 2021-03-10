@@ -298,16 +298,91 @@ In Model 3, kleptoparasitism persists at low frequencies even at the highest reg
 Consequently, while populations in all three models achieve very similar intakes at low $r_{max}$, at intermediate regrowth rates (0.01 -- 0.025), conditionally kleptoparasitic populations outperform populations using fixed strategies.
 Only at high regrowth rates, when fixed strategy populations (Model 2) effectively convert to purely forager populations (Model 1), do they achieve a higher intake than Model 3 populations (Fig. 5C).
 
-\subsection{Movement-Behaviour Co-evolution}
-
-\subsection{The Landscape Effect of Kleptoparasitism}
+\subsection{The Evolutionary and Ecological Consequences of kleptoparasitism}
 
 The evolution and persistence of kleptoparasitism reduces prey-item depletion compared to the foragers-only case, and allows many localised gradients of prey-item abundance to re-emerge (Figs. 2C, 3C, 4C).
-In Model 1, depletion reaches a stable value, and the proportion of clueless plateaus follows it to a stable level of 75\% by generation 10 ($r_{max}$ = 0.01; Fig. 6A, 6D).
-In Model 2, clueless plateaus comprise $>$ 50\% of the landscape by generation 10, but then rapidly subside to $<$ 25\% by generation 20, following rapid reductions in resource landscape depletion (Fig. 6B, 6E).
-In Model 3, depletion stabilises at a value intermediate between Models 1 and 2, and, clueless plateaus stabilise at ~50\% of the landscape (Fig. 6C, 6F).
+In Model 1, depletion reaches a stable value, and the proportion of the landscape with no item cues (`clueless plateaus') follows it to a stable level of 75\% by generation 10 ($r_{max}$ = 0.01; Fig. 6A, 6D).
+Consequently, forager individuals slowly evolve to move towards handlers (blue line; Fig. 6A), as the presence of a handler marks a cell as having a non-zero probability of generating a prey item.
+%
+In model 2, clueless plateaus comprise $>$ 50\% of the landscape by generation 10, but then rapidly subside to $<$ 25\% by generation 20, following rapid reductions in resource landscape depletion (Fig. 6B, 6E).
+As most individuals are kleptoparasites (orange line; Fig. 6B), and moving towards handlers is the only viable kleptoparasite movement strategy, the population as a whole evolves to move towards handlers (blue line; Fig. 6B).
+%%
+In Model 3, depletion stabilises at a value intermediate between Models 1 and 2, and, clueless plateaus stabilise at $\sim$50\% of the landscape (Fig. 6C, 6F).
+Model 3 individuals are faced with both a lesser abundance of prey-items than in model 2, as well as being able to steal from any handlers they encounter; as a consequences, all individuals evolve a preference for moving towards handlers (blue line; Fig. 6C), which represent both a direct resource as well as an indication of prey item abundance.
+
+When kleptoparasitism is a fixed, inherited strategy (model 2), kleptoparasitic individuals face a particularly strong selection pressure to move towards handlers, as these are their only food source (Fig. 7A).
+As kleptoparasites form an increasing proportion of the population, they also form an increasing proportion of individuals with a preference for moving towards handlers (Fig. 7B).
+In contrast, foragers are largely neutral to handlers, and as they decrease in frequency, they form a decreasing proportion of individuals with a preference for handlers (Fig. 7A, 7B).
 
 \section{Discussion}
+
+short summary of results?
+
+\subsection{Exploitation Competition Does Not Produce Polymorphisms}
+
+Competition is a key process in determining animal space use across scales, and can lead to the diversification of populations as individuals specialise to avoid competition.
+Here, we show how the mechanisms of competition and movement are key to this diversification.
+In our Model 1 with only exploitative competition, only a single movement morph evolves.
+Previous models of the evolution of movement rules suggest that multiple movement morphs should evolve in a forager-resource context \citep[][Netz et al. in prep.]{getz2015}.
+However, both models include two components missing from Model 1: interference competition, and movement costs, highlighting the insufficiency of exploitative competition alone to generate phenotypic polymorphisms.
+
+\subsection{Polymorphism as the Outcome of Constraints}
+
+Our Models 2 and 3 further show how constraints, such as a movement or strategy cost, are key to the evolution of polymorphisms.
+In our Model 2, the modelling of kleptoparasitic interference as a fixed strategy leads to the dimorphism between obligate foragers and kleptoparasites.
+This constraint is resolved in Model 3, and individuals evolve to be kleptoparasitic in the presence of handlers, and foragers otherwise.
+The strategy constraint on Model 2 individuals prevents the population from converging on a single behavioural and movement phenotype, as kleptoparasites are dependent on foragers for intake.
+
+Fixed-strategy populations evolve a further polymorphism in movement behaviour, with kleptoparasites moving towards handlers, and foragers neutral to handlers.
+This coupling of movement and behavioural strategy is expected because obligate kleptoparasites functionally occupy a higher trophic level whose primary resource is handling foragers, rather than prey items.
+Once the the handler-preference in fixed in kleptoparasitic lineages, it becomes the more frequent handler response (over avoidance) as kleptoparasites increase in frequency.
+
+Several factors contribute to the stabilisation of kleptoparasitism at high frequencies, rather than the emergence of limit cycles of kleptoparasites and foragers.
+Among the most important is global natal dispersal, which ensures a well-mixed population in each generation, rather than increasing densities of offspring (of either strategy) around the most successful ancestors (`differential reproduction').
+Differential reproduction would allow instabilities related to spatial structuring, whereby increasing  kleptoparasite density in an area would eventually lead to lower per-capita intake among kleptoparasites relative to foragers, and consequently an increase in the forager:kleptoparasite ratio.
+
+\subsection{Plasticity, Polymorphisms, and Productivity}
+
+Model 3, which allows individuals to opportunistically steal prey items, resolves the strategic constraint of Model 2.
+When the inherited decision making weight is conditionally coupled with expressed behaviour, the frequency of stealing attempts better reflects the encounter rate of handlers, rather than the frequency of stealing propensity in the population.
+Model 3 individuals' behaviour is thus more adapted to immediate, local conditions; they lose less time in futile stealing attempts, and thus achieve better intakes.
+Consequently, individuals rapidly converge upon a single, optimal strategy, which is to steal when handlers are available, and to forage otherwise.
+
+Conditional strategy populations thus outperform fixed-strategy populations, and have similar intakes as forager populations, on low productivity landscapes.
+On more productive landscapes ($r_{max} \geq$ 0.02), exploitation competition is reduced, and the probability of a forager-prey item encounter is much higher than the probability of a kleptoparasite-handler encounter.
+Consequently, fixed-strategy kleptoparasites rarely match the per-capita intakes of foragers, and rapidly go extinct.
+Thus high $r_{max}$ instances of Model 2 consistently produce populations that are functionally identical to Model 1 populations, with no kleptoparasitism.
+However, at high $r_{max}$, opportunistic kleptoparasites in Model 3 have a greater per-capita intake rate than pure foragers, as kleptoparasitic prey acquisition deprives a (foraging) handler of its prey. 
+This allows kleptoparasitic interference to persist, while also resulting in slightly lower total population intake than the pure forager populations of Model 1 and high $r_{max}$ Model 2.
+
+\subsection{Competition and Landscape Effects}
+
+Competition strongly influences landscape structure, which has cascading ecological and evolutionary effects.
+In Model 1, foragers face exploitation competition alone, and rapidly deplete prey items, which results in a large, stable proportion of the landscape forming clueless plateaus, with few movement cues \citep{perkins1992a}.
+Consequently, individuals slowly converge upon a movement strategy that makes use of public information in the form of handling individuals, which indicate a non-zero prey-item generation probability.
+%%
+In Model 2, the emergence and persistence of kleptoparasitism at low $r_{max}$ reduces resource depletion, prey-items are regenerated, and the proportion of clueless plateaus is reduced.
+Ironically, the abundance of item cues is not functionally useful to most individuals; kleptoparasites find themselves in a `desert of plenty' as their only resource is handlers, which are uncommon relative to prey items.
+On the other hand, for foragers, which can only handle one prey-item at a time, moving at random becomes a viable strategy once most cells have at least one prey-item.
+%%
+Model 3 populations evolve kleptoparasitism, which similarly depresses prey-item depletion, and reduces the proportion of clueless plateaus.
+However, due to their conditional strategies, these individuals make use of the full range of cues for movement and behaviour decisions.
+
+
+1. exploitation is not sufficient to cause morphs without costs on movement strategy? movement distance? basically without negative density dependence (costs are super important).
+
+2. in model 2, there are behavioural morphs because of imposed constraints, ie, individuals have a fixed strategy. refer to examples.
+
+2.5. model 2: foragers persist because they are  necessary to the system. klepts persist at some growth rates because stealing is the more profitable individual strategy at low growth rates.
+
+2.6. model 2: klepts and foragers both evolve nh-avoidance and item preference as these are heavily conserved traits.
+
+2.7. model 1: ephemeral information beacons on uninformative landscape, sociability OR assessing individual condition is important when there are few other cues
+
+3. Model 3 resolves the constraint through context-dependent behavior, in which case the polymorphism vanishes.
+
+4. klepts reduce resource depletion, act as third trophic level.
+something something landscape of fear
 
 % Yet movement behaviour leaves few clues as to its origins, and its long-term effects on populations and landscapes are yet more challenging to measure at an evolutionary scale.
 % The proximate, ecological causes and consequences of animal movement are now understood in unprecedented detail, but the ultimate causes and large-scale consequences are poorly understood.
@@ -539,6 +614,18 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 
 \begin{figure}[h!]
     \centering
+    \includegraphics[width=0.90\textwidth]{figures/fig_08.png}
+    \caption{
+        The evolution and persistence of a kleptoparasitic response (orange lines) and stealing events (red lines) reduces item depletion (coloured cells; row 2), thus reducing `clueless plateaus' (black lines and areas; row 3). All scenarios are shown at $r_{max}$ = 0.01, and only a part of the landscape is shown.
+        \textbf{(A, D)} Strong depletion of the resource landscape in Model 1 leads to large areas with no item gradient (clueless plateaus; [D]; black areas; green areas = detectable item gradient).
+        \textbf{(B, E)} The emergence and persistence of fixed kleptoparasitism in model 2 leads to a reduction in the area of clueless plateaus within 40 generations ([E]; black areas).
+        \textbf{(C, F)} In model 3, the conditional kleptoparasitic strategy leads to depletion intermediate between models 1 and 2, and a similarly intermediate proportion of clueless plateaus on the landscape ([F]).
+    }
+    \label{Fig:CluelessLandscape}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
     \includegraphics[width=0.85\textwidth]{figures/fig_07.png}
     \caption{
        Movement rules rapidly diverge between fixed behavioural strategies in model 2.
@@ -550,17 +637,7 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
     \label{Fig:Syndrome}
 \end{figure}
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.90\textwidth]{figures/fig_08.png}
-    \caption{
-        The evolution and persistence of a kleptoparasitic response (orange lines) and stealing events (red lines) reduces item depletion (coloured cells; row 2), thus reducing `clueless plateaus' (black lines and areas; row 3). All scenarios are shown at $r_{max}$ = 0.01, and only a part of the landscape is shown.
-        \textbf{(A, D)} Strong depletion of the resource landscape in Model 1 leads to large areas with no item gradient (clueless plateaus; [D]; black areas; green areas = detectable item gradient).
-        \textbf{(B, E)} The emergence and persistence of fixed kleptoparasitism in model 2 leads to a reduction in the area of clueless plateaus within 40 generations ([E]; black areas).
-        \textbf{(C, F)} In model 3, the conditional kleptoparasitic strategy leads to depletion intermediate between models 1 and 2, and a similarly intermediate proportion of clueless plateaus on the landscape ([F]).
-    }
-    \label{Fig:CluelessLandscape}
-\end{figure}
+
 
 % \subsection{Online figure legends}
 
