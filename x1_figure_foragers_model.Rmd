@@ -120,15 +120,17 @@ fig_land_foragers <-
   geom_point(
     data = data_agent[agents > 0, ],
     aes(x, y, size = agents),
-    shape = 1
+    shape = 1,
+    stroke = 0.3
   ) +
   facet_grid(~gen,
     labeller = label_both
   ) +
-  scale_fill_viridis_c(
+  scale_fill_distiller(
+    palette = "YlGnBu",
     limits = c(1, NA),
     na.value = "white",
-    direction = -1
+    direction = 1
   ) +
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T) +
