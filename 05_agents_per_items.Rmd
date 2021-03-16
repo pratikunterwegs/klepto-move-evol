@@ -89,7 +89,7 @@ data <- data[, unlist(item_data, recursive = F),
 ]
 
 # save data
-fwrite(data, file = "data_sim/results/data_agent_counts_1_150.csv")
+fwrite(data, file = "data_sim/results/data_item_counts_1_150.csv")
 ```
 
 ## read in data
