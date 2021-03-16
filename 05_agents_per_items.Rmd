@@ -40,7 +40,7 @@ params$image <- glue_data(params, "{folder_path}/{gen}.png")
 data = copy(params)
 
 # get data
-data$agent_data <- lapply(data$image,
+agent_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
   layer = c(1, 3), # read only foragers and klepts
   crop_dim = 60,
@@ -48,25 +48,13 @@ data$agent_data <- lapply(data$image,
 )
 
 # remove where agents are 0
-data$agent_data = lapply(
-  data$agent_data, function(df) {
+agent_data = lapply(
+  agent_data, function(df) {
     df = df[items > 0,]
+    setnames(df, "items", "agents")
+    df[, agents := round(agents / 0.02)]
   }
 )
-
-# unlist
-data <- data[, unlist(agent_data, recursive = F),
-  by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
-]
-
-# rename
-setnames(data, "items", "agents")
-
-# recount agents
-data[, agents := round(agents / 0.02)]
-
-# save data
-fwrite(data, file = "data_sim/results/data_agent_counts_1_150.csv")
 ```
 
 ## get items in all gens
@@ -76,20 +64,28 @@ fwrite(data, file = "data_sim/results/data_agent_counts_1_150.csv")
 data = copy(params)
 
 # get data
-data$item_data <- lapply(data$image,
+item_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
   layer = c(4), # read only foragers and klepts
   crop_dim = 60,
   type = "items"
 )
 
+# keep item data on occupied cells
+layer_data = Map(function(adf, idf) {
+  idf = merge(adf, idf, by = intersect(names(x), names(y)), all = FALSE)
+})
+
+# add layer data to param data
+data$layer_data = layer_data
+
 # unlist
-data <- data[, unlist(item_data, recursive = F),
+data <- data[, unlist(layer_data, recursive = F),
   by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
 ]
 
 # save data
-fwrite(data, file = "data_sim/results/data_item_counts_1_150.csv")
+fwrite(data, file = "data_sim/results/data_layer_counts_1_150.csv")
 ```
 
 ## read in data
