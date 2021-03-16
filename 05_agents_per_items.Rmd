@@ -45,18 +45,18 @@ data$agent_data <- lapply(data$image,
 )
 
 # unlist
-data_landscape <- data_landscape[, unlist(agent_data, recursive = F),
-  by = c("sim_type", "gen")
+data <- data[, unlist(agent_data, recursive = F),
+  by = c("sim_type", "gen", "replicate", "regrowth")
 ]
 
 # rename
-setnames(data_landscape, "items", "agents")
+setnames(data, "items", "agents")
 
 # recount agents
-data_landscape[, agents := round(agents / 0.02)]
+data[, agents := round(agents / 0.02)]
 
 # save data
-fwrite(data_landscape, file = "data_sim/results/data_agent_counts_1_150.csv")
+fwrite(data, file = "data_sim/results/data_agent_counts_1_150.csv")
 ```
 
 ## get items in all gens
