@@ -3,6 +3,7 @@ output: html_document
 editor_options: 
   chunk_output_type: console
 ---
+
 ```{r}
 library(data.table)
 library(glue)
@@ -70,7 +71,11 @@ item_data <- lapply(data$image,
   crop_dim = 60,
   type = "items"
 )
+```
 
+## get full layer data
+
+```{r}
 # keep item data on occupied cells
 layer_data = Map(function(adf, idf) {
   idf = merge(adf, idf, by = intersect(names(adf), names(idf)), all = FALSE)
@@ -91,43 +96,3 @@ data = data[, list(sim_type, gen, replicate, regrowth, x, y, agents, items)]
 # save data
 fwrite(data, file = "data_sim/results/data_layer_counts_1_150.csv")
 ```
-
-## read in data
-
-```{r}
-data_agents = fread("data_sim/results/data_agent_counts_1_150.csv")
-data_items = fread("data_sim/results/data_item_counts_1_150.csv")
-```
-
-merge data
-
-```{r}
-# merge data and select occupied cells
-data = merge(data_agents, data_items)
-data = data[agents > 0, ]
-
-# split by sim type and gen and do lm
-data = split(data, by = c("sim_type", "gen"))
-# run lm
-data_coef = lapply(data, function(df) {
-  lm(df$agents ~ df$items)$coef[2]
-})
-
-# get unique data gen
-data = rbindlist(data)
-data = unique(data, by = c("sim_type", "gen"))
-data$coef_agent_item = unlist(data_coef)
-```
-
-```{r}
-ggplot(data)+
-  geom_hline(
-    yintercept = 0,
-    col = "grey"
-  )+
-  geom_path(aes(
-    gen, coef_agent_item
-  ))+
-  facet_grid(~sim_type)
-```
-
