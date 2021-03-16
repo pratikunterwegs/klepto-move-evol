@@ -13,28 +13,34 @@ library(ggplot2)
 ## get agents in all gens
 
 ```{r}
-paths <- list.dirs("data_sim/for_landscape/", recursive = F)
+params = fread("data_sim/results/data_param_combinations.csv")
+params$folder_path = stringr::str_replace(params$folder_path,
+                                          "data", 
+                                          "data_sim")
 
 # select gens
 gens_for_figure <- stringr::str_pad(seq(150), width = 5, pad = "0")
 
-# get paths for files
-data_landscape <- CJ(
-  gen = gens_for_figure,
-  path = paths
-)
+# get paths for files 
+params$gens = list(gens_for_figure)
 
-# add sim_type
-data_landscape[, sim_type := rep(c("facultative", "foragers", "obligate"), 150)]
+# unlist
+params = params[, unlist(gens_for_figure, recursive = F),
+                by = list(sim_type, replicate, regrowth, folder_path)]
+# rename col
+setnames(params, "V1", "gen")
 
 # get paths
-data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
+params$image <- glue_data(params, "{folder_path}/{gen}.png")
+
+# copy as data
+data = copy(params)
 
 # get data
-data_landscape$agent_data <- lapply(data_landscape$image,
+data$agent_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
   layer = c(1, 3), # read only foragers and klepts
-  crop_dim = 60,
+  crop_dim = 120,
   type = "items"
 )
 
