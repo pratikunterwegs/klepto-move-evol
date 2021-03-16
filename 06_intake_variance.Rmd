@@ -22,10 +22,24 @@ params = params[regrowth <= 0.02,]
 
 ```{r}
 # get intake variance
-intake_variance = lapply(params$folder_path[[1]], function(path) {
+intake_variance = lapply(params$folder_path, function(path) {
   kleptomoveMS::get_intake_variance(
     data_folder = path
   )
 })
-```
 
+# make data
+data = copy(params)
+data = unique(params, by = c("sim_type", "replicate", "regrowth"))
+data[, folder_path := NULL]
+
+# add list
+data$intake_variance = intake_variance
+
+# unlist
+data = data[, unlist(intake_variance, recursive = FALSE),
+            by = c("sim_type", "replicate", "regrowth")]
+
+# save
+fwrite(data, file = "data_sim/data_intake_variance.csv")
+```
