@@ -84,7 +84,7 @@ data$item_data <- lapply(data$image,
 )
 
 # unlist
-data <- data[, unlist(agent_data, recursive = F),
+data <- data[, unlist(item_data, recursive = F),
   by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
 ]
 
