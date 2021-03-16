@@ -73,8 +73,8 @@ item_data <- lapply(data$image,
 
 # keep item data on occupied cells
 layer_data = Map(function(adf, idf) {
-  idf = merge(adf, idf, by = intersect(names(x), names(y)), all = FALSE)
-})
+  idf = merge(adf, idf, by = intersect(names(adf), names(idf)), all = FALSE)
+}, agent_data, item_data)
 
 # add layer data to param data
 data$layer_data = layer_data
@@ -83,6 +83,10 @@ data$layer_data = layer_data
 data <- data[, unlist(layer_data, recursive = F),
   by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
 ]
+
+# select data
+data[, gen := as.numeric(gen)]
+data = data[, list(sim_type, gen, replicate, regrowth, x, y, agents, items)]
 
 # save data
 fwrite(data, file = "data_sim/results/data_layer_counts_1_150.csv")
