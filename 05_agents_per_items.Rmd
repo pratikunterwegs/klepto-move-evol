@@ -1,0 +1,131 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r}
+library(data.table)
+library(glue)
+
+library(ggplot2)
+```
+
+## get agents in all gens
+
+```{r}
+paths <- list.dirs("data_sim/for_landscape/", recursive = F)
+
+# select gens
+gens_for_figure <- stringr::str_pad(seq(150), width = 5, pad = "0")
+
+# get paths for files
+data_landscape <- CJ(
+  gen = gens_for_figure,
+  path = paths
+)
+
+# add sim_type
+data_landscape[, sim_type := rep(c("facultative", "foragers", "obligate"), 150)]
+
+# get paths
+data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
+
+# get data
+data_landscape$agent_data <- lapply(data_landscape$image,
+  kleptomoveMS::read_landscape,
+  layer = c(1, 3), # read only foragers and klepts
+  crop_dim = 60,
+  type = "items"
+)
+
+# unlist
+data_landscape <- data_landscape[, unlist(agent_data, recursive = F),
+  by = c("sim_type", "gen")
+]
+
+# rename
+setnames(data_landscape, "items", "agents")
+
+# recount agents
+data_landscape[, agents := round(agents / 0.02)]
+
+# save data
+fwrite(data_landscape, file = "data_sim/results/data_agent_counts_1_150.csv")
+```
+
+## get items in all gens
+
+```{r}
+paths <- list.dirs("data_sim/for_landscape/", recursive = F)
+
+# select gens
+gens_for_figure <- stringr::str_pad(seq(150), width = 5, pad = "0")
+
+# get paths for files
+data_landscape <- CJ(
+  gen = gens_for_figure,
+  path = paths
+)
+
+# add sim_type
+data_landscape[, sim_type := rep(c("facultative", "foragers", "obligate"), 150)]
+
+# get paths
+data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
+
+# get data
+data_landscape$agent_data <- lapply(data_landscape$image,
+  kleptomoveMS::read_landscape,
+  layer = c(4), # read only items
+  crop_dim = 60,
+  type = "items"
+)
+
+# unlist
+data_landscape <- data_landscape[, unlist(agent_data, recursive = F),
+  by = c("sim_type", "gen")
+]
+
+# save data
+fwrite(data_landscape, file = "data_sim/results/data_item_counts_1_150.csv")
+```
+
+## read in data
+
+```{r}
+data_agents = fread("data_sim/results/data_agent_counts_1_150.csv")
+data_items = fread("data_sim/results/data_item_counts_1_150.csv")
+```
+
+merge data
+
+```{r}
+# merge data and select occupied cells
+data = merge(data_agents, data_items)
+data = data[agents > 0, ]
+
+# split by sim type and gen and do lm
+data = split(data, by = c("sim_type", "gen"))
+# run lm
+data_coef = lapply(data, function(df) {
+  lm(df$agents ~ df$items)$coef[2]
+})
+
+# get unique data gen
+data = rbindlist(data)
+data = unique(data, by = c("sim_type", "gen"))
+data$coef_agent_item = unlist(data_coef)
+```
+
+```{r}
+ggplot(data)+
+  geom_hline(
+    yintercept = 0,
+    col = "grey"
+  )+
+  geom_path(aes(
+    gen, coef_agent_item
+  ))+
+  facet_grid(~sim_type)
+```
+
