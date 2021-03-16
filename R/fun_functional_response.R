@@ -175,7 +175,8 @@ get_intake_variance <- function(
     "pc_intake_forager",
     "pc_intake_klepts",
     "pc_intake_total"
-  ), data_folder,
+  ), 
+  data_folder,
   which_gen = seq(991, 998, 1),
   n_time = 400) {
   
@@ -190,13 +191,6 @@ get_intake_variance <- function(
     )
   )
   
-  # cast wide
-  data_proc = data.table::dcast(
-    data,
-    value.var = "value",
-    formula = gen + cell ~ variable
-  )
-  
   # filter
   data_proc = data_proc[total_agents > 0, ]
   
@@ -208,8 +202,6 @@ get_intake_variance <- function(
                                value.vars = response)
   
   # get mean and variance across variables
-  # subset useful measures
-  data_proc <- data_proc[variable %in% response, ]
   
   data_proc <- data_proc[, list(
     mean_value = mean(value, na.rm = TRUE),
@@ -218,6 +210,7 @@ get_intake_variance <- function(
   ),
   by = c("gen", "variable")
   ]
+
 }
 
 #### functions to get the functional response in kleptomove ####
