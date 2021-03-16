@@ -1,0 +1,49 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(data.table)
+
+# plotting
+library(ggplot2)
+```
+
+read data and explore
+
+```{r}
+# read data
+data = fread("data_sim/results/data_layer_counts_1_150.csv")
+
+# split and run lm
+data_model = copy(data)
+data_model = split(data_model, by = c("sim_type", "gen", "replicate", "regrowth"))
+
+# run lm
+model_coefs = lapply(data_model, function(df) {
+  lm(df$agents ~ df$items)$coef[2]
+})
+
+# get unique data
+data = unique(data, by = c("sim_type", "gen", "replicate", "regrowth"))
+data[, c("x", "y", "agents", "items") := NULL]
+
+# assign coefs
+data$cf = unlist(model_coefs)
+```
+
+```{r}
+# exploratory plot
+ggplot(data)+
+  geom_line(
+    aes(gen, cf,
+        group = replicate
+    ),
+    size = 0.3
+  )+
+  coord_cartesian(ylim = c(NA, 0.5))+
+  facet_grid(sim_type ~ regrowth)
+```
+
