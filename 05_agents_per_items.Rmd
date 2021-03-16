@@ -18,8 +18,11 @@ params$folder_path = stringr::str_replace(params$folder_path,
                                           "data", 
                                           "data_sim")
 
+# remove params over 0.02
+params = params[regrowth <= 0.02,]
+
 # select gens
-gens_for_figure <- stringr::str_pad(seq(150), width = 5, pad = "0")
+gens_for_figure <- stringr::str_pad(seq(100), width = 5, pad = "0")
 
 # get paths for files 
 params$gens = list(gens_for_figure)
@@ -40,13 +43,20 @@ data = copy(params)
 data$agent_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
   layer = c(1, 3), # read only foragers and klepts
-  crop_dim = 120,
+  crop_dim = 60,
   type = "items"
+)
+
+# remove where agents are 0
+data$agent_data = lapply(
+  data$agent_data, function(df) {
+    df = df[items > 0,]
+  }
 )
 
 # unlist
 data <- data[, unlist(agent_data, recursive = F),
-  by = c("sim_type", "gen", "replicate", "regrowth")
+  by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
 ]
 
 # rename
@@ -69,13 +79,13 @@ data = copy(params)
 data$item_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
   layer = c(4), # read only foragers and klepts
-  crop_dim = 120,
+  crop_dim = 60,
   type = "items"
 )
 
 # unlist
 data <- data[, unlist(agent_data, recursive = F),
-  by = c("sim_type", "gen", "replicate", "regrowth")
+  by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
 ]
 
 # save data
