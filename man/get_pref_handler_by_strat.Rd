@@ -8,7 +8,7 @@ get_pref_handler_by_strat(
   data_folder,
   generations,
   weight_klept_bias,
-  weight_handler_pref
+  weight_of_interest
 )
 }
 \arguments{
@@ -16,11 +16,11 @@ get_pref_handler_by_strat(
 
 \item{generations}{The generations to extact, recommended 1 - 100.}
 
-\item{weight_klept_bias}{Which weight (mostly 5) refers to the kleptoparasite
+\item{weight_klept_bias}{Which weight (mostly 5 or 7) refers to the kleptoparasite
 strategy, this is the bias in obligate simulations.}
 
-\item{weight_handler_pref}{Which weight (mostly 3) refers to the handler
-preference.}
+\item{weight_of_interest}{Which weight are we interested in. A named vector
+of weight numbers.}
 }
 \value{
 A data.table of counts of handler preference across strategy.
