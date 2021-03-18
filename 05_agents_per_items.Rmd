@@ -43,7 +43,7 @@ data = copy(params)
 # get data
 agent_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
-  layer = c(1, 3), # read only foragers and klepts
+  layer = c(1, 2, 3), # read only foragers and klepts
   crop_dim = 60,
   type = "items"
 )
