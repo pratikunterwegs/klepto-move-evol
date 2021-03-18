@@ -6,6 +6,6 @@
 #' @return A potential intake rate.
 #' @export
 #'
-get_potential_intake = function(p_detection, n_items) {
-  1 - (1 - p_detection) ^ n_items
+get_potential_intake <- function(p_detection, n_items) {
+  1 - (1 - p_detection)^n_items
 }

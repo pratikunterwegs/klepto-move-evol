@@ -21,10 +21,10 @@ read_landscape <- function(landscape_file, layer, crop_dim,
   if (length(dim(land)) == 3) {
     land <- rowSums(land, dims = 2)
   }
-  
+
   # crop to square matrix of size dim
   land <- land[seq(crop_dim), seq(crop_dim)]
-  
+
   # multiply by carrying capacity if items asked
   if (layer == 4) {
     land <- land * max_K
@@ -96,28 +96,26 @@ read_landscape <- function(landscape_file, layer, crop_dim,
 #' @return A single layer variance.
 #' @export
 #'
-get_layer_variance = function(
-  landscape_file, layer, crop_dim,
-  type = c("items", "gradient"),
-  max_K = 5
-) {
-  
+get_layer_variance <- function(
+                               landscape_file, layer, crop_dim,
+                               type = c("items", "gradient"),
+                               max_K = 5) {
+
   # read the layer-th layer
   land <- png::readPNG(landscape_file)[, , layer]
-  
+
   # sum across layers
   if (length(dim(land)) == 3) {
     land <- rowSums(land, dims = 2)
   }
-  
+
   # crop to square matrix of size dim
   land <- land[seq(crop_dim), seq(crop_dim)]
-  
+
   # multiply by carrying capacity if items asked
   if (layer == 4) {
     land <- land * max_K
   }
-  
+
   var(as.vector(land))
-  
 }
