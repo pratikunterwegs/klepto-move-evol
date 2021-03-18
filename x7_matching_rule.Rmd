@@ -6,7 +6,7 @@ editor_options:
 
 ```{r}
 library(data.table)
-
+library(kleptomoveMS)
 # plotting
 library(ggplot2)
 ```
@@ -17,33 +17,97 @@ read data and explore
 # read data
 data = fread("data_sim/results/data_layer_counts_1_150.csv")
 
-# split and run lm
-data_model = copy(data)
-data_model = split(data_model, by = c("sim_type", "gen", "replicate", "regrowth"))
+# get potential intake
+data[, potential_in := get_potential_intake(0.2, items)]
 
-# run lm
-model_coefs = lapply(data_model, function(df) {
-  lm(df$agents ~ df$items)$coef[2]
-})
+# # split and run lm
+# data_model = copy(data)
+# data_model = split(data_model, by = c("sim_type", "gen", "replicate", "regrowth"))
+
+# # run lm
+# model_coefs = lapply(data_model, function(df) {
+#   lm(df$agents ~ df$potential_in)$coef[2]
+# })
+
+# get simple ratio
+# data[, cf := ifelse(data$items > 0, agents/items, agents)]
+
+# get correlation
+data_summary = data[, list(cf = cor(agents, potential_in)),
+                    by = c("sim_type", "gen", "replicate", "regrowth")]
 
 # get unique data
-data = unique(data, by = c("sim_type", "gen", "replicate", "regrowth"))
-data[, c("x", "y", "agents", "items") := NULL]
+# data = unique(data, by = c("sim_type", "gen", "replicate", "regrowth"))
+# data[, c("x", "y", "agents", "items", "potential_in") := NULL]
+# 
+# # assign coefs
+# data$cf = unlist(model_coefs)
+# 
+# # get summary
+data_summary_cf = data_summary[, list(
+  mean_c = mean(cf, na.rm = TRUE),
+  median_c = median(cf, na.rm = TRUE),
+  sd_c = sd(cf, na.rm = TRUE)
+), by = c("sim_type", "gen", "regrowth")]
 
-# assign coefs
-data$cf = unlist(model_coefs)
+# convert median to running median
+data_summary_cf[, `:=`(runmed_cf = runmed(median_c, k = 7),
+                       rollmean_cf = frollmean(mean_c, n = 3)),
+                by = c("sim_type", "regrowth")]
 ```
 
 ```{r}
 # exploratory plot
-ggplot(data)+
-  geom_line(
-    aes(gen, cf,
-        group = replicate
-    ),
-    size = 0.3
+ggplot()+
+  geom_hline(
+    yintercept = 0,
+    size = 0.1,
+    col = "red"
   )+
-  coord_cartesian(ylim = c(NA, 0.5))+
-  facet_grid(sim_type ~ regrowth)
+  geom_point(
+    data = data_summary,
+    aes(
+      x = gen,
+      y = cf,
+      col = sim_type
+    ),
+    size = 0.1
+  )+
+  geom_path(
+    data = data_summary_cf,
+    aes(
+      x = gen,
+      y = runmed_cf,
+      # ymin = mean_c - sd_c,
+      # ymax = mean_c + sd_c,
+      col = sim_type
+    )
+  )+
+  scale_colour_manual(
+    values = c(
+      foragers = "maroon",
+      obligate = "dodgerblue",
+      facultative = "darkorange",
+      random = "grey"
+    ),
+    labels = c(
+      foragers = "Foragers",
+      obligate = "Fixed",
+      facultative = "Conditional",
+      random = "Random"
+    )
+  ) +
+  kleptomoveMS::theme_custom(grid = TRUE)+
+  theme(legend.position = "top")+
+  coord_cartesian(
+    xlim = c(0, 50))+
+  facet_grid(~regrowth, labeller = label_both)+
+  labs(x = "generations", y = "correlation agents ~ potential intake rate")
+```
+
+```{r}
+ggsave(
+  filename = "figures/fig_matching_rule.png"
+)
 ```
 
