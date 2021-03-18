@@ -19,9 +19,6 @@ get_layer_variance(
 
 \item{crop_dim}{How many rows and columns to return.}
 
-\item{type}{What to return, either "items" for the item counts, or "gradient"
-for the gradient in item counts.}
-
 \item{max_K}{Carrying capacity of a cell.}
 }
 \value{

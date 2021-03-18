@@ -8,7 +8,7 @@ library(glue)
 library(ggplot2)
 ```
 
-## get agents in all gens
+## get parameters
 
 ```{r}
 params = fread("data_sim/results/data_param_combinations.csv")
@@ -19,6 +19,8 @@ params$folder_path = stringr::str_replace(params$folder_path,
 # remove params over 0.02
 #params = params[regrowth <= 0.02,]
 ```
+
+## get intake variance in last gens
 
 ```{r}
 # get intake variance
