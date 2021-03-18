@@ -163,15 +163,17 @@ fig_land_fixed <-
   geom_point(
     data = data_agent[agents > 0, ],
     aes(x, y, size = agents),
-    shape = 1
+    shape = 1,
+    stroke = 0.3
   ) +
   facet_grid(~gen,
     labeller = label_both
   ) +
-  scale_fill_viridis_c(
+  scale_fill_distiller(
+    palette = "YlGnBu",
     limits = c(1, NA),
     na.value = "white",
-    direction = -1
+    direction = 1
   ) +
   scale_size(breaks = c(1, 2, 3, 4)) +
   coord_equal(expand = F) +
