@@ -20,29 +20,10 @@ data = fread("data_sim/results/data_layer_counts_1_150.csv")
 # get potential intake
 data[, potential_in := get_potential_intake(0.2, items)]
 
-# # split and run lm
-# data_model = copy(data)
-# data_model = split(data_model, by = c("sim_type", "gen", "replicate", "regrowth"))
-
-# # run lm
-# model_coefs = lapply(data_model, function(df) {
-#   lm(df$agents ~ df$potential_in)$coef[2]
-# })
-
-# get simple ratio
-# data[, cf := ifelse(data$items > 0, agents/items, agents)]
-
 # get correlation
 data_summary = data[, list(cf = cor(agents, potential_in)),
                     by = c("sim_type", "gen", "replicate", "regrowth")]
 
-# get unique data
-# data = unique(data, by = c("sim_type", "gen", "replicate", "regrowth"))
-# data[, c("x", "y", "agents", "items", "potential_in") := NULL]
-# 
-# # assign coefs
-# data$cf = unlist(model_coefs)
-# 
 # # get summary
 data_summary_cf = data_summary[, list(
   mean_c = mean(cf, na.rm = TRUE),
@@ -54,6 +35,10 @@ data_summary_cf = data_summary[, list(
 data_summary_cf[, `:=`(runmed_cf = runmed(median_c, k = 7),
                        rollmean_cf = frollmean(mean_c, n = 3)),
                 by = c("sim_type", "regrowth")]
+
+# write data
+fwrite(data_summary, file = "data_sim/results/data_matching_rule.csv")
+fwrite(data_summary_cf, file = "data_sim/results/data_matching_rule_smooth.csv")
 ```
 
 ```{r}
