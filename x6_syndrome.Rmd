@@ -16,6 +16,89 @@ library(colorspace)
 library(patchwork)
 ```
 
+## show node weight
+
+```{r}
+# get raw data
+data_nodes = fread("data_sim/results/data_early_0_100_weight_evolution.csv")
+# subset
+data_nodes = data_nodes[sim_type == "obligate" &
+                          regrowth == 0.01 &
+                          weight_id %in% c(3, 5),]
+# get numeric lower bounds
+data_nodes[, weight_num := as.numeric(
+  stringi::stri_extract_last(weight_value,
+    regex = "[-0-9]+\\.\\d{2}"
+  )
+)]
+```
+
+```{r}
+fig7a =
+  ggplot(data_nodes[weight_prop > 0.001 &
+                  weight_id == 5,])+
+  geom_tile(
+    aes(x = gen, 
+        y = factor(weight_num),
+        fill = weight_prop)
+  )+
+  geom_hline(
+    yintercept = 0,
+    col = "grey20",
+    lty = 3,
+    size = 0.3
+  )+
+  scale_fill_distiller(
+    palette = "BuPu",
+    direction = 1
+  )+
+  scale_y_discrete(
+    breaks = c(-0.97, 1.01),
+    labels = c("Kleptoparasite", "Forager")
+  )+
+  coord_cartesian(expand = F)+
+  kleptomoveMS::theme_custom(base_size = 8)+
+  theme(
+    legend.key.height = unit(1, units = "mm")
+  )+
+  facet_grid(~ replicate, labeller = label_both)+
+  labs(x = "Generation", y = "Behavioural strategy",
+       fill = "Prop. indivs.")
+```
+
+```{r}
+fig7b = 
+  ggplot(data_nodes[weight_prop > 0.001 &
+                  weight_id == 3,])+
+  geom_tile(
+    aes(x = gen, y = weight_num,
+        fill = weight_prop)
+  )+
+  geom_hline(
+    yintercept = 0,
+    col = "grey20",
+    lty = 3,
+    size = 0.3
+  )+
+  scale_fill_distiller(
+    palette = "Oranges",
+    direction = 1,
+    labels = scales::percent
+  )+
+  scale_y_continuous(
+    breaks = c(-0.5, 0.5),
+    labels = c("Avoidance", "Preference")
+  )+
+  coord_cartesian(expand = F)+
+  kleptomoveMS::theme_custom(base_size = 8)+
+  theme(
+    legend.key.height = unit(1, units = "mm")
+  )+
+  facet_grid(~ replicate, labeller = label_both)+
+  labs(x = "Generation", y = "Weight handler response",
+       fill = "Prop. indivs.")
+```
+
 ```{r}
 # get data
 data <- fread("data_sim/results/data_syndrome.csv")
@@ -33,30 +116,33 @@ data[, c("klept_bias", "handler_pref",
 ```
 
 ```{r}
+# counter by klept and handler
+data = data[, list(N = sum(N)), 
+     by = c("sim_type", "replicate", "regrowth", "klept_bias", "handler_pref", "gen")]
+
 # get proportion
 data[, prop_per_strat := N / sum(N), 
      by = c("gen", "klept_bias", "regrowth", "replicate")]
 
-# count handler pref per strategy as total
+# # count handler pref per strategy as total
 # who drives the rise in handlers
-data_hp_total = copy(data)[handler_pref == "prefers handlers",]
-data_hp_total[, total_handlers := sum(N),
-              by = c("gen", "regrowth", "replicate")]
-data_hp_total[, prop_total := N / total_handlers]
+# data_hp_total = copy(data)[handler_pref == "prefers handlers",]
+# data_hp_total[, total_handlers := sum(N),
+#               by = c("gen", "regrowth", "replicate")]
+# data_hp_total[, prop_total := N / total_handlers]
 ```
 
 ```{r}
-fig_7a =
+fig7c =
 ggplot(data[regrowth == 0.01, ]) +
-  geom_line(
+  geom_path(
     aes(
       x = gen,
       y = prop_per_strat,
       col = interaction(klept_bias, handler_pref),
       # size = handler_pref,
-      group = interaction(klept_bias, handler_pref, replicate)
-    ),
-    size = 0.4
+      group = interaction(sim_type, klept_bias, handler_pref, replicate)
+    )
   ) +
   scale_colour_manual(
     values = c(
@@ -82,48 +168,17 @@ ggplot(data[regrowth == 0.01, ]) +
     y = "Prop. handler response"
   ) +
   # scale_x_log10()+
-  kleptomoveMS::theme_custom(grid = T, base_size = 8) +
+  kleptomoveMS::theme_custom(grid = F, base_size = 8) +
   theme(legend.position = "top",
         legend.key.height = unit(1, units = "mm"))+
   guides(colour = guide_legend(nrow = 2, byrow = TRUE))
 ```
 
 ```{r}
-fig7b = 
-  ggplot(data_hp_total[regrowth == 0.01 &
-                         gen <= 50])+
-  geom_line(aes(
-    gen, prop_total,
-    colour = klept_bias,
-    group = interaction(replicate, klept_bias)
-  ), size = 0.4)+
-  scale_y_continuous(
-    labels = c("0", "0.25", "0.5", "0.75", "1")
-  )+
-  scale_color_manual(
-    values = c(
-      klept = "darkred",
-      forager = "royalblue"
-    ),
-    labels = c(
-      klept = "Klept.",
-      forager = "Forager"
-    )
-  )+
-  kleptomoveMS::theme_custom(grid = T, base_size = 8)+
-  theme(legend.position = "top",
-        legend.key.height = unit(1, units = "mm"))+
-  labs(
-    x = "Generation",
-    y = "Prop. indivs. preferring handlers",
-    colour = "Strategy"
-  )
-```
-
-```{r}
 fig_7 =
   wrap_plots(
-    fig_7a, fig7b
+    fig7a, fig7b, fig7c,
+    design = "AB\nC#"
   )+
   plot_annotation(
     tag_levels = "A"
@@ -141,28 +196,7 @@ fig_7 =
 ```{r}
 ggsave(fig_7,
        filename = "figures/fig_07.png",
-       width = 160,
-       height = 80, units = "mm")
-```
-
-## Item preference by strategy
-
-```{r}
-# get total agents per klept bias and item pref (4 classes total)
-data_item_pref = copy(data)
-data_item_pref = data_item_pref[, .(totalN = sum(N)), 
-               by = c("gen", "replicate", "regrowth",
-                             "klept_bias", "nh_pref")]
-data_item_pref = data_item_pref[, prop := totalN / sum(totalN), 
-                      by = c("gen", "replicate", "regrowth", "klept_bias")]
-```
-
-```{r}
-ggplot(data_item_pref[regrowth < 0.02 & gen < 50])+
-  geom_line(aes(gen, prop,
-                col = interaction(klept_bias, nh_pref),
-                group = interaction(klept_bias, nh_pref, replicate)),
-             size = 1)+
-  facet_grid(~regrowth)
+       width = 125,
+       height = 125, units = "mm")
 ```
 
