@@ -39,7 +39,9 @@ params$image <- glue_data(params, "{folder_path}/{gen}.png")
 
 # copy as data
 data = copy(params)
+```
 
+```{r}
 # get data
 agent_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
