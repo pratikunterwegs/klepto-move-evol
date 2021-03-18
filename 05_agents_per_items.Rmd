@@ -104,12 +104,12 @@ fwrite(data, file = "data_sim/results/data_layer_counts_1_150.csv")
 ```{r}
 # get item variance
 data = copy(params)
-data$item_variance = kleptomoveMS::get_layer_variance(
+data[, item_variance := kleptomoveMS::get_layer_variance(
   landscape_file = image,
   layer = 4,
   crop_dim = 120,
   max_K = 5
-)
+)]
 
 # save data
 data = data[, list(sim_type, gen, replicate, regrowth, item_variance)]
