@@ -89,8 +89,6 @@ read_landscape <- function(landscape_file, layer, crop_dim,
 #' @param landscape_file Path to the landscape file.
 #' @param layer Which layer to read.
 #' @param crop_dim How many rows and columns to return.
-#' @param type What to return, either "items" for the item counts, or "gradient"
-#' for the gradient in item counts.
 #' @param max_K Carrying capacity of a cell.
 #'
 #' @return A single layer variance.
