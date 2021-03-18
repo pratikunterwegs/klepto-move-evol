@@ -92,7 +92,7 @@ fig_strategy_fitness <-
     values = c(
       foragers = "maroon",
       obligate = "dodgerblue",
-      facultative = "gold"
+      facultative = "darkorange"
     ),
     labels = c(
       foragers = "Foragers",
@@ -104,7 +104,7 @@ fig_strategy_fitness <-
     values = c(
       foragers = "maroon",
       obligate = "dodgerblue",
-      facultative = "gold"
+      facultative = "darkorange"
     ),
     labels = c(
       foragers = "Foragers",
@@ -130,7 +130,7 @@ fig_strategy_fitness <-
     0.025,
     0.05
   )) +
-  kleptomoveMS::theme_custom(grid = T, base_size = 8) +
+  kleptomoveMS::theme_custom(grid = F, base_size = 8) +
   theme(
     legend.position = "none"
   ) +
@@ -184,7 +184,7 @@ subfigures_strategy_growth <- Map(function(df, name) {
     geom_path(aes(regrowth, value.median,
       group = interaction(sim_type, variable),
       colour = sim_type
-    ), size = 0.4) +
+    )) +
     geom_errorbar(
       aes(regrowth,
         ymin = value.median - value.sd,
@@ -202,7 +202,7 @@ subfigures_strategy_growth <- Map(function(df, name) {
       values = c(
         foragers = "maroon",
         obligate = "dodgerblue",
-        facultative = "gold"
+        facultative = "darkorange"
       ),
       labels = c(
         foragers = "Foragers",
@@ -214,7 +214,7 @@ subfigures_strategy_growth <- Map(function(df, name) {
       values = c(
         foragers = "maroon",
         obligate = "dodgerblue",
-        facultative = "gold"
+        facultative = "darkorange"
       ),
       labels = c(
         foragers = "Foragers",
@@ -248,7 +248,7 @@ subfigures_strategy_growth <- Map(function(df, name) {
       ylim = c(0, 1),
       expand = T
     ) +
-    kleptomoveMS::theme_custom(grid = T, base_size = 8) +
+    kleptomoveMS::theme_custom(grid = F, base_size = 8) +
     theme(legend.position = "bottom") +
     labs(
       x = "Regrowth rate",
