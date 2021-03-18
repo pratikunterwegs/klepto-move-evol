@@ -100,7 +100,7 @@ fig_activity <-
     ylim = c(0, 1),
     expand = T
   ) +
-  kleptomoveMS::theme_custom(grid = T, base_size = 8) +
+  kleptomoveMS::theme_custom(grid = F, base_size = 8) +
   theme(
     legend.position = "top",
     legend.key.height = unit(0, units = "mm")
@@ -135,11 +135,58 @@ fig_intake <-
     ylim = c(0, 50),
     expand = T
   ) +
-  kleptomoveMS::theme_custom(grid = T, base_size = 8) +
+  kleptomoveMS::theme_custom(grid = F, base_size = 8) +
   labs(
     x = "Generation",
     y = "Population intake"
   )
+```
+
+## get matching data
+
+```{r}
+# raw correlation data
+data_match = fread("data_sim/results/data_matching_rule.csv")
+data_match = data_match[sim_type == "obligate" & regrowth == 0.01, ]
+
+# smoothed data
+data_match_smooth = fread("data_sim/results/data_matching_rule_smooth.csv")[
+  sim_type == "obligate" & regrowth == 0.01,
+]
+```
+
+```{r}
+fig_matching =
+  ggplot()+
+  geom_hline(
+    yintercept = 0,
+    lwd = 0.2,
+    col = "red"
+  )+
+  geom_point(
+    data = data_match,
+    aes(
+      x = gen,
+      y = cf
+    ),
+    shape = 1,
+    colour = "grey50"
+  )+
+  geom_path(
+    data = data_match_smooth,
+    aes(
+      x = gen,
+      y = runmed_cf
+    )
+  )+
+  kleptomoveMS::theme_custom(grid = F, base_size = 8)+
+  coord_cartesian(
+    ylim = c(-0.4, 0.2),
+    xlim = c(0, 50)
+  )+
+  xlim(0, 50)+
+  labs(x = "Generation", 
+       y = "Corr. indivs. - intake")
 ```
 
 prepare landscape at 0 and 25
@@ -189,8 +236,9 @@ wrap figures together
 ```{r}
 figure_3_fixed_model <-
   wrap_plots(
-    fig_activity, fig_intake, fig_land_fixed,
-    design = "AB\nCC"
+    fig_activity, fig_intake, fig_matching, 
+    fig_land_fixed,
+    design = "ABC\nDDD"
   ) +
   plot_annotation(
     tag_levels = "A"
@@ -206,7 +254,7 @@ save figure
 ```{r}
 ggsave(figure_3_fixed_model,
   filename = "figures/fig_03.png",
-  height = 125, width = 125, units = "mm"
+  height = 125, width = 170, units = "mm"
 )
 ```
 
