@@ -75,12 +75,45 @@ item_data <- lapply(data$image,
 )
 ```
 
+## get quality layer
+
+```{r}
+quality_data = kleptomoveMS::read_landscape(
+  "data_sim/data_parameters/kernels32.png", 
+  layer = 1, crop_dim = 60, type = "items"
+)
+
+setnames(quality_data, old = "items", new = "quality")
+
+# agent quality data
+quality_data = lapply(agent_data, function(df) {
+  merge(df, quality_data, by = intersect(names(adf), names(idf), all = F))
+})
+
+# unlist
+data$layer_data = quality_data
+
+# unlist
+data <- data[, unlist(layer_data, recursive = F),
+  by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
+]
+
+# select data
+data[, gen := as.numeric(gen)]
+data = data[, list(sim_type, gen, replicate, regrowth, x, y, agents, quality)]
+
+# save data
+fwrite(data, file = "data_sim/results/data_quality_counts_1_150.csv")
+```
+
+
 ## get full layer data
 
 ```{r}
 # keep item data on occupied cells
 layer_data = Map(function(adf, idf) {
   idf = merge(adf, idf, by = intersect(names(adf), names(idf)), all = FALSE)
+  
 }, agent_data, item_data)
 
 # add layer data to param data
