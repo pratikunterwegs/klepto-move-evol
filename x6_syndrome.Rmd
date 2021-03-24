@@ -48,17 +48,20 @@ fig7a =
     lty = 3,
     size = 0.3
   )+
-  scale_fill_distiller(
-    palette = "BuPu",
-    direction = 1
+  scale_fill_continuous_sequential(
+    palette = "Heat2"
   )+
   scale_y_discrete(
     breaks = c(-0.97, 1.01),
     labels = c("Kleptoparasite", "Forager")
   )+
   coord_cartesian(expand = F)+
-  kleptomoveMS::theme_custom(base_size = 8)+
+  theme_classic(base_size = 8)+
   theme(
+    legend.position = "top",
+    strip.background = element_blank(),
+    strip.text = element_text(face = "italic", hjust = 0),
+    axis.text.y = element_text(angle = 90, hjust = 0.5),
     legend.key.height = unit(1, units = "mm")
   )+
   facet_grid(~ replicate, labeller = label_both)+
@@ -66,8 +69,19 @@ fig7a =
        fill = "Prop. indivs.")
 ```
 
+## Prepare strategy-wise weight data WIP
+
 ```{r}
-fig7b = 
+data_strategy_weight = copy(data_nodes)
+data_strategy_weight = data_strategy_weight[!(weight_id == 5 & !weight_num %in% c(-0.97, 1.01)), ]
+data_strategy_weight = data_strategy_weight[, 
+                          weight_prop := weight_prop / sum(weight_prop),
+                          by = c("sim_type", "replicate", "regrowth")]
+```
+
+
+```{r}
+# fig7b = 
   ggplot(data_nodes[weight_prop > 0.001 &
                   weight_id == 3,])+
   geom_tile(
