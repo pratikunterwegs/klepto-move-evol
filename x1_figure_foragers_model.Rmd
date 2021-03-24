@@ -11,6 +11,7 @@ library(data.table)
 
 library(ggplot2)
 library(patchwork)
+library(colorspace)
 ```
 
 ## get data
@@ -36,11 +37,12 @@ ggplot(data_activity[gen <= 50, ]) +
       colour = variable,
       group = interaction(variable, replicate)
     ),
+    position = position_jitter(),
     size = 0.4
   ) +
   scale_colour_manual(
     values = c(
-      foraging = "navyblue",
+      foraging = "steelblue",
       handling = "seagreen"
     ),
     labels = c(foraging = "Foraging", handling = "Handling"),
@@ -57,9 +59,9 @@ ggplot(data_activity[gen <= 50, ]) +
   coord_cartesian(
     xlim = c(1, 50),
     ylim = c(0, 1),
-    expand = T
+    expand = F
   ) +
-  kleptomoveMS::theme_custom(grid = F, base_size = 8) +
+  theme_classic(base_size = 8)+
   theme(legend.position = "top") +
   labs(
     x = "Generation",
@@ -81,6 +83,7 @@ fig_intake <-
     aes(gen, pop_fitness,
         group = replicate
     ),
+    position = position_jitter(),
     size = 0.4
   ) +
   scale_x_continuous(
@@ -89,9 +92,9 @@ fig_intake <-
   coord_cartesian(
     xlim = c(1, 50),
     ylim = c(0, 50),
-    expand = T
+    expand = F
   ) +
-  kleptomoveMS::theme_custom(grid = F, base_size = 8) +
+  theme_classic(base_size = 8)+
   labs(
     x = "Generation",
     y = "Population intake"
@@ -112,39 +115,86 @@ data_match_smooth = fread("data_sim/results/data_matching_rule_smooth.csv")[
 ```
 
 ```{r}
-fig_matching = 
+fig_matching =
   ggplot()+
   geom_hline(
     yintercept = 0,
-    lwd = 0.2,
     col = "red"
   )+
   geom_point(
     data = data_match,
     aes(
       x = gen,
-      y = cf
+      y = cf,
+      fill = cfp <= 0.05
     ),
-    shape = 1,
-    colour = "grey50"
+    show.legend = F,
+    shape = 21
   )+
-  geom_path(
-    data = data_match_smooth,
-    aes(
-      x = gen,
-      y = runmed_cf
-    )
+  geom_smooth(
+    data = data_match[cfp <= 0.05, ],
+    aes(gen, cf),
+    colour = "steelblue",
+    method = "gam"
   )+
-  kleptomoveMS::theme_custom(grid = F, base_size = 8)+
+  scale_fill_brewer(
+    palette = "Blues"
+  )+
+  theme_classic(base_size = 8)+
   coord_cartesian(
-    ylim = c(-0.4, 0.2),
-    xlim = c(0, 50)
+    ylim = c(-0.5, 0.5),
+    xlim = c(0, 50),
+    expand = F
   )+
   xlim(0, 50)+
   labs(x = "Generation", 
-       y = "Corr. indivs. - intake")
+       y = "Corr. indivs. - potential intake")
 ```
 
+## correlation with quality
+
+```{r}
+# raw correlation data
+data_quality = fread("data_sim/results/data_quality_matching_rule.csv")
+data_quality = data_quality[sim_type == "foragers" & regrowth == 0.01, ]
+```
+
+```{r}
+fig_matching_quality =
+  ggplot()+
+  geom_hline(
+    yintercept = 0,
+    col = "red"
+  )+
+  geom_point(
+    data = data_quality,
+    aes(
+      x = gen,
+      y = cf,
+      fill = cfp <= 0.05
+    ),
+    show.legend = F,
+    shape = 21
+  )+
+  geom_smooth(
+    data = data_quality[cfp <= 0.05, ],
+    aes(gen, cf),
+    colour = "steelblue",
+    method = "gam"
+  )+
+  scale_fill_brewer(
+    palette = "Blues"
+  )+
+  theme_classic(base_size = 8)+
+  coord_cartesian(
+    ylim = c(-0.5, 0.5),
+    xlim = c(0, 50),
+    expand = F
+  )+
+  xlim(0, 50)+
+  labs(x = "Generation", 
+       y = "Corr. indivs. - cell quality")
+```
 
 prepare landscape at 0 and 25
 
@@ -169,7 +219,7 @@ fig_land_foragers <-
     data = data_agent[agents > 0, ],
     aes(x, y, size = agents),
     shape = 1,
-    stroke = 0.3
+    col = "grey20"
   ) +
   facet_grid(~gen,
     labeller = label_both
@@ -181,7 +231,7 @@ fig_land_foragers <-
     direction = 1
   ) +
   coord_equal(expand = F) +
-  kleptomoveMS::theme_custom(landscape = T) +
+  kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
   theme(legend.position = "bottom")+
   labs(fill = "# Items", size = "# Indiv.")
 ```
@@ -194,9 +244,9 @@ wrap figures together
 figure_2_forager_model <-
   wrap_plots(
     fig_activity, fig_intake, 
-    fig_matching,
     fig_land_foragers,
-    design = "ABC\nDDD"
+    fig_matching, fig_matching_quality,
+    design = "AABB\nCCCC\nDDEE"
   ) +
     plot_annotation(
       tag_levels = "A"
@@ -212,7 +262,7 @@ save figure
 ```{r}
 ggsave(figure_2_forager_model,
   filename = "figures/fig_02.png",
-  height = 125, width = 170, units = "mm"
+  height = 150, width = 125, units = "mm"
 )
 ```
 
