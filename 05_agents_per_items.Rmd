@@ -87,7 +87,7 @@ setnames(quality_data, old = "items", new = "quality")
 
 # agent quality data
 quality_data = lapply(agent_data, function(df) {
-  merge(df, quality_data, by = intersect(names(adf), names(idf), all = F))
+  merge(df, quality_data, by = intersect(names(df), names(quality_data)), all = F)
 })
 
 # unlist
