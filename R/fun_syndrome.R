@@ -37,7 +37,7 @@ get_pref_handler_by_strat <- function(
 
     # this is a matrix, discretise the klept bias and handler pref 1,1 is
     # forager, has handler preference
-    if (!prop_by_strategy) {
+    if (!handler_pref_by_strategy) {
       weights <- weights > 0
       # make data tables
       weights <- data.table::as.data.table(weights)
