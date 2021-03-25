@@ -11,10 +11,12 @@
 #' @export
 #'
 get_pref_handler_by_strat <- function(
-                                      data_folder,
-                                      generations,
-                                      weight_klept_bias,
-                                      weight_of_interest) {
+  data_folder,
+  generations,
+  weight_klept_bias,
+  weight_of_interest,
+  handler_pref_by_strategy = FALSE
+) {
 
   # source 'source_me.R' in the data folder
   source(sprintf("%s/sourceMe.R", data_folder))
@@ -26,8 +28,7 @@ get_pref_handler_by_strat <- function(
 
     # get the two weights we want
     # why do we multiply by 20, who knows
-    weights <- G[["agents"]][["ann"]][
-      ,
+    weights <- G[["agents"]][["ann"]][,
       c(weight_klept_bias, weight_of_interest)
     ] * 20
 
@@ -36,18 +37,33 @@ get_pref_handler_by_strat <- function(
 
     # this is a matrix, discretise the klept bias and handler pref 1,1 is
     # forager, has handler preference
-    weights <- weights > 0
-
-    # make data tables
-    weights <- data.table::as.data.table(weights)
-
-    # count by unique values
-    weights <- weights[, .N, by = c("klept_bias", names(weight_of_interest))]
-
-    # add generation
-    weights$gen <- g
-
-    return(weights)
+    if (!prop_by_strategy) {
+      weights <- weights > 0
+      # make data tables
+      weights <- data.table::as.data.table(weights)
+      # count by unique values
+      weights <- weights[, .N, by = c("klept_bias", names(weight_of_interest))]
+      # add generation
+      weights$gen <- g
+    } else {
+      weights[, "klept_bias"] = weights[, "klept_bias"] > 0
+      weights[, "handler_bias"] = tanh(weights[, "handler_bias"])
+      # this next is hardcoded
+      weights[, "handler_bias"] = as.numeric(
+        stringi::stri_extract_first(
+          str = cut(
+            x = weights[, "handler_bias"], 
+            breaks = seq(-1.01, 1.01, 0.01)
+          ), 
+          regex = "[-0-9]+\\.\\d{2}"
+        )
+      )
+      weights = data.table::as.data.table(weights)
+      weights = weights[, list(.N), by = c("klept_bias", "handler_bias")]
+      weights[, prop_handler_pref := N / sum(N), by = "klept_bias"]
+      weights$gen <- g
+    }
+    weights
   })
 
   # bind all the data together
