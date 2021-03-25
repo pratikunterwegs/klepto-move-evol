@@ -161,7 +161,8 @@ data[, prop_per_strat := N / sum(N),
 
 ```{r}
 fig7c =
-ggplot(data[regrowth == 0.01, ]) +
+ggplot(data[regrowth == 0.01 &
+              handler_pref == "prefers handlers", ]) +
   geom_hline(
     yintercept = 0.5,
     col = "grey50",
@@ -193,17 +194,19 @@ ggplot(data[regrowth == 0.01, ]) +
     )
   ) +
   scale_y_continuous(
-    breaks = c(0, 0.5, 1)
+    breaks = c(0.5, 0.75, 1)
   )+
   coord_cartesian(
-    ylim = c(0, 1),
-    xlim = c(1, 50)
+    ylim = c(0.33, 1),
+    xlim = c(1, 50),
+    expand = F
   ) +
   labs(
     x = "Generation",
     y = "Prop. handler response"
   ) +
-  # scale_x_log10()+
+  scale_x_log10()+
+  annotation_logticks(sides = "b")+
   kleptomoveMS::theme_custom(grid = F, base_size = 8) +
   theme(legend.position = "bottom",
         legend.key.height = unit(1, units = "mm"))+
