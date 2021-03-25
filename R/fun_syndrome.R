@@ -46,20 +46,25 @@ get_pref_handler_by_strat <- function(
       # add generation
       weights$gen <- g
     } else {
+      assertthat::assert_that(length(weight_of_interest) == 1,
+                              msg = "get syndrome: can only take one weight,
+                                the handler preference")
       weights[, "klept_bias"] = weights[, "klept_bias"] > 0
-      weights[, "handler_bias"] = tanh(weights[, "handler_bias"])
+      weights[, names(weight_of_interest)] = 
+        tanh(weights[, names(weight_of_interest)])
       # this next is hardcoded
-      weights[, "handler_bias"] = as.numeric(
+      weights[, names(weight_of_interest)] = as.numeric(
         stringi::stri_extract_first(
           str = cut(
-            x = weights[, "handler_bias"], 
+            x = weights[, names(weight_of_interest)], 
             breaks = seq(-1.01, 1.01, 0.01)
           ), 
           regex = "[-0-9]+\\.\\d{2}"
         )
       )
       weights = data.table::as.data.table(weights)
-      weights = weights[, list(.N), by = c("klept_bias", "handler_bias")]
+      weights = weights[, list(.N), 
+                        by = c("klept_bias", names(weight_of_interest))]
       weights[, prop_handler_pref := N / sum(N), by = "klept_bias"]
       weights$gen <- g
     }
