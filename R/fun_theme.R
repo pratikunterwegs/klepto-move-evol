@@ -8,10 +8,10 @@
 theme_custom <- function(grid = FALSE,
                          landscape = FALSE,
                          ...) {
-  this_theme <- ggplot2::theme_test(...) +
+  this_theme <- ggplot2::theme_classic(...) +
     ggplot2::theme(
       legend.position = "none",
-      axis.title = ggplot2::element_text(face = "bold"),
+      # axis.title = ggplot2::element_text(face = "bold"),
       # axis.ticks.length = ggplot2::unit(1.5, units = "mm"),
       axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
       # axis.line = ggplot2::element_line(
@@ -23,11 +23,8 @@ theme_custom <- function(grid = FALSE,
       #   size = 0.3
       # ),
       strip.background = ggplot2::element_blank(),
-      strip.text = ggplot2::element_text(face = "bold", hjust = 0),
-      panel.background = ggplot2::element_rect(
-        fill = "grey99"
+      strip.text = ggplot2::element_text(face = "italic", hjust = 0)
       )
-    )
 
   if (grid) {
     this_theme <- this_theme +
