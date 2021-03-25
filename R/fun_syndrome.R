@@ -57,7 +57,7 @@ get_pref_handler_by_strat <- function(
         stringi::stri_extract_first(
           str = cut(
             x = weights[, names(weight_of_interest)], 
-            breaks = seq(-1.01, 1.01, 0.01)
+            breaks = seq(-1.01, 1.01, 0.05)
           ), 
           regex = "[-0-9]+\\.\\d{2}"
         )
