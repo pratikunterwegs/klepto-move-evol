@@ -36,10 +36,11 @@ data_nodes[, weight_num := as.numeric(
 ```{r}
 fig7a =
   ggplot(data_nodes[weight_prop > 0.001 &
-                  weight_id == 5,])+
+                  weight_id == 5 &
+                    gen %% 3 == 0,])+
   geom_tile(
     aes(x = gen, 
-        y = factor(weight_num),
+        y = (weight_num),
         fill = weight_prop)
   )+
   geom_hline(
@@ -49,14 +50,17 @@ fig7a =
     size = 0.3
   )+
   scale_fill_continuous_sequential(
-    palette = "Heat2"
+    palette = "Purple-Blue",
+    labels = scales::percent
   )+
-  scale_y_discrete(
-    breaks = c(-0.97, 1.01),
-    labels = c("Kleptoparasite", "Forager")
+  scale_y_continuous(
+    breaks = c(-1.75, 1.75),
+    labels = c("Klept.", "Forager")
   )+
-  coord_cartesian(expand = F)+
-  theme_classic(base_size = 8)+
+  coord_cartesian(
+    expand = F
+  )+
+  kleptomoveMS::theme_custom(base_size = 8)+
   theme(
     legend.position = "top",
     strip.background = element_blank(),
@@ -72,45 +76,61 @@ fig7a =
 ## Prepare strategy-wise weight data WIP
 
 ```{r}
-data_strategy_weight = copy(data_nodes)
-data_strategy_weight = data_strategy_weight[!(weight_id == 5 & !weight_num %in% c(-0.97, 1.01)), ]
-data_strategy_weight = data_strategy_weight[, 
-                          weight_prop := weight_prop / sum(weight_prop),
-                          by = c("sim_type", "replicate", "regrowth")]
+data_strategy_weight = fread("data_sim/results/data_syndrome_by_strategy.csv")
+data_strategy_weight = split(data_strategy_weight, by = "klept_bias")
 ```
 
 
 ```{r}
-# fig7b = 
-  ggplot(data_nodes[weight_prop > 0.001 &
-                  weight_id == 3,])+
+subplots_syndrome = Map(function(df, val) {
+  
+  colours = sequential_hcl(n = 10, palette = "Reds 3", rev = T)
+  fill_lab = "Prop. klepts."
+  if (val == "1") {
+    fill_lab = "Prop. foragers"
+    colours = sequential_hcl(n = 10, palette = "Blues 3", rev = T)
+  }
+  
+  ggplot(df[prop_handler_pref > 0.01,])+
   geom_tile(
-    aes(x = gen, y = weight_num,
-        fill = weight_prop)
+    aes(x = gen, y = handler_pref,
+        fill = prop_handler_pref)
   )+
   geom_hline(
     yintercept = 0,
-    col = "grey20",
-    lty = 3,
-    size = 0.3
+    col = "grey80",
+    lty = 1,
+    size = 0.1
   )+
-  scale_fill_distiller(
-    palette = "Oranges",
-    direction = 1,
+  scale_fill_gradientn(
+    colours = colours,
     labels = scales::percent
   )+
   scale_y_continuous(
-    breaks = c(-0.5, 0.5),
-    labels = c("Avoidance", "Preference")
+    breaks = c(-1, 0, 1),
+    labels = c("Avoid", "", "Prefer")
   )+
-  coord_cartesian(expand = F)+
+  coord_cartesian(
+    ylim = c(-1, 1),
+    expand = F
+  )+
   kleptomoveMS::theme_custom(base_size = 8)+
   theme(
-    legend.key.height = unit(1, units = "mm")
+    legend.key.height = unit(1, units = "mm"),
+    legend.position = "top"
   )+
-  facet_grid(~ replicate, labeller = label_both)+
-  labs(x = "Generation", y = "Weight handler response",
-       fill = "Prop. indivs.")
+  facet_wrap(~ replicate, 
+             labeller = label_both, 
+             scales = "free")+
+  labs(x = "Generation", 
+       y = "Handler response",
+       fill = fill_lab)
+}, data_strategy_weight, names(data_strategy_weight))
+
+# wrap subplots by strat
+fig7b = wrap_plots(
+  subplots_syndrome, ncol = 1
+)
 ```
 
 ```{r}
@@ -137,18 +157,17 @@ data = data[, list(N = sum(N)),
 # get proportion
 data[, prop_per_strat := N / sum(N), 
      by = c("gen", "klept_bias", "regrowth", "replicate")]
-
-# # count handler pref per strategy as total
-# who drives the rise in handlers
-# data_hp_total = copy(data)[handler_pref == "prefers handlers",]
-# data_hp_total[, total_handlers := sum(N),
-#               by = c("gen", "regrowth", "replicate")]
-# data_hp_total[, prop_total := N / total_handlers]
 ```
 
 ```{r}
 fig7c =
 ggplot(data[regrowth == 0.01, ]) +
+  geom_hline(
+    yintercept = 0.5,
+    col = "grey50",
+    lty = 3,
+    size = 0.3
+  )+
   geom_path(
     aes(
       x = gen,
@@ -163,7 +182,7 @@ ggplot(data[regrowth == 0.01, ]) +
       "forager.prefers handlers" = "royalblue",
       "forager.avoids handlers" = "lightblue",
       "klept.prefers handlers" = "darkred",
-      "klept.avoids handlers" = "indianred"
+      "klept.avoids handlers" = "pink"
     ),
     name = NULL,
     labels = c(
@@ -173,6 +192,9 @@ ggplot(data[regrowth == 0.01, ]) +
       "klept.avoids handlers" = "Klept., avoids handlers"
     )
   ) +
+  scale_y_continuous(
+    breaks = c(0, 0.5, 1)
+  )+
   coord_cartesian(
     ylim = c(0, 1),
     xlim = c(1, 50)
@@ -183,16 +205,16 @@ ggplot(data[regrowth == 0.01, ]) +
   ) +
   # scale_x_log10()+
   kleptomoveMS::theme_custom(grid = F, base_size = 8) +
-  theme(legend.position = "top",
+  theme(legend.position = "bottom",
         legend.key.height = unit(1, units = "mm"))+
-  guides(colour = guide_legend(nrow = 2, byrow = TRUE))
+  guides(colour = guide_legend(nrow = 4, byrow = TRUE))
 ```
 
 ```{r}
 fig_7 =
   wrap_plots(
     fig7a, fig7b, fig7c,
-    design = "AB\nC#"
+    design = "AAA\nBBC\nBBC\nBBC\nBB#"
   )+
   plot_annotation(
     tag_levels = "A"
@@ -201,8 +223,7 @@ fig_7 =
     plot.tag = element_text(
       face = "bold",
       size = 12
-    ),
-    legend.position = "top"
+    )
   )
 ```
 
@@ -211,6 +232,6 @@ fig_7 =
 ggsave(fig_7,
        filename = "figures/fig_07.png",
        width = 125,
-       height = 125, units = "mm")
+       height = 150, units = "mm")
 ```
 
