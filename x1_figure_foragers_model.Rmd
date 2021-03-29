@@ -37,12 +37,11 @@ ggplot(data_activity[gen <= 50, ]) +
       colour = variable,
       group = interaction(variable, replicate)
     ),
-    position = position_jitter(),
-    size = 0.4
+    position = position_jitter()
   ) +
   scale_colour_manual(
     values = c(
-      foraging = "steelblue",
+      foraging = "darkblue",
       handling = "seagreen"
     ),
     labels = c(foraging = "Foraging", handling = "Handling"),
@@ -83,8 +82,7 @@ fig_intake <-
     aes(gen, pop_fitness,
         group = replicate
     ),
-    position = position_jitter(),
-    size = 0.4
+    position = position_jitter()
   ) +
   scale_x_continuous(
     breaks = c(1, seq(10, 50, 10))
@@ -122,23 +120,13 @@ fig_matching =
     col = "red"
   )+
   geom_point(
-    data = data_match,
+    data = data_match[gen <= 50,],
     aes(
       x = gen,
-      y = cf,
-      fill = cfp <= 0.05
+      y = cf
     ),
-    show.legend = F,
-    shape = 21
-  )+
-  geom_smooth(
-    data = data_match[cfp <= 0.05, ],
-    aes(gen, cf),
-    colour = "steelblue",
-    method = "gam"
-  )+
-  scale_fill_brewer(
-    palette = "Blues"
+    shape = 1,
+    show.legend = F
   )+
   theme_classic(base_size = 8)+
   coord_cartesian(
@@ -148,7 +136,7 @@ fig_matching =
   )+
   xlim(0, 50)+
   labs(x = "Generation", 
-       y = "Corr. indivs. - potential intake")
+       y = "Corr. indivs. ~ potential intake")
 ```
 
 ## correlation with quality
@@ -167,23 +155,14 @@ fig_matching_quality =
     col = "red"
   )+
   geom_point(
-    data = data_quality,
+    data = data_quality[gen <= 50,],
     aes(
       x = gen,
-      y = cf,
-      fill = cfp <= 0.05
+      y = cf
     ),
-    show.legend = F,
-    shape = 21
-  )+
-  geom_smooth(
-    data = data_quality[cfp <= 0.05, ],
-    aes(gen, cf),
-    colour = "steelblue",
-    method = "gam"
-  )+
-  scale_fill_brewer(
-    palette = "Blues"
+    shape = 1,
+    fill = "grey",
+    show.legend = F
   )+
   theme_classic(base_size = 8)+
   coord_cartesian(
@@ -193,7 +172,7 @@ fig_matching_quality =
   )+
   xlim(0, 50)+
   labs(x = "Generation", 
-       y = "Corr. indivs. - cell quality")
+       y = "Corr. indivs. ~ cell quality")
 ```
 
 prepare landscape at 0 and 25
@@ -245,7 +224,7 @@ figure_2_forager_model <-
   wrap_plots(
     fig_activity, fig_intake, 
     fig_land_foragers,
-    fig_matching, fig_matching_quality,
+    fig_matching_quality, fig_matching,
     design = "AABB\nCCCC\nDDEE"
   ) +
     plot_annotation(

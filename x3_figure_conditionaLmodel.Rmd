@@ -72,7 +72,7 @@ fig_activity <-
   ), size = 0.4) +
   scale_colour_manual(
     values = c(
-      foraging = "steelblue",
+      foraging = "darkblue",
       handling = "seagreen",
       stealing = "red",
       p_klept = "darkorange"
@@ -163,20 +163,10 @@ fig_matching =
     data = data_match,
     aes(
       x = gen,
-      y = cf,
-      fill = cfp <= 0.05
+      y = cf
     ),
     show.legend = F,
-    shape = 21
-  )+
-  geom_smooth(
-    data = data_match[cfp <= 0.05, ],
-    aes(gen, cf),
-    colour = "steelblue",
-    method = "gam"
-  )+
-  scale_fill_brewer(
-    palette = "Blues"
+    shape = 1
   )+
   theme_classic(base_size = 8)+
   coord_cartesian(
@@ -208,20 +198,10 @@ fig_matching_quality =
     data = data_quality,
     aes(
       x = gen,
-      y = cf,
-      fill = cfp <= 0.05
+      y = cf
     ),
     show.legend = F,
-    shape = 21
-  )+
-  geom_smooth(
-    data = data_quality[cfp <= 0.05, ],
-    aes(gen, cf),
-    colour = "steelblue",
-    method = "gam"
-  )+
-  scale_fill_brewer(
-    palette = "Blues"
+    shape = 1
   )+
   theme_classic(base_size = 8)+
   coord_cartesian(
