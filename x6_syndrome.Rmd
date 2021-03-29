@@ -103,9 +103,9 @@ subplots_syndrome <- Map(function(df, val) {
     ) +
     geom_hline(
       yintercept = 0,
-      col = "grey80",
-      lty = 1,
-      size = 0.1
+      col = "grey20",
+      lty = 2,
+      size = 0.3
     ) +
     scale_fill_gradientn(
       colours = colours,
@@ -113,7 +113,7 @@ subplots_syndrome <- Map(function(df, val) {
     ) +
     scale_y_continuous(
       breaks = c(-1, 0, 1),
-      labels = c("Avoid", "", "Prefer")
+      labels = c("Avoid", "Neutral", "Prefer")
     ) +
     coord_cartesian(
       ylim = c(-1, 1),
@@ -178,8 +178,8 @@ fig7c <-
     handler_pref == "prefers handlers", ]) +
   geom_hline(
     yintercept = 0.5,
-    col = "grey50",
-    lty = 3,
+    col = "grey20",
+    lty = 2,
     size = 0.3
   ) +
   geom_path(
@@ -216,10 +216,12 @@ fig7c <-
   ) +
   labs(
     x = "Generation",
-    y = "Prop. handler response"
+    y = "Prop. handler preference"
   ) +
   scale_x_log10() +
-  annotation_logticks(sides = "b") +
+  annotation_logticks(sides = "b",
+                      colour = "grey",
+                      size = 0.2) +
   kleptomoveMS::theme_custom(grid = F, base_size = 8) +
   theme(
     legend.position = "bottom",
