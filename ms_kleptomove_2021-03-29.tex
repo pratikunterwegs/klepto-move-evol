@@ -554,37 +554,45 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/fig_02.png}
+    \includegraphics[width=0.70\textwidth]{figures/fig_02.png}
     \caption{
         Model 1 populations with only exploitation competition rapidly reach an \textbf{(A)} activity budget and \textbf{(B)} total intake equlibrium. The initial spike in handling and population intake is due to initially high foraging success on a fully stocked resource landscape.
-        \textbf{(C)} The sustained extraction of prey-items results in a rapid depletion of the resource landscape within 50 generations. The number of individuals on occupied cells is shown as black circles (size = number of individuals). Panels \textbf{A, B} show three replicates, while panel \textbf{C} shows a single replicate; all panels are for $r_{max}$ = 0.01.
+        \textbf{(C)} The sustained extraction of prey-items results in a rapid depletion of the resource landscape within 10 generations. The number of individuals on occupied cells is shown as black circles (size = number of individuals). 
+        \textbf{(D)} The correlation between the number of individuals on a cell, and its productivity $r_{max}$, remains low across generations, while the 
+        \textbf{(E)} correlation between individual counts and the probability of finding a prey-item (which relates to the item count) rapidly reaches a negative value, between -0.5 and -0.25.
+        Panels \textbf{A, B, D} and \textbf{E} show three replicates, while panel \textbf{C} shows a single replicate; all panels are for $r_{max}$ = 0.01.
     }
     \label{Fig:Model1}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/fig_03.png}
+    \includegraphics[width=0.70\textwidth]{figures/fig_03.png}
     \caption{
         Model 2 populations with both exploitation competition, and kleptoparasitism as a fixed, inherited strategy reach an \textbf{(A)} activity budget and \textbf{(B)} total intake equlibrium rapidly.
         The initial handling and intake spike is due to very successful handling on undepleted resource landscapes.
-        The frequency of stealing activities (red line; panel A) is less than the proportion of kleptoparasitic individuals (orange line; panel A), as successful kleptoparasites are counted as handlers while processing prey items.
-        \textbf{(C)} The sustained extraction of prey-items results in an initially rapid depletion of the resource landscape within 10 generations. 
-        With a reduction in foraging and handling due to increased stealing after generation 30 (panel A), prey-item depletion is reduced, and the resource landscape recovers.
-        The number of individuals on occupied cells is shown as black circles (size = number of individuals). Panels \textbf{A, B} show three replicates, while panel \textbf{C} shows a single replicate; all panels are for $r_{max}$ = 0.01.
+        The frequency of stealing activities (red line; panel A) is less than the proportion of kleptoparasitic individuals (orange line; panel A), as successful kleptoparasites are counted as handlers.
+        \textbf{(C)} With a reduction in foraging and handling due to increased stealing after generation 30 (panel A), prey-item depletion is reduced, and the resource landscape recovers by generation 50.
+        The number of individuals on occupied cells is shown as black circles (size = number of individuals). 
+        \textbf{(D)} The correlation between the number of individuals on a cell, and its productivity $r_{max}$, remains low across generations, while the 
+        \textbf{(E)} correlation between individual counts and the probability of finding a prey-item (which relates to the item count) rapidly reaches a negative value, between -0.5 and -0.25.
+        Panels \textbf{A, B, D} and \textbf{E} show three replicates, while panel \textbf{C} shows a single replicate; all panels are for $r_{max}$ = 0.01.
     }
     \label{Fig:Model2}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/fig_04.png}
+    \includegraphics[width=0.70\textwidth]{figures/fig_04.png}
     \caption{
         Model 3 populations with both exploitation competition, and kleptoparasitism as strategy conditional on local cues, reach an \textbf{(A)} activity budget and \textbf{(B)} total intake equlibrium rapidly.
         The initial handling and intake spike is due to very successful handling on undepleted resource landscapes.
         A kleptoparasitic response to handlers (orange line; panel A) becomes rapidly fixed in the population, but the frequency of stealing remains relatively much lower (red line; panel A).
-        \textbf{(C)} The sustained extraction of prey-items results in an initially rapid depletion of the resource landscape within 10 generations; the resource landscape regenerates prey-items as kleptoparasitism reduces foraging activities.
-        The number of individuals on occupied cells is shown as black circles (size = number of individuals). Panels \textbf{A, B} show three replicates, while panel \textbf{C} shows a single replicate; all panels are for $r_{max}$ = 0.01.
+        \textbf{(C)} The initially rapid depletion of the resource landscape within 10 generations is halted as kleptoparasitism reduces foraging activities, and the resource landscape regenerates prey-items by generation 50.
+        The number of individuals on occupied cells is shown as black circles (size = number of individuals).
+        \textbf{(D)} The correlation between the number of individuals on a cell, and its productivity $r_{max}$, and
+        \textbf{(E)} the correlation between individual counts and the probability of finding a prey-item are both quite weak across generations.
+        Panels \textbf{A, B, D} and \textbf{E} show three replicates, while panel \textbf{C} shows a single replicate; all panels are for $r_{max}$ = 0.01.
     }
     \label{Fig:Model3}
 \end{figure}
@@ -595,31 +603,40 @@ and members of the Modelling Adaptive Response Mechanisms Group, and of the Theo
     \caption{Landscape productivity strongly affects model outcomes.
     \textbf{(A)} The frequency foraging reduces with increasing $r_{max}$ in models 1 and 3, but remains relatively stable in model 2. In all three models, this is partly due to an increase in handling caused by increased resoure availability, and \textbf{(B)} partly due to reduced kleptoparasitism in models 2 and 3. In model 2, kleptoparasitism goes extinct at higher $r_{max}$, and such model 2 populations are functionally identical with model 1 populations.
     \textbf{(C)} At low $r_{max}$, populations in all three models achieve similar intakes. At intermediate $r_{max}$ however, popualtions with a conditional kleptoparasitic strategy outperform populations with fixed strategies. At high $r_{max}$, conditional kleptoparasitism populations (model 3) achieve lower intakes than populations in models 1 and 2, which are then functionally identical.
+    Shaded regions around solid lines show the standard deviation of each value; these are not visible when the standard deviaiton is very small.
     }
     \label{Fig:Sensitivity}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.90\textwidth]{figures/fig_08.png}
+    \includegraphics[width=0.70\textwidth]{figures/fig_08.png}
     \caption{
-        The evolution and persistence of a kleptoparasitic response (orange lines) and stealing events (red lines) reduces item depletion (coloured cells; row 2), thus reducing `clueless plateaus' (black lines and areas; row 3). All scenarios are shown at $r_{max}$ = 0.01, and only a part of the landscape is shown.
-        \textbf{(A, D)} Strong depletion of the resource landscape in Model 1 leads to large areas with no item gradient (clueless plateaus; [D]; black areas; green areas = detectable item gradient).
-        \textbf{(B, E)} The emergence and persistence of fixed kleptoparasitism in model 2 leads to a reduction in the area of clueless plateaus within 40 generations ([E]; black areas).
-        \textbf{(C, F)} In model 3, the conditional kleptoparasitic strategy leads to depletion intermediate between models 1 and 2, and a similarly intermediate proportion of clueless plateaus on the landscape ([F]).
+        The sustained depletion of prey-items leads to the homogenisation of large parts of the resource landscape within 10 generations.
+        This homogenisation to zero items leads to the creation of `clueless regions', i.e., neighbouring cells with no difference in item counts, and thus no direct resource gradients (grey areas in \textbf{A1, B1, C1}; green areas show cells which differ from neighbours in item counts).
+        Black lines in \textbf{(A2, B2, C2)} show the proportion of the landscape that is `clueless'.
+        The evolution and persistence of a kleptoparasitic response (orange lines) and stealing events (red lines) reduces item depletion.
+        \textbf{(A1, A2)} Strong depletion of the resource landscape in Model 1 leads to large areas with no item gradient.
+        When the majority of the landscape is `clueless', moving towards handlers, which are an indirect indicator of resources, becomes a common strategy (blue line).
+        \textbf{(B1, B2)} The emergence and persistence of fixed kleptoparasitism in Model 2 leads to a reduction in the area of clueless plateaus within 40 generations.
+        \textbf{(C1, C2)} In Model 3, the conditional kleptoparasitic strategy leads to depletion intermediate between Models 1 and 2, and a similarly intermediate proportion of clueless plateaus on the landscape.
+        All panels show replicates at $r_{max}$ = 0.01; landscape panels show only a single replicate.
     }
     \label{Fig:CluelessLandscape}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/fig_07.png}
+    \includegraphics[width=0.70\textwidth]{figures/fig_07.png}
     \caption{
-       Movement rules rapidly diverge between fixed behavioural strategies in model 2.
-       \textbf{(A)} Within 5 generations, all kleptoparasitic individuals ($\sim$75\% of the population at equilibrium; see Fig. 3A) have an evolved preference for moving towards handlers.
-       However, forager individuals are agnostic to handlers, and are equally split between handler preference and avoidance.
-       \textbf{(B)} The strong selection on kleptoparasites for moving towards handlers, and the lack of similar selection pressure on foragers, results in the majority of handler preferring individuals in the population being kleptoparasites.
-       Both panels show three replicates at $r_{max}$ = 0.01.
+       Movement rules rapidly diverge between fixed behavioural strategies in Model 2.
+       \textbf{(A)} Kleptoparasitism rapidly becomes the more frequent strategy in Model 2 populations, with no differences across replicates.
+       \textbf{(B)} However, replicates differ strongly in the frequencies of evolved movement strategies among the two behavioural strategies.
+       While nearly all kleptoparasites evolve to move towards handlers, their direct resource, the strength of their handler preference is polymorphic, with 2 -- 3 morphs in most replicates.
+       \textbf{(C)} Foragers are also polymorphic in their handler responses, but these morphs are the results of drift, rather than selection.
+       \textbf{(D)} Overall, within 5 generations (shown on a log scale), all kleptoparasitic individuals ($\sim$75\% of the population at equilibrium; see Fig. 3A) have an evolved preference for moving towards handlers.
+       Meanwhile, forager individuals are agnostic to handlers, and are equally split between handler preference and avoidance.
+       All panels show three replicates at $r_{max}$ = 0.01.
     }
     \label{Fig:Syndrome}
 \end{figure}
