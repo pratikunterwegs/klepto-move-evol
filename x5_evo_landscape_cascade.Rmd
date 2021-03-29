@@ -169,10 +169,12 @@ subplots <- lapply(data, function(df) {
   }
 
   ggplot(df) +
-    geom_path(aes(gen, value,
-      col = variable,
-      group = interaction(replicate, variable)
-    ), size = 0.4) +
+    geom_path(
+      aes(gen, value,
+          col = variable,
+          group = interaction(replicate, variable)
+      )
+    ) +
     scale_colour_manual(
       values = c(
         p_clueless = "grey40",
