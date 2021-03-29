@@ -20,10 +20,10 @@ params$folder_path = stringr::str_replace(params$folder_path,
                                           "data_sim")
 
 # remove params over 0.02
-params = params[regrowth <= 0.02,]
+# params = params[regrowth <= 0.02,]
 
 # select gens
-gens_for_figure <- stringr::str_pad(seq(100), width = 5, pad = "0")
+gens_for_figure <- stringr::str_pad(seq(50), width = 5, pad = "0")
 
 # get paths for files 
 params$gens = list(gens_for_figure)
@@ -115,6 +115,8 @@ layer_data = Map(function(adf, idf) {
   idf = merge(adf, idf, by = intersect(names(adf), names(idf)), all = FALSE)
   
 }, agent_data, item_data)
+
+data = copy(params)
 
 # add layer data to param data
 data$layer_data = layer_data
