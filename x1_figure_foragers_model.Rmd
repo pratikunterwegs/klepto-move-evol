@@ -30,7 +30,7 @@ data_activity <- data_activity[
 
 ```{r}
 fig_activity <-
-ggplot(data_activity[gen <= 50, ]) +
+  ggplot(data_activity[gen <= 50, ]) +
   geom_path(
     aes(
       gen, value,
@@ -60,7 +60,7 @@ ggplot(data_activity[gen <= 50, ]) +
     ylim = c(0, 1),
     expand = F
   ) +
-  theme_classic(base_size = 8)+
+  theme_classic(base_size = 8) +
   theme(legend.position = "top") +
   labs(
     x = "Generation",
@@ -75,12 +75,12 @@ ggplot(data_activity[gen <= 50, ]) +
 fig_intake <-
   ggplot(
     unique(data_activity[gen <= 50, ],
-           by = c("gen", "replicate", "pop_fitness")
+      by = c("gen", "replicate", "pop_fitness")
     )
   ) +
   geom_path(
     aes(gen, pop_fitness,
-        group = replicate
+      group = replicate
     ),
     position = position_jitter()
   ) +
@@ -92,7 +92,7 @@ fig_intake <-
     ylim = c(0, 50),
     expand = F
   ) +
-  theme_classic(base_size = 8)+
+  theme_classic(base_size = 8) +
   labs(
     x = "Generation",
     y = "Population intake"
@@ -103,59 +103,61 @@ fig_intake <-
 
 ```{r}
 # raw correlation data
-data_match = fread("data_sim/results/data_matching_rule.csv")
-data_match = data_match[sim_type == "foragers" & regrowth == 0.01, ]
+data_match <- fread("data_sim/results/data_matching_rule.csv")
+data_match <- data_match[sim_type == "foragers" & regrowth == 0.01, ]
 
 # smoothed data
-data_match_smooth = fread("data_sim/results/data_matching_rule_smooth.csv")[
+data_match_smooth <- fread("data_sim/results/data_matching_rule_smooth.csv")[
   sim_type == "foragers" & regrowth == 0.01,
 ]
 ```
 
 ```{r}
-fig_matching =
-  ggplot()+
+fig_matching <-
+  ggplot() +
   geom_hline(
     yintercept = 0,
     col = "red"
-  )+
+  ) +
   geom_point(
-    data = data_match[gen <= 50,],
+    data = data_match[gen <= 50, ],
     aes(
       x = gen,
       y = cf
     ),
     shape = 1,
     show.legend = F
-  )+
-  theme_classic(base_size = 8)+
+  ) +
+  theme_classic(base_size = 8) +
   coord_cartesian(
     ylim = c(-0.5, 0.5),
     xlim = c(0, 50),
     expand = F
-  )+
-  xlim(0, 50)+
-  labs(x = "Generation", 
-       y = "Corr. indivs. ~ potential intake")
+  ) +
+  xlim(0, 50) +
+  labs(
+    x = "Generation",
+    y = "Corr. indivs. ~ potential intake"
+  )
 ```
 
 ## correlation with quality
 
 ```{r}
 # raw correlation data
-data_quality = fread("data_sim/results/data_quality_matching_rule.csv")
-data_quality = data_quality[sim_type == "foragers" & regrowth == 0.01, ]
+data_quality <- fread("data_sim/results/data_quality_matching_rule.csv")
+data_quality <- data_quality[sim_type == "foragers" & regrowth == 0.01, ]
 ```
 
 ```{r}
-fig_matching_quality =
-  ggplot()+
+fig_matching_quality <-
+  ggplot() +
   geom_hline(
     yintercept = 0,
     col = "red"
-  )+
+  ) +
   geom_point(
-    data = data_quality[gen <= 50,],
+    data = data_quality[gen <= 50, ],
     aes(
       x = gen,
       y = cf
@@ -163,16 +165,18 @@ fig_matching_quality =
     shape = 1,
     fill = "grey",
     show.legend = F
-  )+
-  theme_classic(base_size = 8)+
+  ) +
+  theme_classic(base_size = 8) +
   coord_cartesian(
     ylim = c(-0.5, 0.5),
     xlim = c(0, 50),
     expand = F
-  )+
-  xlim(0, 50)+
-  labs(x = "Generation", 
-       y = "Corr. indivs. ~ cell quality")
+  ) +
+  xlim(0, 50) +
+  labs(
+    x = "Generation",
+    y = "Corr. indivs. ~ cell quality"
+  )
 ```
 
 prepare landscape at 0 and 25
@@ -211,7 +215,7 @@ fig_land_foragers <-
   ) +
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
-  theme(legend.position = "bottom")+
+  theme(legend.position = "bottom") +
   labs(fill = "# Items", size = "# Indiv.")
 ```
 
@@ -222,7 +226,7 @@ wrap figures together
 ```{r}
 figure_2_forager_model <-
   wrap_plots(
-    fig_activity, fig_intake, 
+    fig_activity, fig_intake,
     fig_land_foragers,
     fig_matching_quality, fig_matching,
     design = "AABB\nCCCC\nDDEE"

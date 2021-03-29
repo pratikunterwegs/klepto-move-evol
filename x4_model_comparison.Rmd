@@ -68,14 +68,14 @@ fig_strategy_fitness <-
     ),
     alpha = 0.2
   ) +
-    geom_line(
-      data = data_fitness_summary,
-      aes((regrowth),
-          y = pop_fitness.median,
-          col = sim_type,
-          group = sim_type
-      )
-    ) +
+  geom_line(
+    data = data_fitness_summary,
+    aes((regrowth),
+      y = pop_fitness.median,
+      col = sim_type,
+      group = sim_type
+    )
+  ) +
   scale_fill_manual(
     values = c(
       foragers = "maroon",
@@ -105,16 +105,15 @@ fig_strategy_fitness <-
     0.01,
     0.025,
     0.05
-  )
+  )) +
+  scale_y_continuous(
+    breaks = seq(0, 60, 20)
   ) +
-    scale_y_continuous(
-      breaks = seq(0, 60, 20)
-    )+
-    coord_cartesian(
-      ylim = c(0, 60),
-      xlim = c(0, 0.051),
-      expand = F
-    )+
+  coord_cartesian(
+    ylim = c(0, 60),
+    xlim = c(0, 0.051),
+    expand = F
+  ) +
   kleptomoveMS::theme_custom(grid = F, base_size = 8) +
   theme(
     legend.position = "none"

@@ -15,18 +15,19 @@ read data and explore
 
 ```{r}
 # read data
-data = fread("data_sim/results/data_item_variance_1_150.csv")
+data <- fread("data_sim/results/data_item_variance_1_150.csv")
 ```
 
 ```{r}
 # exploratory plot
-ggplot(data)+
+ggplot(data) +
   geom_path(
-    aes(gen, item_variance, 
-        colour = sim_type,
-        group = interaction(replicate, sim_type))
-  )+
-  facet_grid(~regrowth)+
+    aes(gen, item_variance,
+      colour = sim_type,
+      group = interaction(replicate, sim_type)
+    )
+  ) +
+  facet_grid(~regrowth) +
   coord_cartesian(
     xlim = c(0, 50)
   )

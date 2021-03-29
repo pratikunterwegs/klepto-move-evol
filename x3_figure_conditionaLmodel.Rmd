@@ -98,7 +98,7 @@ fig_activity <-
     ylim = c(0, 1),
     expand = F
   ) +
-  theme_classic(base_size = 8)+
+  theme_classic(base_size = 8) +
   theme(
     legend.position = "top",
     legend.key.height = unit(0, units = "mm")
@@ -120,7 +120,7 @@ fig_intake <-
   )) +
   geom_path(
     aes(gen, pop_fitness,
-        group = replicate
+      group = replicate
     ),
     size = 0.4
   ) +
@@ -132,7 +132,7 @@ fig_intake <-
     ylim = c(0, 50),
     expand = F
   ) +
-  theme_classic(base_size = 8)+
+  theme_classic(base_size = 8) +
   labs(
     x = "Generation",
     y = "Population intake"
@@ -143,22 +143,22 @@ fig_intake <-
 
 ```{r}
 # raw correlation data
-data_match = fread("data_sim/results/data_matching_rule.csv")
-data_match = data_match[sim_type == "facultative" & regrowth == 0.01, ]
+data_match <- fread("data_sim/results/data_matching_rule.csv")
+data_match <- data_match[sim_type == "facultative" & regrowth == 0.01, ]
 
 # smoothed data
-data_match_smooth = fread("data_sim/results/data_matching_rule_smooth.csv")[
+data_match_smooth <- fread("data_sim/results/data_matching_rule_smooth.csv")[
   sim_type == "facultative" & regrowth == 0.01,
 ]
 ```
 
 ```{r}
-fig_matching =
-  ggplot()+
+fig_matching <-
+  ggplot() +
   geom_hline(
     yintercept = 0,
     col = "red"
-  )+
+  ) +
   geom_point(
     data = data_match,
     aes(
@@ -167,33 +167,35 @@ fig_matching =
     ),
     show.legend = F,
     shape = 1
-  )+
-  theme_classic(base_size = 8)+
+  ) +
+  theme_classic(base_size = 8) +
   coord_cartesian(
     ylim = c(-0.5, 0.5),
     xlim = c(0, 50),
     expand = F
-  )+
-  xlim(0, 50)+
-  labs(x = "Generation", 
-       y = "Corr. indivs. ~ potential intake")
+  ) +
+  xlim(0, 50) +
+  labs(
+    x = "Generation",
+    y = "Corr. indivs. ~ potential intake"
+  )
 ```
 
 ## correlation with quality
 
 ```{r}
 # raw correlation data
-data_quality = fread("data_sim/results/data_quality_matching_rule.csv")
-data_quality = data_quality[sim_type == "facultative" & regrowth == 0.01, ]
+data_quality <- fread("data_sim/results/data_quality_matching_rule.csv")
+data_quality <- data_quality[sim_type == "facultative" & regrowth == 0.01, ]
 ```
 
 ```{r}
-fig_matching_quality =
-  ggplot()+
+fig_matching_quality <-
+  ggplot() +
   geom_hline(
     yintercept = 0,
     col = "red"
-  )+
+  ) +
   geom_point(
     data = data_quality,
     aes(
@@ -202,16 +204,18 @@ fig_matching_quality =
     ),
     show.legend = F,
     shape = 1
-  )+
-  theme_classic(base_size = 8)+
+  ) +
+  theme_classic(base_size = 8) +
   coord_cartesian(
     ylim = c(-0.5, 0.5),
     xlim = c(0, 50),
     expand = F
-  )+
-  xlim(0, 50)+
-  labs(x = "Generation", 
-       y = "Corr. indivs. ~ cell quality")
+  ) +
+  xlim(0, 50) +
+  labs(
+    x = "Generation",
+    y = "Corr. indivs. ~ cell quality"
+  )
 ```
 
 
@@ -243,8 +247,8 @@ fig_land_conditional <-
     labeller = label_both
   ) +
   scale_size(
-    breaks = c(1,2,3,4)
-  )+
+    breaks = c(1, 2, 3, 4)
+  ) +
   scale_fill_distiller(
     palette = "YlGnBu",
     limits = c(1, NA),
@@ -253,7 +257,7 @@ fig_land_conditional <-
   ) +
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
-  theme(legend.position = "bottom")+
+  theme(legend.position = "bottom") +
   labs(fill = "# Items", size = "# Indiv.")
 ```
 

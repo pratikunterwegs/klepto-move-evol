@@ -68,8 +68,8 @@ klept_bias <- klept_bias[, list(klept_strategy = sum(weight_prop)),
 Handler strategy
 
 ```{r}
-handler_strategy <- data[sim_type == "facultative" 
-                         & weight_id == 7 & weight_num < 0, ]
+handler_strategy <- data[sim_type == "facultative"
+& weight_id == 7 & weight_num < 0, ]
 handler_strategy <- handler_strategy[, list(klept_strategy = sum(weight_prop)),
   by = c("sim_type", "replicate", "regrowth", "gen")
 ]
@@ -328,29 +328,35 @@ subplot_land <- subplot_land[fignames]
 ```{r}
 # make figure 6
 figure_8 <-
-    (subplot_land[["foragers.gradient"]] + subplots[["foragers"]]) /
-    (subplot_land[["obligate.gradient"]] + subplots[["obligate"]]) /
-    (subplot_land[["facultative.gradient"]] + subplots[["facultative"]]) +
+  (subplot_land[["foragers.gradient"]] + subplots[["foragers"]]) /
+  (subplot_land[["obligate.gradient"]] + subplots[["obligate"]]) /
+  (subplot_land[["facultative.gradient"]] + subplots[["facultative"]]) +
   plot_annotation(
-      tag_levels = c("A")
+    tag_levels = c("A")
   )
 
 # why is this not compatible with lapply, or anything similar!
-figure_8[[1]] = figure_8[[1]] +
-    plot_layout(guide = "collect",
-                tag_level = "new")
+figure_8[[1]] <- figure_8[[1]] +
+  plot_layout(
+    guide = "collect",
+    tag_level = "new"
+  )
 
-figure_8[[2]] = figure_8[[2]] +
-    plot_layout(guide = "collect",
-                tag_level = "new")
+figure_8[[2]] <- figure_8[[2]] +
+  plot_layout(
+    guide = "collect",
+    tag_level = "new"
+  )
 
-figure_8[[3]] = figure_8[[3]] +
-    plot_layout(guide = "collect",
-                tag_level = "new")
+figure_8[[3]] <- figure_8[[3]] +
+  plot_layout(
+    guide = "collect",
+    tag_level = "new"
+  )
 
-figure_8 =
+figure_8 <-
   figure_8 +
-   plot_annotation(tag_levels = c('A', '1'))
+  plot_annotation(tag_levels = c("A", "1"))
 
 ggsave(
   figure_8,

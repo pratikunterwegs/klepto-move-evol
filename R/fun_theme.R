@@ -8,11 +8,11 @@
 theme_custom <- function(grid = FALSE,
                          landscape = FALSE,
                          ...) {
-  this_theme = ggplot2::theme_test()
-  
+  this_theme <- ggplot2::theme_test()
+
   if (landscape) {
     this_theme <- this_theme +
-      ggplot2::theme_test()+
+      ggplot2::theme_test() +
       ggplot2::theme(
         legend.position = "top",
         legend.key.height = ggplot2::unit(1, units = "mm"),
@@ -36,7 +36,7 @@ theme_custom <- function(grid = FALSE,
         #   size = 0.3
         # ),
       )
-    
+
     if (grid) {
       this_theme <- this_theme +
         ggplot2::theme(
@@ -52,5 +52,4 @@ theme_custom <- function(grid = FALSE,
       strip.background = ggplot2::element_blank(),
       strip.text = ggplot2::element_text(face = "italic", hjust = 0)
     )
-    
 }

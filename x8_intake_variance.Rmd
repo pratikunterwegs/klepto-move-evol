@@ -15,18 +15,19 @@ read data and explore
 
 ```{r}
 # read data
-data = fread("data_sim/results/data_intake_variance.csv")
+data <- fread("data_sim/results/data_intake_variance.csv")
 # remove klepts from foragers and random
-data = data[!(variable == "pc_intake_klepts" & 
-                (sim_type %in% c("foragers", "random"))), ]
+data <- data[!(variable == "pc_intake_klepts" &
+  (sim_type %in% c("foragers", "random"))), ]
 ```
 
 ```{r}
 # exploratory plot
-ggplot(data[variable == "pc_intake_total"])+
+ggplot(data[variable == "pc_intake_total"]) +
   geom_boxplot(
-    aes(factor(regrowth), var_value, 
-        colour = sim_type)
+    aes(factor(regrowth), var_value,
+      colour = sim_type
+    )
   )
 ```
 

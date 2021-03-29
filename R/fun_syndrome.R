@@ -11,12 +11,11 @@
 #' @export
 #'
 get_pref_handler_by_strat <- function(
-  data_folder,
-  generations,
-  weight_klept_bias,
-  weight_of_interest,
-  handler_pref_by_strategy = FALSE
-) {
+                                      data_folder,
+                                      generations,
+                                      weight_klept_bias,
+                                      weight_of_interest,
+                                      handler_pref_by_strategy = FALSE) {
 
   # source 'source_me.R' in the data folder
   source(sprintf("%s/sourceMe.R", data_folder))
@@ -28,7 +27,8 @@ get_pref_handler_by_strat <- function(
 
     # get the two weights we want
     # why do we multiply by 20, who knows
-    weights <- G[["agents"]][["ann"]][,
+    weights <- G[["agents"]][["ann"]][
+      ,
       c(weight_klept_bias, weight_of_interest)
     ] * 20
 
@@ -47,24 +47,26 @@ get_pref_handler_by_strat <- function(
       weights$gen <- g
     } else {
       assertthat::assert_that(length(weight_of_interest) == 1,
-                              msg = "get syndrome: can only take one weight,
-                                the handler preference")
-      weights[, "klept_bias"] = weights[, "klept_bias"] > 0
-      weights[, names(weight_of_interest)] = 
+        msg = "get syndrome: can only take one weight,
+                                the handler preference"
+      )
+      weights[, "klept_bias"] <- weights[, "klept_bias"] > 0
+      weights[, names(weight_of_interest)] <-
         tanh(weights[, names(weight_of_interest)])
       # this next is hardcoded
-      weights[, names(weight_of_interest)] = as.numeric(
+      weights[, names(weight_of_interest)] <- as.numeric(
         stringi::stri_extract_first(
           str = cut(
-            x = weights[, names(weight_of_interest)], 
+            x = weights[, names(weight_of_interest)],
             breaks = seq(-1.01, 1.01, 0.05)
-          ), 
+          ),
           regex = "[-0-9]+\\.\\d{2}"
         )
       )
-      weights = data.table::as.data.table(weights)
-      weights = weights[, list(.N), 
-                        by = c("klept_bias", names(weight_of_interest))]
+      weights <- data.table::as.data.table(weights)
+      weights <- weights[, list(.N),
+        by = c("klept_bias", names(weight_of_interest))
+      ]
       weights[, prop_handler_pref := N / sum(N), by = "klept_bias"]
       weights$gen <- g
     }

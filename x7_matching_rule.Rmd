@@ -15,27 +15,33 @@ library(ggplot2)
 
 ```{r}
 # read data
-data = fread("data_sim/results/data_layer_counts_1_150.csv")
+data <- fread("data_sim/results/data_layer_counts_1_150.csv")
 
 # get potential intake
 data[, potential_in := get_potential_intake(0.2, items)]
 
 # get correlation
-data_summary = data[, list(cf = cor.test(agents, potential_in)[["estimate"]],
-                           cfp = cor.test(agents, potential_in)[["p.value"]]),
-                    by = c("sim_type", "gen", "replicate", "regrowth")]
+data_summary <- data[, list(
+  cf = cor.test(agents, potential_in)[["estimate"]],
+  cfp = cor.test(agents, potential_in)[["p.value"]]
+),
+by = c("sim_type", "gen", "replicate", "regrowth")
+]
 
 # # get summary
-data_summary_cf = data_summary[cfp <= 0.05, list(
+data_summary_cf <- data_summary[cfp <= 0.05, list(
   mean_c = mean(cf, na.rm = TRUE),
   median_c = median(cf, na.rm = TRUE),
   sd_c = sd(cf, na.rm = TRUE)
 ), by = c("sim_type", "gen", "regrowth")]
 
 # convert median to running median
-data_summary_cf[, `:=`(runmed_cf = runmed(median_c, k = 7),
-                       rollmean_cf = frollmean(mean_c, n = 3)),
-                by = c("sim_type", "regrowth")]
+data_summary_cf[, `:=`(
+  runmed_cf = runmed(median_c, k = 7),
+  rollmean_cf = frollmean(mean_c, n = 3)
+),
+by = c("sim_type", "regrowth")
+]
 
 # write data
 fwrite(data_summary, file = "data_sim/results/data_matching_rule.csv")
@@ -46,24 +52,30 @@ fwrite(data_summary_cf, file = "data_sim/results/data_matching_rule_smooth.csv")
 
 ```{r}
 # read data
-data = fread("data_sim/results/data_quality_counts_1_150.csv")
+data <- fread("data_sim/results/data_quality_counts_1_150.csv")
 
 # get correlation
-data_summary = data[, list(cf = cor.test(agents, quality)[["estimate"]],
-                           cfp = cor.test(agents, quality)[["p.value"]]),
-                    by = c("sim_type", "gen", "replicate", "regrowth")]
+data_summary <- data[, list(
+  cf = cor.test(agents, quality)[["estimate"]],
+  cfp = cor.test(agents, quality)[["p.value"]]
+),
+by = c("sim_type", "gen", "replicate", "regrowth")
+]
 
 # # get summary
-data_summary_cf = data_summary[cfp <= 0.05, list(
+data_summary_cf <- data_summary[cfp <= 0.05, list(
   mean_c = mean(cf, na.rm = TRUE),
   median_c = median(cf, na.rm = TRUE),
   sd_c = sd(cf, na.rm = TRUE)
 ), by = c("sim_type", "gen", "regrowth")]
 
 # convert median to running median
-data_summary_cf[, `:=`(runmed_cf = runmed(median_c, k = 7),
-                       rollmean_cf = frollmean(mean_c, n = 3)),
-                by = c("sim_type", "regrowth")]
+data_summary_cf[, `:=`(
+  runmed_cf = runmed(median_c, k = 7),
+  rollmean_cf = frollmean(mean_c, n = 3)
+),
+by = c("sim_type", "regrowth")
+]
 
 # write data
 fwrite(data_summary, file = "data_sim/results/data_quality_matching_rule.csv")
@@ -73,12 +85,12 @@ fwrite(data_summary_cf, file = "data_sim/results/data_quality_matching_rule_smoo
 
 ```{r}
 # exploratory plot
-ggplot()+
+ggplot() +
   geom_hline(
     yintercept = 0,
     # size = 0.1,
     col = "red"
-  )+
+  ) +
   # geom_point(
   #   data = data_summary,
   #   aes(
@@ -96,7 +108,7 @@ ggplot()+
       # ymax = mean_c + sd_c,
       col = sim_type
     )
-  )+
+  ) +
   scale_colour_manual(
     values = c(
       foragers = "maroon",
@@ -111,9 +123,9 @@ ggplot()+
       random = "Random"
     )
   ) +
-  kleptomoveMS::theme_custom(grid = TRUE)+
-  theme(legend.position = "top")+  
-  facet_grid(~regrowth, labeller = label_both)+
+  kleptomoveMS::theme_custom(grid = TRUE) +
+  theme(legend.position = "top") +
+  facet_grid(~regrowth, labeller = label_both) +
   labs(x = "generations", y = "correlation agents ~ potential intake rate")
 ```
 
