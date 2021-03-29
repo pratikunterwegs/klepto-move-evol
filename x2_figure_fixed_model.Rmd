@@ -178,7 +178,7 @@ fig_matching =
   )+
   xlim(0, 50)+
   labs(x = "Generation", 
-       y = "Corr. indivs. - potential intake")
+       y = "Corr. indivs. ~ potential intake")
 ```
 
 ## correlation with quality
@@ -213,7 +213,7 @@ fig_matching_quality =
   )+
   xlim(0, 50)+
   labs(x = "Generation", 
-       y = "Corr. indivs. - cell quality")
+       y = "Corr. indivs. ~ cell quality")
 ```
 
 prepare landscape at 0 and 25
