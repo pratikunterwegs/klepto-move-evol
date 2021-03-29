@@ -302,7 +302,7 @@ subplot_land <- lapply(landscape, function(df) {
     facet_grid(~gen, labeller = label_both) +
     scale_fill_gradientn(
       colours = pal,
-      na.value = ifelse(unique(df$variable) == "items", "white", "grey20"),
+      na.value = ifelse(unique(df$variable) == "items", "white", "grey95"),
       limits = c(0.7, NA)
     ) +
     coord_equal(expand = F) +
@@ -348,7 +348,8 @@ figure_8[[3]] = figure_8[[3]] +
     plot_layout(guide = "collect",
                 tag_level = "new")
 
-figure_8 = figure_8 +
+figure_8 =
+  figure_8 +
    plot_annotation(tag_levels = c('A', '1'))
 
 ggsave(
