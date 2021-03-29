@@ -56,43 +56,31 @@ data_fitness_summary <-
 # boxplot fitness
 fig_strategy_fitness <-
   ggplot() +
-  geom_line(
-    data = data_fitness_summary,
-    aes((regrowth),
-      y = pop_fitness.median,
-      col = sim_type,
-      group = sim_type
-    ),
-    # lwd = 0.2,
-    position = position_dodge(width = 0.005)
-  ) +
-  geom_errorbar(
+  geom_ribbon(
     data = data_fitness_summary,
     aes(regrowth,
       ymin = pop_fitness.median -
         pop_fitness.sd,
       ymax = pop_fitness.median +
         pop_fitness.sd,
-      group = sim_type
+      group = sim_type,
+      fill = sim_type
     ),
-    lwd = 0.2,
-    position = position_dodge(width = 0.005)
+    alpha = 0.2
   ) +
-  geom_point(
-    data = data_fitness_summary,
-    aes((regrowth),
-      y = pop_fitness.median,
-      fill = sim_type,
-      shape = sim_type
-    ),
-    size = 2,
-    position = position_dodge(width = 0.005)
-  ) +
+    geom_line(
+      data = data_fitness_summary,
+      aes((regrowth),
+          y = pop_fitness.median,
+          col = sim_type,
+          group = sim_type
+      )
+    ) +
   scale_fill_manual(
     values = c(
       foragers = "maroon",
       obligate = "dodgerblue",
-      facultative = "darkorange"
+      facultative = "gold"
     ),
     labels = c(
       foragers = "Foragers",
@@ -104,19 +92,7 @@ fig_strategy_fitness <-
     values = c(
       foragers = "maroon",
       obligate = "dodgerblue",
-      facultative = "darkorange"
-    ),
-    labels = c(
-      foragers = "Foragers",
-      obligate = "Fixed",
-      facultative = "Conditional"
-    )
-  ) +
-  scale_shape_manual(
-    values = c(
-      foragers = 21,
-      obligate = 22,
-      facultative = 24
+      facultative = "gold"
     ),
     labels = c(
       foragers = "Foragers",
@@ -129,7 +105,16 @@ fig_strategy_fitness <-
     0.01,
     0.025,
     0.05
-  )) +
+  )
+  ) +
+    scale_y_continuous(
+      breaks = seq(0, 60, 20)
+    )+
+    coord_cartesian(
+      ylim = c(0, 60),
+      xlim = c(0, 0.051),
+      expand = F
+    )+
   kleptomoveMS::theme_custom(grid = F, base_size = 8) +
   theme(
     legend.position = "none"
@@ -172,37 +157,29 @@ data_strategy_summary <- split(data_strategy_summary,
 ```
 
 ```{r}
-# define palette
-pal <- c("red", "navyblue")
-
 subfigures_strategy_growth <- Map(function(df, name) {
   yaxis_name <- sprintf("Prop. %s", stringr::str_to_sentence(name))
   # colour <- ifelse(name == "stealing", pal[1], pal[2])
 
   # plot figure
   ggplot(df) +
+    geom_ribbon(
+      aes(regrowth,
+        ymin = value.median - value.sd,
+        ymax = value.median + value.sd,
+        fill = sim_type
+      ),
+      alpha = 0.2
+    ) +
     geom_path(aes(regrowth, value.median,
       group = interaction(sim_type, variable),
       colour = sim_type
     )) +
-    geom_errorbar(
-      aes(regrowth,
-        ymin = value.median - value.sd,
-        ymax = value.median + value.sd
-      ),
-      lwd = 0.2
-    ) +
-    geom_point(aes(regrowth, value.median,
-      shape = sim_type,
-      fill = sim_type
-    ),
-    size = 2
-    ) +
     scale_fill_manual(
       values = c(
         foragers = "maroon",
         obligate = "dodgerblue",
-        facultative = "darkorange"
+        facultative = "gold"
       ),
       labels = c(
         foragers = "Foragers",
@@ -214,19 +191,7 @@ subfigures_strategy_growth <- Map(function(df, name) {
       values = c(
         foragers = "maroon",
         obligate = "dodgerblue",
-        facultative = "darkorange"
-      ),
-      labels = c(
-        foragers = "Foragers",
-        obligate = "Fixed",
-        facultative = "Conditional"
-      )
-    ) +
-    scale_shape_manual(
-      values = c(
-        foragers = 21,
-        obligate = 22,
-        facultative = 24
+        facultative = "gold"
       ),
       labels = c(
         foragers = "Foragers",
@@ -246,9 +211,9 @@ subfigures_strategy_growth <- Map(function(df, name) {
     )) +
     coord_cartesian(
       ylim = c(0, 1),
-      expand = T
+      expand = F
     ) +
-    kleptomoveMS::theme_custom(grid = F, base_size = 8) +
+    kleptomoveMS::theme_custom(base_size = 8) +
     theme(legend.position = "bottom") +
     labs(
       x = "Regrowth rate",
@@ -270,7 +235,6 @@ point_plots <- append(
 )
 ```
 
-
 ```{r}
 # wrap all figures
 figure_06 <-
@@ -290,7 +254,7 @@ figure_06 <-
 ggsave(
   figure_06,
   filename = "figures/fig_06.png",
-  height = 75, width = 180, units = "mm"
+  height = 75, width = 160, units = "mm"
 )
 ```
 
