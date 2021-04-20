@@ -34,7 +34,7 @@ data_nodes[, weight_num := as.numeric(
 ```
 
 ```{r}
-fig7a <-
+fig3a <-
   ggplot(data_nodes[weight_prop > 0.001 &
     weight_id == 5 &
     gen %% 3 == 0, ]) +
@@ -52,9 +52,8 @@ fig7a <-
     size = 0.3
   ) +
   scale_fill_continuous_sequential(
-    palette = "Purple-Blue",
-    labels = scales::percent
-  ) +
+    palette = "Light Grays"
+  )+
   scale_y_continuous(
     breaks = c(-1.75, 1.75),
     labels = c("Klept.", "Forager")
@@ -136,7 +135,7 @@ subplots_syndrome <- Map(function(df, val) {
 }, data_strategy_weight, names(data_strategy_weight))
 
 # wrap subplots by strat
-fig7b <- wrap_plots(
+fig3b <- wrap_plots(
   subplots_syndrome,
   ncol = 1
 )
@@ -173,7 +172,7 @@ data[, prop_per_strat := N / sum(N),
 ```
 
 ```{r}
-fig7c <-
+fig3c <-
   ggplot(data[regrowth == 0.01 &
     handler_pref == "prefers handlers", ]) +
   geom_hline(
@@ -231,9 +230,9 @@ fig7c <-
 ```
 
 ```{r}
-fig_7 <-
+fig_3 <-
   wrap_plots(
-    fig7a, fig7b, fig7c,
+    fig3a, fig3b, fig3c,
     design = "AAA\nBBC\nBBC\nBBC\nBB#"
   ) +
     plot_annotation(
@@ -249,8 +248,8 @@ fig_7 <-
 
 
 ```{r}
-ggsave(fig_7,
-  filename = "figures/fig_07.png",
+ggsave(fig_3,
+  filename = "figures/fig_03.png",
   width = 125,
   height = 150, units = "mm"
 )
