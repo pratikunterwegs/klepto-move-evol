@@ -79,7 +79,7 @@ fig_activity <-
       p_klept = "darkorange"
     ),
     labels = c(
-      foraging = "Foraging",
+      foraging = "Searching",
       handling = "Handling",
       stealing = "Stealing",
       p_klept = "Prop. klept."

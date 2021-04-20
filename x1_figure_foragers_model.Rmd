@@ -44,7 +44,7 @@ fig_activity <-
       foraging = "darkblue",
       handling = "seagreen"
     ),
-    labels = c(foraging = "Foraging", handling = "Handling"),
+    labels = c(foraging = "Searching", handling = "Handling"),
     breaks = c("foraging", "handling")
   ) +
   scale_y_continuous(
