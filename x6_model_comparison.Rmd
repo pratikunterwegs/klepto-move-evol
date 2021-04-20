@@ -56,7 +56,7 @@ data_fitness_summary <-
 # boxplot fitness
 fig_strategy_fitness <-
   ggplot() +
-  geom_ribbon(
+  geom_errorbar(
     data = data_fitness_summary,
     aes(regrowth,
       ymin = pop_fitness.median -
@@ -64,9 +64,9 @@ fig_strategy_fitness <-
       ymax = pop_fitness.median +
         pop_fitness.sd,
       group = sim_type,
-      fill = sim_type
+      colour = sim_type
     ),
-    alpha = 0.2
+    size = 0.1
   ) +
   geom_line(
     data = data_fitness_summary,
@@ -75,6 +75,15 @@ fig_strategy_fitness <-
       col = sim_type,
       group = sim_type
     )
+  ) +
+  geom_point(
+    data = data_fitness_summary,
+    aes((regrowth),
+      y = pop_fitness.median,
+      fill = sim_type,
+      group = sim_type
+    ),
+    shape = 21
   ) +
   scale_fill_manual(
     values = c(
@@ -162,18 +171,22 @@ subfigures_strategy_growth <- Map(function(df, name) {
 
   # plot figure
   ggplot(df) +
-    geom_ribbon(
+    geom_errorbar(
       aes(regrowth,
         ymin = value.median - value.sd,
         ymax = value.median + value.sd,
-        fill = sim_type
+        colour = sim_type
       ),
-      alpha = 0.2
+      size = 0.1
     ) +
     geom_path(aes(regrowth, value.median,
       group = interaction(sim_type, variable),
       colour = sim_type
     )) +
+    geom_point(aes(regrowth, value.median,
+      group = interaction(sim_type, variable),
+      fill = sim_type
+    ), shape = 21) +
     scale_fill_manual(
       values = c(
         foragers = "maroon",
