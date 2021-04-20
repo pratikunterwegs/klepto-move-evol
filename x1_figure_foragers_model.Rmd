@@ -120,11 +120,12 @@ fig_matching <-
     col = "red"
   ) +
   geom_point(
-    data = data_match[gen <= 50, ],
+    data = data_match[gen < 50, ],
     aes(
       x = gen,
       y = cf
     ),
+    colour = "steelblue",
     shape = 1,
     show.legend = F
   ) +
@@ -157,13 +158,13 @@ fig_matching_quality <-
     col = "red"
   ) +
   geom_point(
-    data = data_quality[gen <= 50, ],
+    data = data_quality[gen < 50, ],
     aes(
       x = gen,
       y = cf
     ),
     shape = 1,
-    fill = "grey",
+    colour = "steelblue",
     show.legend = F
   ) +
   theme_classic(base_size = 8) +
@@ -207,11 +208,11 @@ fig_land_foragers <-
   facet_grid(~gen,
     labeller = label_both
   ) +
-  scale_fill_distiller(
-    palette = "YlGnBu",
+  scale_fill_viridis_c(
+    option = "G",
     limits = c(1, NA),
     na.value = "white",
-    direction = 1
+    direction = -1
   ) +
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
@@ -219,12 +220,12 @@ fig_land_foragers <-
   labs(fill = "# Items", size = "# Indiv.")
 ```
 
-## Figure 2 Foragers model
+## Figure 1 Foragers model
 
 wrap figures together
 
 ```{r}
-figure_2_forager_model <-
+figure_1_forager_model <-
   wrap_plots(
     fig_activity, fig_intake,
     fig_land_foragers,
@@ -243,9 +244,8 @@ figure_2_forager_model <-
 save figure
 
 ```{r}
-ggsave(figure_2_forager_model,
-  filename = "figures/fig_02.png",
+ggsave(figure_1_forager_model,
+  filename = "figures/fig_01.png",
   height = 150, width = 125, units = "mm"
 )
 ```
-

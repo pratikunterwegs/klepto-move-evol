@@ -162,11 +162,12 @@ fig_matching <-
     col = "red"
   ) +
   geom_point(
-    data = data_match,
+    data = data_match[gen < 50],
     aes(
       x = gen,
       y = cf
     ),
+    colour = "steelblue",
     show.legend = F,
     shape = 1
   ) +
@@ -199,11 +200,12 @@ fig_matching_quality <-
     col = "red"
   ) +
   geom_point(
-    data = data_quality,
+    data = data_quality[gen < 50],
     aes(
       x = gen,
       y = cf
     ),
+    colour = "steelblue",
     show.legend = F,
     shape = 1
   ) +
@@ -247,11 +249,11 @@ fig_land_fixed <-
   facet_grid(~gen,
     labeller = label_both
   ) +
-  scale_fill_distiller(
-    palette = "YlGnBu",
+  scale_fill_viridis_c(
+    option = "G",
     limits = c(1, NA),
     na.value = "white",
-    direction = 1
+    direction = -1
   ) +
   scale_size(breaks = c(1, 2, 3, 4)) +
   coord_equal(expand = F) +
@@ -260,12 +262,12 @@ fig_land_fixed <-
   labs(fill = "# Items", size = "# Indiv.")
 ```
 
-## Figure 3 Fixed model
+## Figure 2 Fixed model
 
 wrap figures together
 
 ```{r}
-figure_3_fixed_model <-
+figure_2_fixed_model <-
   wrap_plots(
     fig_activity, fig_intake,
     fig_land_fixed,
@@ -284,8 +286,8 @@ figure_3_fixed_model <-
 save figure
 
 ```{r}
-ggsave(figure_3_fixed_model,
-  filename = "figures/fig_03.png",
+ggsave(figure_2_fixed_model,
+  filename = "figures/fig_02.png",
   height = 150, width = 125, units = "mm"
 )
 ```
