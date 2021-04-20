@@ -165,6 +165,7 @@ fig_matching <-
       x = gen,
       y = cf
     ),
+    colour = "steelblue",
     show.legend = F,
     shape = 1
   ) +
@@ -202,6 +203,7 @@ fig_matching_quality <-
       x = gen,
       y = cf
     ),
+    colour = "steelblue",
     show.legend = F,
     shape = 1
   ) +
@@ -249,11 +251,11 @@ fig_land_conditional <-
   scale_size(
     breaks = c(1, 2, 3, 4)
   ) +
-  scale_fill_distiller(
-    palette = "YlGnBu",
+  scale_fill_viridis_c(
+    option = "G",
     limits = c(1, NA),
     na.value = "white",
-    direction = 1
+    direction = -1
   ) +
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
