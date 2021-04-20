@@ -29,9 +29,9 @@ data <- data[regrowth %in% focus_r, ]
 
 # handle weight value ranges and use UPPER bound
 data[, weight_num :=
-  stringi::stri_extract_last(weight_value,
-    regex = "[-0-9]+\\.\\d{2}"
-  )]
+       stringi::stri_extract_last(weight_value,
+                                  regex = "[-0-9]+\\.\\d{2}"
+       )]
 # assign numeric
 data[, weight_num := as.numeric(weight_num)]
 
@@ -46,14 +46,14 @@ Handler preference
 ```{r}
 # get positive weights for handlers (weight 3)
 wt_handler <- data[weight_id == 3 &
-  weight_num > 0 &
-  regrowth == 0.01 &
-  sim_type != "random", ]
+                     weight_num > 0 &
+                     regrowth == 0.01 &
+                     sim_type != "random", ]
 
 # sum proportions
 wt_handler <- wt_handler[, list(pref_handlers = sum(weight_prop)),
-  by = c("sim_type", "replicate", "regrowth", "gen")
-]
+                         by = c("sim_type", "replicate", "regrowth", "gen")
+                         ]
 ```
 
 Kleptoparasite bias for fixed strategy
@@ -61,18 +61,18 @@ Kleptoparasite bias for fixed strategy
 ```{r}
 klept_bias <- data[weight_id == 5 & weight_num < 0 & sim_type != "facultative", ]
 klept_bias <- klept_bias[, list(klept_strategy = sum(weight_prop)),
-  by = c("sim_type", "replicate", "regrowth", "gen")
-]
+                         by = c("sim_type", "replicate", "regrowth", "gen")
+                         ]
 ```
 
 Handler strategy
 
 ```{r}
 handler_strategy <- data[sim_type == "facultative"
-& weight_id == 7 & weight_num < 0, ]
+                         & weight_id == 7 & weight_num < 0, ]
 handler_strategy <- handler_strategy[, list(klept_strategy = sum(weight_prop)),
-  by = c("sim_type", "replicate", "regrowth", "gen")
-]
+                                     by = c("sim_type", "replicate", "regrowth", "gen")
+                                     ]
 ```
 
 ### Merge weight strategy
@@ -109,21 +109,21 @@ data_strat <- data_strat[sim_type != "random"]
 
 # subset for klept prop
 data_strat <- data_strat[variable == "stealing" &
-  regrowth %in% focus_r, ]
+                           regrowth %in% focus_r, ]
 
 # remove zero vlaues for stealing in foragers only
 data_strat <- data_strat[!(sim_type == "foragers" & variable == "stealing"), ]
 
 # dcast
 data_strat <- dcast(data_strat, sim_type + replicate +
-  regrowth + gen + pop_fitness + conflicts ~ variable,
-value.var = "value"
+                      regrowth + gen + pop_fitness + conflicts ~ variable,
+                    value.var = "value"
 )
 
 # join with land data
 data_strat <- merge(data_strat, data,
-  by = c("gen", "replicate", "regrowth", "sim_type"),
-  all.y = TRUE
+                    by = c("gen", "replicate", "regrowth", "sim_type"),
+                    all.y = TRUE
 )
 
 # join with data_wt
@@ -136,20 +136,20 @@ data_strat <- merge(data_strat, wt_handler)
 data <- copy(data_strat)
 
 data <- melt(data,
-  id.vars = c(
-    "gen", "replicate",
-    "regrowth", "sim_type"
-  )
+             id.vars = c(
+               "gen", "replicate",
+               "regrowth", "sim_type"
+             )
 )
 
 # set factor order
 data$sim_type <- factor(data$sim_type,
-  levels = c("foragers", "obligate", "facultative")
+                        levels = c("foragers", "obligate", "facultative")
 )
 
 # remove variables
 data <- data[variable %in%
-  c("stealing", "p_clueless", "klept_strategy", "pref_handlers"), ]
+               c("stealing", "p_clueless", "klept_strategy", "pref_handlers"), ]
 
 #
 # # split data
@@ -167,7 +167,7 @@ subplots <- lapply(data, function(df) {
     x_lim <- c(0, 50)
     df <- df[gen <= 50, ]
   }
-
+  
   ggplot(df) +
     geom_path(
       aes(gen, value,
@@ -241,10 +241,10 @@ landscape_data$image <- glue_data(landscape_data, "{path}/{gen}.png")
 
 # get data
 landscape_data$data <- lapply(landscape_data$image,
-  kleptomoveMS::read_landscape,
-  layer = 4,
-  crop_dim = 60,
-  type = "items"
+                              kleptomoveMS::read_landscape,
+                              layer = 4,
+                              crop_dim = 60,
+                              type = "items"
 )
 
 # convert gen to numeric
@@ -252,25 +252,24 @@ landscape_data[, gen := as.numeric(gen)]
 
 # unlst
 landscape_items <- landscape_data[, unlist(data, recursive = F),
-  by = c("sim_type", "gen")
-]
+                                  by = c("sim_type", "gen")
+                                  ]
 ```
 
 ### Gradient landscape
 
-
 ```{r}
 # get data
 landscape_data$data <- lapply(landscape_data$image,
-  kleptomoveMS::read_landscape,
-  layer = 4,
-  crop_dim = 60,
-  type = "gradient"
+                              kleptomoveMS::read_landscape,
+                              layer = 4,
+                              crop_dim = 60,
+                              type = "gradient"
 )
 # unlst
 landscape_gradient <- landscape_data[, unlist(data, recursive = F),
-  by = c("sim_type", "gen")
-]
+                                     by = c("sim_type", "gen")
+                                     ]
 ```
 
 ### Merge landscapes
@@ -291,20 +290,20 @@ landscape <- split(landscape, by = c("sim_type", "variable"))
 
 ```{r}
 subplot_land <- lapply(landscape, function(df) {
-  pal <- sequential_hcl(5, palette = "Terrain", rev = T)[4]
+  pal <- viridisLite::mako(5)[4]
   # set palette
   if (unique(df$variable) == "items") {
     pal <- viridis::viridis(5, direction = -1)
   }
-
+  
   ggplot(df) +
     geom_tile(aes(x, y, fill = (value)),
-      show.legend = F
+              show.legend = F
     ) +
     facet_grid(~gen, labeller = label_both) +
     scale_fill_gradientn(
       colours = pal,
-      na.value = ifelse(unique(df$variable) == "items", "white", "grey95"),
+      na.value = ifelse(unique(df$variable) == "items", "white", "grey20"),
       limits = c(0.7, NA)
     ) +
     coord_equal(expand = F) +
@@ -324,12 +323,11 @@ fignames <- c(glue("{sim_types}.gradient"))
 subplot_land <- subplot_land[fignames]
 ```
 
-
-## Figure 6
+## Figure 5
 
 ```{r}
-# make figure 6
-figure_8 <-
+# make figure 5
+figure_5 <-
   (subplot_land[["foragers.gradient"]] + subplots[["foragers"]]) /
   (subplot_land[["obligate.gradient"]] + subplots[["obligate"]]) /
   (subplot_land[["facultative.gradient"]] + subplots[["facultative"]]) +
@@ -338,34 +336,34 @@ figure_8 <-
   )
 
 # why is this not compatible with lapply, or anything similar!
-figure_8[[1]] <- figure_8[[1]] +
+figure_5[[1]] <- figure_5[[1]] +
   plot_layout(
     guide = "collect",
     tag_level = "new"
   )
 
-figure_8[[2]] <- figure_8[[2]] +
+figure_5[[2]] <- figure_5[[2]] +
   plot_layout(
     guide = "collect",
     tag_level = "new"
   )
 
-figure_8[[3]] <- figure_8[[3]] +
+figure_5[[3]] <- figure_5[[3]] +
   plot_layout(
     guide = "collect",
     tag_level = "new"
   )
 
-figure_8 <-
-  figure_8 +
+figure_5 <-
+  figure_5 +
   plot_annotation(tag_levels = c("A", "1"))
 
 ggsave(
-  figure_8,
+  figure_5,
   height = 160,
   width = 170,
   units = "mm",
-  filename = "figures/fig_08.png"
+  filename = "figures/fig_05.png"
 )
 ```
 
