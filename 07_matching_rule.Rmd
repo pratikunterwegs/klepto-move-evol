@@ -22,8 +22,12 @@ data[, potential_in := get_potential_intake(0.2, items)]
 
 # get correlation
 data_summary <- data[, list(
-  cf = cor.test(agents, potential_in)[["estimate"]],
-  cfp = cor.test(agents, potential_in)[["p.value"]]
+  cf = 
+    tryCatch(
+      expr = cor.test(agents, potential_in)[["estimate"]],
+      error = function(e) return(NA_real_)
+    )
+    
 ),
 by = c("sim_type", "gen", "replicate", "regrowth")
 ]
