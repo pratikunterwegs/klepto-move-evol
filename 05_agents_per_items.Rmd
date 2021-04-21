@@ -7,7 +7,6 @@ editor_options:
 ```{r}
 library(data.table)
 library(glue)
-
 library(ggplot2)
 ```
 
@@ -48,7 +47,7 @@ data <- copy(params)
 # get data
 agent_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
-  layer = c(1, 2, 3), # read only foragers and klepts
+  layer = c(1, 2, 3), # read all agents
   crop_dim = 60,
   type = "items"
 )
@@ -72,7 +71,7 @@ data <- copy(params)
 # get data
 item_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
-  layer = c(4), # read only foragers and klepts
+  layer = c(4), # read items
   crop_dim = 60,
   type = "items"
 )
