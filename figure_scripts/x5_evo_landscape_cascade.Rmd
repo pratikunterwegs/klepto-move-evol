@@ -59,7 +59,8 @@ wt_handler <- wt_handler[, list(pref_handlers = sum(weight_prop)),
 Kleptoparasite bias for fixed strategy
 
 ```{r}
-klept_bias <- data[weight_id == 5 & weight_num < 0 & sim_type != "facultative", ]
+klept_bias <- data[weight_id == 5 & weight_num < 0 & 
+                     sim_type != "facultative", ]
 klept_bias <- klept_bias[, list(klept_strategy = sum(weight_prop)),
                          by = c("sim_type", "replicate", "regrowth", "gen")
                          ]
@@ -71,7 +72,8 @@ Handler strategy
 handler_strategy <- data[sim_type == "facultative"
                          & weight_id == 7 & weight_num < 0, ]
 handler_strategy <- handler_strategy[, list(klept_strategy = sum(weight_prop)),
-                                     by = c("sim_type", "replicate", "regrowth", "gen")
+                                     by = c("sim_type", "replicate", "regrowth",
+                                            "gen")
                                      ]
 ```
 
@@ -98,6 +100,9 @@ data[, V1 := NULL]
 
 # remove random
 data <- data[sim_type != "random"]
+
+# 1 - p_clueless
+data$p_clueless = 1 - data$p_clueless
 ```
 
 ## Read proportion strategy data
@@ -151,12 +156,14 @@ data$sim_type <- factor(data$sim_type,
 data <- data[variable %in%
                c("stealing", "p_clueless", "klept_strategy", "pref_handlers"), ]
 
-#
-# # split data
+# split data
 data <- split(data, by = "sim_type")
 ```
 
 ```{r}
+# this green
+this_green = viridisLite::mako(5)[4]
+
 # make subplots
 subplots <- lapply(data, function(df) {
   if (unique(df$sim_type) == "foragers") {
@@ -177,13 +184,13 @@ subplots <- lapply(data, function(df) {
     ) +
     scale_colour_manual(
       values = c(
-        p_clueless = "grey40",
+        p_clueless = this_green,
         stealing = "red",
         klept_strategy = "darkorange",
         pref_handlers = "steelblue"
       ),
       labels = c(
-        p_clueless = "Clueless plateaus",
+        p_clueless = "Movement increases intake",
         stealing = "Time stealing",
         klept_strategy = "Prop. klept.",
         pref_handlers = "Pref. handler"
@@ -203,6 +210,7 @@ subplots <- lapply(data, function(df) {
       expand = F
     ) +
     kleptomoveMS::theme_custom(grid = F, base_size = 8) +
+    theme(legend.position = "top")+
     labs(
       x = "Generation",
       y = "Proportion",
@@ -210,8 +218,6 @@ subplots <- lapply(data, function(df) {
     ) +
     guides(colour = guide_legend(nrow = 1, byrow = TRUE))
 })
-
-# work on adding lines at different levels
 ```
 
 ## Show landscape for each sim type
@@ -303,7 +309,7 @@ subplot_land <- lapply(landscape, function(df) {
     facet_grid(~gen, labeller = label_both) +
     scale_fill_gradientn(
       colours = pal,
-      na.value = ifelse(unique(df$variable) == "items", "white", "grey20"),
+      na.value = "white",
       limits = c(0.7, NA)
     ) +
     coord_equal(expand = F) +
@@ -328,11 +334,19 @@ subplot_land <- subplot_land[fignames]
 ```{r}
 # make figure 5
 figure_5 <-
-  (subplot_land[["foragers.gradient"]] + subplots[["foragers"]]) /
-  (subplot_land[["obligate.gradient"]] + subplots[["obligate"]]) /
-  (subplot_land[["facultative.gradient"]] + subplots[["facultative"]]) +
-  plot_annotation(
-    tag_levels = c("A")
+  wrap_plots(
+    wrap_plots(subplot_land[["foragers.gradient"]], subplots[["foragers"]]),
+    wrap_plots(subplot_land[["obligate.gradient"]], subplots[["obligate"]]),
+    wrap_plots(subplot_land[["facultative.gradient"]], subplots[["facultative"]]),
+    nrow = 3
+    # design = "AABB\nCCDD\nEEFF"
+  ) &
+  theme(
+    plot.tag = element_text(
+      face = "bold",
+      size = 8
+    ),
+    legend.position = "top"
   )
 
 # why is this not compatible with lapply, or anything similar!
@@ -356,12 +370,12 @@ figure_5[[3]] <- figure_5[[3]] +
 
 figure_5 <-
   figure_5 +
-  plot_annotation(tag_levels = c("A", "1"))
+  plot_annotation(tag_levels = c("A", "1")) 
 
 ggsave(
   figure_5,
   height = 160,
-  width = 170,
+  width = 120,
   units = "mm",
   filename = "figures/fig_05.png"
 )
