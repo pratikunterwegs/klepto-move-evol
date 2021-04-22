@@ -6,7 +6,7 @@
 # Rscript --slave -e 'lapply(list.files(pattern = "\\d{2}\\w+.Rmd"), function(x) knitr::purl(x, output = sprintf("R/%s", gsub(".{4}$", ".R", x))))'
 
 # copy pdfs and name correctly
-rm ms_kleptomove_*.tex
+rm docs/ms_kleptomove_*.tex
 rm docs/ms_kleptomove_*.pdf
 cp -p overleaf-kleptomove/manuscript.tex docs/ms_kleptomove_`date -I`.tex
 cp -p overleaf-kleptomove/manuscript.pdf docs/ms_kleptomove_`date -I`.pdf
