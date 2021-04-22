@@ -26,7 +26,7 @@ read_landscape <- function(landscape_file, layer, crop_dim,
   land <- land[seq(crop_dim), seq(crop_dim)]
 
   # multiply by carrying capacity if items asked
-  if (layer == 4) {
+  if (length(layer == 1) & layer[1] == 4) {
     land <- land * max_K
   }
 
