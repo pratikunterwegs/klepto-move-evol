@@ -160,7 +160,7 @@ fig_matching <-
     col = "red"
   ) +
   geom_point(
-    data = data_match,
+    data = data_match[gen < 50,],
     aes(
       x = gen,
       y = cf
@@ -198,7 +198,7 @@ fig_matching_quality <-
     col = "red"
   ) +
   geom_point(
-    data = data_quality,
+    data = data_quality[gen < 50,],
     aes(
       x = gen,
       y = cf
