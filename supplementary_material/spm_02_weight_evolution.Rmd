@@ -1,0 +1,179 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Weight evolution in each scenario
+
+```{r}
+# load libraries
+library(data.table)
+library(ggplot2)
+library(patchwork)
+```
+
+## Load data
+
+```{r}
+# split by simulation and regrowth
+data = fread("data_sim/results/data_weight_evolution.csv")
+data = data[regrowth %in% c(0.01),]
+
+data = data[gen < 990, ]
+
+# get weight numeric value
+data[, weight_num := as.numeric(
+  stringi::stri_extract_last(weight_value,
+    regex = "[-0-9]+\\.\\d{2}"
+  )
+)]
+
+# keep only 2, 3, 4, 7 weights
+# the movement preference for non-handlers, handlers, and items,
+# and the strategy preference for handlers
+data = data[weight_id %in% c(2:4, 7),]
+
+data = split(data, by = c("sim_type"))
+
+# # split by regrowth
+# data = lapply(data, function(df) {
+#   split(df, by = "regrowth")
+# })
+
+# split again by weight id
+data = lapply(data, function(df) {
+    split(df, by = "weight_id")
+})
+```
+
+```{r}
+# labels
+label_weight = c(
+  "2" = "Non-handlers",
+  "3" = "Handlers",
+  "4" = "Prey items",
+  "7" = "Handler response"
+)
+label_replicate = c(
+  "1" = "Repl. 1",
+  "2" = "Repl. 2",
+  "3" = "Repl. 3"
+)
+
+get_weight_splots = function(this_list) {
+  regrowth = unique(this_list[[1]]$regrowth)
+  subplots = lapply(this_list, function(df) {
+    spl = 
+      ggplot(df)+
+      geom_hline(
+        yintercept = 0,
+        colour = "steelblue"
+      )+
+      geom_tile(
+        aes(gen, weight_num,
+            fill = weight_prop)
+      )+
+      facet_grid(
+        replicate~weight_id,
+        labeller = labeller(
+          weight_id = label_weight,
+          replicate = label_replicate
+        )
+      )+
+      scale_y_continuous(
+        breaks = c(-0.55, 0.55),
+        labels = c("Avoid.", "Pref.")
+      )+
+      theme_test(base_size = 10)+
+      theme(
+        legend.position = "bottom",
+        strip.background = element_blank(),
+        strip.text = element_text(face = "italic", hjust = 0),
+        axis.text.y = element_text(angle = 90, hjust = 0.5,
+                                   size = 10),
+        legend.text = element_text(size = 6),
+        legend.key.height = unit(1, units = "mm"),
+        legend.key.width = unit(4, units = "mm")
+      ) +
+      coord_cartesian(
+        ylim = c(-0.99, 1.02),
+        expand = F
+      )+
+      labs(
+        x = "Generation",
+        y = NULL,
+        fill = "% Pop."
+      )
+    
+    if (unique(df$weight_id) == 2) {
+      spl = spl +
+        scale_fill_viridis_c(
+          option = "A", direction = -1,
+          limits = c(0.001, 1),
+          na.value = "white",
+          label = scales::percent
+        )
+    } else if (unique(df$weight_id) == 3) {
+      spl = spl +
+        scale_fill_viridis_c(
+          option = "D", direction = -1,
+          limits = c(0.001, 1),
+          na.value = "white",
+          label = scales::percent
+        )
+    } else if (unique(df$weight_id) == 4) {
+      spl = spl +
+        scale_fill_viridis_c(
+          option = "G", direction = -1,
+          limits = c(0.001, 1),
+          na.value = "white",
+          label = scales::percent
+        )
+    } else {
+      spl = spl +
+        scale_fill_viridis_c(
+          option = "F", direction = -1,
+          limits = c(0.001, 1),
+          na.value = "white",
+          label = scales::percent
+        ) +
+        scale_y_continuous(
+          breaks = c(-0.5, 0.5),
+          labels = c("Steal", "Search")
+        )
+    }
+    spl
+  })
+  
+  wrap_plots(subplots, nrow = 1) &
+    plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(
+    plot.tag = element_text(face = "bold")
+  )
+}
+
+```
+
+## Plot evolution of major weights
+
+```{r}
+# wrap all plots
+plots = lapply(data, function(l) {
+  get_weight_splots(l)
+})
+
+# save plots
+invisible(
+  lapply(c("foragers", "obligate", "facultative", "random"), function(p) {
+    ggsave(
+      plots[[p]],
+      filename = sprintf("supplementary_material/figures/fig_wt_evo_%s.png",
+                         p)
+    )
+  })
+)
+```
+
