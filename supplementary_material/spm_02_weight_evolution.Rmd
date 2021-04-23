@@ -33,6 +33,7 @@ data[, weight_num := as.numeric(
 # the movement preference for non-handlers, handlers, and items,
 # and the strategy preference for handlers
 data = data[weight_id %in% c(2:4, 7),]
+data = data[!((weight_id == 7) & sim_type %in% c("foragers", "obligate")),]
 
 data = split(data, by = c("sim_type"))
 
