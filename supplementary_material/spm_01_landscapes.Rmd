@@ -1,0 +1,86 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Resource landscapes under different $r_{max}$
+
+```{r}
+# load libraries
+library(data.table)
+library(ggplot2)
+library(patchwork)
+```
+
+## Load data
+
+```{r}
+# split by simulation and regrowth
+data = fread("data_sim/results/data_landscape_item_count_1_50.csv")
+data = data[regrowth %in% c(0.001, 0.005, 0.02, 0.05),]
+
+data = split(data, by = c("sim_type"))
+
+data = lapply(data, function(df) {
+  split(df, by = "regrowth")
+})
+```
+
+## Plot landscape item counts
+
+### Temporary function
+
+```{r}
+plot_subplots = function(df) {
+  ggplot(df)+
+  geom_tile(
+    aes(x, y,
+        fill = items)
+  )+
+  scale_fill_viridis_c(
+    option = "G", direction = -1,
+    limits = c(1, NA),
+    na.value = "white"
+  )+
+  facet_grid(~ gen,
+             labeller = label_both)+
+  coord_equal(expand = F) +
+  kleptomoveMS::theme_custom(landscape = T) +
+  theme(legend.position = "right",
+        legend.key.width = unit(1, units = "mm"),
+        legend.key.height = unit(5, units = "mm"),
+        # legend.text = element_text(size = 6),
+        # legend.title = element_text(size = 6)
+  ) +
+  labs(fill = "# Items", size = "# Indiv.",
+       title = sprintf("regrowth: %s", unique(df$regrowth)))
+}
+```
+
+
+```{r}
+# wrap all plots
+plots = lapply(data, function(l) {
+  subplots = lapply(l, plot_subplots)
+  wrap_plots(subplots, ncol = 2) &
+  plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(
+    plot.tag = element_text(face = "bold")
+  ) 
+})
+
+# save plots
+invisible(
+  lapply(c("foragers", "obligate", "facultative", "random"), function(p) {
+    ggsave(
+      plots[[p]],
+      filename = sprintf("supplementary_material/figures/fig_landscape_rmax_%s.png",
+                         p)
+    )
+  })
+)
+```
+
