@@ -3,14 +3,21 @@ output: html_document
 editor_options: 
   chunk_output_type: console
 ---
+
+# Process landscape snapshots
+
 ```{r}
 library(data.table)
 library(glue)
 library(kleptomoveMS)
 ```
 
+## Items per cell
+
 ```{r}
-paths <- list.dirs("data_sim/for_landscape/", recursive = F)
+# read paths
+paths <- list.dirs("data_sim/", recursive = F)
+paths = paths[grep("rep_001", paths)]
 
 # select gens
 gens_for_figure <- stringr::str_pad(c(1, 10, 50), width = 5, pad = "0")
@@ -22,7 +29,15 @@ data_landscape <- CJ(
 )
 
 # add sim_type
-data_landscape[, sim_type := rep(c("facultative", "foragers", "obligate"), 3)]
+data_landscape[, sim_type := rep(
+  rep(c("facultative", "foragers", 
+        "obligate", "random"), each = 10), 3)]
+
+growth_rates = c(0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.25)
+
+data_landscape[, regrowth := rep(
+  growth_rates, 12
+)]
 
 # get paths
 data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
@@ -38,9 +53,9 @@ data_landscape$data <- lapply(data_landscape$image,
 # convert gen to numeric
 data_landscape[, gen := as.numeric(gen)]
 
-# unlst
+# unlist
 data_landscape <- data_landscape[, unlist(data, recursive = F),
-  by = c("sim_type", "gen")
+  by = c("sim_type", "gen", "regrowth")
 ]
 
 # save
@@ -49,10 +64,12 @@ fwrite(data_landscape,
 )
 ```
 
-## Landscape agent count
+## Foragers per cell
 
 ```{r}
-paths <- list.dirs("data_sim/for_landscape/", recursive = F)
+# read paths
+paths <- list.dirs("data_sim/", recursive = F)
+paths = paths[grep("rep_001", paths)]
 
 # select gens
 gens_for_figure <- stringr::str_pad(c(1, 10, 50), width = 5, pad = "0")
@@ -64,7 +81,15 @@ data_landscape <- CJ(
 )
 
 # add sim_type
-data_landscape[, sim_type := rep(c("facultative", "foragers", "obligate"), 3)]
+data_landscape[, sim_type := rep(
+  rep(c("facultative", "foragers", 
+        "obligate", "random"), each = 10), 3)]
+
+growth_rates = c(0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.25)
+
+data_landscape[, regrowth := rep(
+  growth_rates, 12
+)]
 
 # get paths
 data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
@@ -77,32 +102,14 @@ data_landscape$agent_data <- lapply(data_landscape$image,
   type = "items"
 )
 
+# convert gen to numeric
+data_landscape[, gen := as.numeric(gen)]
+
 # unlist
-# unlst
 data_landscape <- data_landscape[, unlist(agent_data, recursive = F),
-  by = c("sim_type", "gen")
+  by = c("sim_type", "gen", "regrowth")
 ]
-
-# rename
-setnames(data_landscape, "items", "agents")
-
-# recount agents
-data_landscape[, agents := round(agents / 0.02)]
 
 # save data
 fwrite(data_landscape, file = "data_sim/results/data_agent_count_1_50.csv")
 ```
-
-```{r}
-ggplot(data_landscape[agents > 0, ]) +
-  geom_point(aes(x, y, size = agents),
-    shape = 1
-  ) +
-  facet_grid(gen ~ sim_type) +
-  scale_fill_distiller(
-    direction = 1,
-    limits = c(1, NA),
-    na.value = "white"
-  )
-```
-
