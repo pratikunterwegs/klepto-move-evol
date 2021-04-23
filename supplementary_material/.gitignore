@@ -1,0 +1,7 @@
+# all files except tex
+AmNat*
+supplement*
+!*.tex
+!*.bbl
+!figures
+!.gitignore
