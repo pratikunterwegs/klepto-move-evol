@@ -1,0 +1,78 @@
+\documentclass[11pt]{article}
+\usepackage{mathptmx}
+% \usepackage{mathpazo} %Like Palatino with extensive math support
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage[normalem]{ulem}
+\usepackage[sort,comma,round,authoryear]{natbib}
+\linespread{1.7}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{lineno}
+% \usepackage{titlesec}
+% \titleformat{\section}[block]{\Large\bfseries\filcenter}{\thesection}{1em}{}
+% \titleformat{\subsection}[block]{\Large\itshape\filcenter}{\thesubsection}{1em}{}
+% \titleformat{\subsubsection}[block]{\large\itshape}{\thesubsubsection}{1em}{}
+% \titleformat{\paragraph}[runin]{\itshape}{\theparagraph}{1em}{}[. ]\renewcommand{\refname}{Literature Cited}
+
+\title{Supplementary Material for: The joint evolution of movement and competition strategies}
+
+% This version of the LaTeX template was last updated on
+% November 8, 2019.
+
+%%%%%%%%%%%%%%%%%%%%%
+% Authorship
+%%%%%%%%%%%%%%%%%%%%%
+% Please remove authorship information while your paper is under review,
+% unless you wish to waive your anonymity under double-blind review. You
+% will need to add this information back in to your final files after
+% acceptance.
+
+\author{Pratik R. Gupte$^{1,\ast}$ \\ 
+        Christoph F. G. Netz$^{1,\ast}$ \\ 
+        Franz J. Weissing$^{1, \ast}$}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\noindent{} 1. Groningen Institute for Evolutionary Life Sciences, University of Groningen, Groningen 9747 AG, The Netherlands.
+
+\noindent{} $\ast$ Corresponding authors; e-mail: p.r.gupte@rug.nl or f.j.weissing@rug.nl
+
+\bigskip
+
+\section{Landscape depletion at varying $r_{max}$}
+
+\newpage
+
+\subsection{Scenario 1: No Kleptoparasitism}
+
+\begin{figure}[h!]
+        \centering
+        \includegraphics*[width=1.0\textwidth]{figures/fig_landscape_rmax_foragers.png}
+        \caption{In scenario 1, foragers completely deplete the resource landscape within 10 generations at low $r_{max}$ (\textbf{A, B}).
+        However, at $r_{max} >$ 0.01 (\textbf{C, D}, prey item regeneration exceeds depletion and the resource landscape is rapidly saturated until most cells carry 5 items, the maximum allowed in our model.)}
+\end{figure}
+
+\subsection{Scenario 2: Fixed Foraging Strategies}
+
+\begin{figure}[h!]
+        \centering
+        \includegraphics*[width=1.0\textwidth]{figures/fig_landscape_rmax_obligate.png}
+        \caption{In scenario 2, foragers can only deplete the resource landscape at very low $r_{max}$ (\textbf{A}; 1 prey item generated per 1,000 timesteps, or 2.5 generations).
+        At all $r_{max} \geq$ 0.05 (\textbf{B, C, D}, prey item regeneration matches or exceeds depletion and the resource landscape either shows strong spatial structure, or is entirely saturated with prey items.)}
+\end{figure}
+
+\subsection{Scenario 3: Conditional Foraging Strategies}
+
+\begin{figure}[h!]
+        \centering
+        \includegraphics*[width=1.0\textwidth]{figures/fig_landscape_rmax_facultative.png}
+        \caption{Scenario 3 is similar to scenario 1 at low $r_{max}$ (\textbf{A, B}, where foragers completely deplete the resource landscape).
+        Similarly, at $r_{max} >$ 0.01 (\textbf{C, D}, prey item regeneration exceeds depletion and the resource landscape is rapidly saturated to a carrying capacity of 5 prey items per cell.)}
+\end{figure}
+
+\end{document}
