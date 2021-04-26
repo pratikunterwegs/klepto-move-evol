@@ -3,5 +3,6 @@ AmNat*
 supplement*
 !*.tex
 !*.bbl
+!*.pdf
 !figures
 !.gitignore
