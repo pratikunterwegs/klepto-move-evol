@@ -1,5 +1,19 @@
-# The Evolutionary Ecology of Individual Foraging Decisions
+# Source Code and Supplementary Material for _The joint evolution of movement and competition strategies_
 
-Summary R code and references for the Kleptomove manuscript.
+This is the source code for the analyses and figures for a manuscript that reports on models the joint evolution of movement and competition strategies using massive, spatial, individual-based models.
 
-The manuscript text lives on an Overleaf repository, which is not public.
+## Analysis Source Code
+
+### Simulation Source Code
+
+The simulation source code is provided at a different repository, which is related to this repository as a submodule.
+
+### Replicating Analyses
+
+## Supplementary Material
+
+## Main Text
+
+## Data
+
+## Other Directories
