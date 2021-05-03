@@ -1,18 +1,18 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-
-```{r}
+#' ---
+#' output: html_document
+#' editor_options:
+#'   chunk_output_type: console
+#' ---
+#'
+## -----------------------------------------------------------------------------
 library(data.table)
 library(glue)
 library(ggplot2)
-```
 
-## get agents in all gens
-
-```{r}
+#'
+#' ## get agents in all gens
+#'
+## -----------------------------------------------------------------------------
 params <- fread("data_sim/results/data_param_combinations.csv")
 params$folder_path <- stringr::str_replace(
   params$folder_path,
@@ -41,9 +41,9 @@ params$image <- glue_data(params, "{folder_path}/{gen}.png")
 
 # copy as data
 data <- copy(params)
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 # get data
 agent_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
@@ -60,11 +60,11 @@ agent_data <- lapply(
     # df[, agents := round(agents / 0.02)]
   }
 )
-```
 
-## get items in all gens
-
-```{r}
+#'
+#' ## get items in all gens
+#'
+## -----------------------------------------------------------------------------
 # copy as data
 data <- copy(params)
 
@@ -75,11 +75,11 @@ item_data <- lapply(data$image,
   crop_dim = 60,
   type = "items"
 )
-```
 
-## get quality layer
-
-```{r}
+#'
+#' ## get quality layer
+#'
+## -----------------------------------------------------------------------------
 quality_data <- kleptomoveMS::read_landscape(
   "data_sim/data_parameters/kernels32.png",
   layer = 1, crop_dim = 60, type = "items"
@@ -106,12 +106,12 @@ data <- data[, list(sim_type, gen, replicate, regrowth, x, y, agents, quality)]
 
 # save data
 fwrite(data, file = "data_sim/results/data_quality_counts_1_150.csv")
-```
 
-
-## get full layer data
-
-```{r}
+#'
+#'
+#' ## get full layer data
+#'
+## -----------------------------------------------------------------------------
 # keep item data on occupied cells
 layer_data <- Map(function(adf, idf) {
   idf <- merge(adf, idf, by = intersect(names(adf), names(idf)), all = FALSE)
@@ -133,11 +133,11 @@ data <- data[, list(sim_type, gen, replicate, regrowth, x, y, agents, items)]
 
 # save data
 fwrite(data, file = "data_sim/results/data_layer_counts_1_150.csv")
-```
 
-## get items variance
-
-```{r}
+#'
+#' ## get items variance
+#'
+## -----------------------------------------------------------------------------
 # get item variance
 data <- copy(params)
 data[, item_variance := kleptomoveMS::get_layer_variance(
@@ -152,5 +152,5 @@ data <- data[, list(sim_type, gen, replicate, regrowth, item_variance)]
 
 # save data
 fwrite(data, file = "data_sim/results/data_item_variance_1_150.csv")
-```
 
+#'

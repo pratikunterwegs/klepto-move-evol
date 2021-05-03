@@ -1,22 +1,22 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-
-# Prepare node weight evolution data
-
-## Load libraries
-
-```{r}
+#' ---
+#' output: html_document
+#' editor_options:
+#'   chunk_output_type: console
+#' ---
+#'
+#' # Prepare node weight evolution data
+#'
+#' ## Load libraries
+#'
+## -----------------------------------------------------------------------------
 # load libs
 library(data.table)
 library(kleptomoveMS)
-```
 
-## Run function over data
-
-```{r}
+#'
+#' ## Run function over data
+#'
+## -----------------------------------------------------------------------------
 # read parameter combinations
 param_combinations <- fread("data_sim/results/data_param_combinations.csv")
 param_combinations[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
@@ -36,11 +36,11 @@ temp_gen_data <- lapply(
     )
   }
 )
-```
 
-## Write sparse and final generation range sequence to file
-
-```{r}
+#'
+#' ## Write sparse and final generation range sequence to file
+#'
+## -----------------------------------------------------------------------------
 # bind with parameters
 data <- param_combinations
 data[, wt_data := temp_gen_data]
@@ -50,11 +50,11 @@ data <- data[, unlist(wt_data, recursive = F),
   by = list(sim_type, replicate, regrowth)
 ]
 fwrite(data, file = "data_sim/results/data_weight_evolution.csv")
-```
 
-## Prepare data for intial generations
-
-```{r}
+#'
+#' ## Prepare data for intial generations
+#'
+## -----------------------------------------------------------------------------
 # read parameter combinations
 param_combinations <- fread("data_sim/results/data_param_combinations.csv")
 param_combinations[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
@@ -77,11 +77,11 @@ temp_gen_data <- lapply(
     )
   }
 )
-```
 
-## Write sparse and final generation range sequence to file
-
-```{r}
+#'
+#' ## Write sparse and final generation range sequence to file
+#'
+## -----------------------------------------------------------------------------
 # bind with parameters
 data <- copy(param_combinations)
 data[, wt_data := temp_gen_data]
@@ -91,4 +91,3 @@ data <- data[, unlist(wt_data, recursive = F),
   by = list(sim_type, replicate, regrowth)
 ]
 fwrite(data, file = "data_sim/results/data_early_0_100_weight_evolution.csv")
-```

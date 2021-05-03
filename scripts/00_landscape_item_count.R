@@ -1,23 +1,23 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-
-# Process landscape snapshots
-
-```{r}
+#' ---
+#' output: html_document
+#' editor_options:
+#'   chunk_output_type: console
+#' ---
+#'
+#' # Process landscape snapshots
+#'
+## -----------------------------------------------------------------------------
 library(data.table)
 library(glue)
 library(kleptomoveMS)
-```
 
-## Items per cell
-
-```{r}
+#'
+#' ## Items per cell
+#'
+## -----------------------------------------------------------------------------
 # read paths
 paths <- list.dirs("data_sim/", recursive = F)
-paths = paths[grep("rep_001", paths)]
+paths <- paths[grep("rep_001", paths)]
 
 # select gens
 gens_for_figure <- stringr::str_pad(c(1, 10, 50), width = 5, pad = "0")
@@ -30,10 +30,13 @@ data_landscape <- CJ(
 
 # add sim_type
 data_landscape[, sim_type := rep(
-  rep(c("facultative", "foragers", 
-        "obligate", "random"), each = 10), 3)]
+  rep(c(
+    "facultative", "foragers",
+    "obligate", "random"
+  ), each = 10), 3
+)]
 
-growth_rates = c(0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.25)
+growth_rates <- c(0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.25)
 
 data_landscape[, regrowth := rep(
   growth_rates, 12
@@ -62,14 +65,14 @@ data_landscape <- data_landscape[, unlist(data, recursive = F),
 fwrite(data_landscape,
   file = "data_sim/results/data_landscape_item_count_1_50.csv"
 )
-```
 
-## Foragers per cell
-
-```{r}
+#'
+#' ## Foragers per cell
+#'
+## -----------------------------------------------------------------------------
 # read paths
 paths <- list.dirs("data_sim/", recursive = F)
-paths = paths[grep("rep_001", paths)]
+paths <- paths[grep("rep_001", paths)]
 
 # select gens
 gens_for_figure <- stringr::str_pad(c(1, 10, 50), width = 5, pad = "0")
@@ -82,10 +85,13 @@ data_landscape <- CJ(
 
 # add sim_type
 data_landscape[, sim_type := rep(
-  rep(c("facultative", "foragers", 
-        "obligate", "random"), each = 10), 3)]
+  rep(c(
+    "facultative", "foragers",
+    "obligate", "random"
+  ), each = 10), 3
+)]
 
-growth_rates = c(0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.25)
+growth_rates <- c(0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.25)
 
 data_landscape[, regrowth := rep(
   growth_rates, 12
@@ -112,4 +118,3 @@ data_landscape <- data_landscape[, unlist(agent_data, recursive = F),
 
 # save data
 fwrite(data_landscape, file = "data_sim/results/data_agent_count_1_50.csv")
-```
