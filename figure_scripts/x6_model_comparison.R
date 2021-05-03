@@ -1,17 +1,17 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-
-```{r}
+#' ---
+#' output: html_document
+#' editor_options:
+#'   chunk_output_type: console
+#' ---
+#'
+## -----------------------------------------------------------------------------
 library(data.table)
 # plotting
 library(ggplot2)
 library(patchwork)
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 data <- fread("data_sim/results/data_strategy_gen.csv")
 # rearrange
 data$sim_type <- factor(data$sim_type,
@@ -23,11 +23,11 @@ data <- data[regrowth <= 0.1, ]
 
 # remove random
 data <- data[sim_type != "random", ]
-```
 
-### Fitness in relation to regrowth and scenario
-
-```{r}
+#'
+#' ### Fitness in relation to regrowth and scenario
+#'
+## -----------------------------------------------------------------------------
 # get last 10 generations
 data_equi <- data[gen > max(gen) - 10 & regrowth <= 0.05, ]
 
@@ -134,11 +134,11 @@ fig_strategy_fitness <-
     fill = "Model",
     shape = "Model"
   )
-```
 
-### Foraging and stealing across regrowth and scenario
-
-```{r}
+#'
+#' ### Foraging and stealing across regrowth and scenario
+#'
+## -----------------------------------------------------------------------------
 # get the stealing and foraging over regrowth rates
 data_strategy_summary <- data_equi[variable %in% c(
   "stealing",
@@ -162,9 +162,9 @@ data_strategy_summary <-
 data_strategy_summary <- split(data_strategy_summary,
   by = "variable"
 )
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 subfigures_strategy_growth <- Map(function(df, name) {
   yaxis_name <- sprintf("Prop. %s", stringr::str_to_sentence(name))
   # colour <- ifelse(name == "stealing", pal[1], pal[2])
@@ -235,19 +235,19 @@ subfigures_strategy_growth <- Map(function(df, name) {
       shape = "Model"
     )
 }, data_strategy_summary, names(data_strategy_summary))
-```
 
-## Make Figure model comparison
-
-```{r}
+#'
+#' ## Make Figure model comparison
+#'
+## -----------------------------------------------------------------------------
 # point plots
 point_plots <- append(
   subfigures_strategy_growth,
   list(fig_strategy_fitness)
 )
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 # wrap all figures
 figure_06 <-
   wrap_plots(point_plots) +
@@ -268,5 +268,5 @@ ggsave(
   filename = "figures/fig_06.png",
   height = 75, width = 160, units = "mm"
 )
-```
 
+#'

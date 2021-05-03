@@ -1,12 +1,12 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-
-# Landscape effects
-
-```{r}
+#' ---
+#' output: html_document
+#' editor_options:
+#'   chunk_output_type: console
+#' ---
+#'
+#' # Landscape effects
+#'
+## -----------------------------------------------------------------------------
 # to handle data and plot
 library(data.table)
 library(glue)
@@ -14,11 +14,11 @@ library(glue)
 library(ggplot2)
 library(colorspace)
 library(patchwork)
-```
 
-## Read node weight evolution
-
-```{r}
+#'
+#' ## Read node weight evolution
+#'
+## -----------------------------------------------------------------------------
 # read back in
 data <- fread("data_sim/results/data_early_0_100_weight_evolution.csv")
 # data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
@@ -29,63 +29,65 @@ data <- data[regrowth %in% focus_r, ]
 
 # handle weight value ranges and use UPPER bound
 data[, weight_num :=
-       stringi::stri_extract_last(weight_value,
-                                  regex = "[-0-9]+\\.\\d{2}"
-       )]
+  stringi::stri_extract_last(weight_value,
+    regex = "[-0-9]+\\.\\d{2}"
+  )]
 # assign numeric
 data[, weight_num := as.numeric(weight_num)]
 
 # remove random sim
 data <- data[sim_type != "random", ]
-```
 
-## Prepare summary data
-
-Handler preference
-
-```{r}
+#'
+#' ## Prepare summary data
+#'
+#' Handler preference
+#'
+## -----------------------------------------------------------------------------
 # get positive weights for handlers (weight 3)
 wt_handler <- data[weight_id == 3 &
-                     weight_num > 0 &
-                     regrowth == 0.01 &
-                     sim_type != "random", ]
+  weight_num > 0 &
+  regrowth == 0.01 &
+  sim_type != "random", ]
 
 # sum proportions
 wt_handler <- wt_handler[, list(pref_handlers = sum(weight_prop)),
-                         by = c("sim_type", "replicate", "regrowth", "gen")
-                         ]
-```
+  by = c("sim_type", "replicate", "regrowth", "gen")
+]
 
-Kleptoparasite bias for fixed strategy
-
-```{r}
-klept_bias <- data[weight_id == 5 & weight_num < 0 & 
-                     sim_type != "facultative", ]
+#'
+#' Kleptoparasite bias for fixed strategy
+#'
+## -----------------------------------------------------------------------------
+klept_bias <- data[weight_id == 5 & weight_num < 0 &
+  sim_type != "facultative", ]
 klept_bias <- klept_bias[, list(klept_strategy = sum(weight_prop)),
-                         by = c("sim_type", "replicate", "regrowth", "gen")
-                         ]
-```
+  by = c("sim_type", "replicate", "regrowth", "gen")
+]
 
-Handler strategy
-
-```{r}
+#'
+#' Handler strategy
+#'
+## -----------------------------------------------------------------------------
 handler_strategy <- data[sim_type == "facultative"
-                         & weight_id == 7 & weight_num < 0, ]
+& weight_id == 7 & weight_num < 0, ]
 handler_strategy <- handler_strategy[, list(klept_strategy = sum(weight_prop)),
-                                     by = c("sim_type", "replicate", "regrowth",
-                                            "gen")
-                                     ]
-```
+  by = c(
+    "sim_type", "replicate", "regrowth",
+    "gen"
+  )
+]
 
-### Merge weight strategy
-
-```{r}
+#'
+#' ### Merge weight strategy
+#'
+## -----------------------------------------------------------------------------
 data_wt <- rbindlist(list(klept_bias, handler_strategy))
-```
 
-## Read p clueless
-
-```{r}
+#'
+#' ## Read p clueless
+#'
+## -----------------------------------------------------------------------------
 # focus r
 focus_r <- c(0.01)
 
@@ -102,33 +104,33 @@ data[, V1 := NULL]
 data <- data[sim_type != "random"]
 
 # 1 - p_clueless
-data$p_clueless = 1 - data$p_clueless
-```
+data$p_clueless <- 1 - data$p_clueless
 
-## Read proportion strategy data
-
-```{r}
+#'
+#' ## Read proportion strategy data
+#'
+## -----------------------------------------------------------------------------
 # get data
 data_strat <- fread("data_sim/results/data_strategy_gen.csv")
 data_strat <- data_strat[sim_type != "random"]
 
 # subset for klept prop
 data_strat <- data_strat[variable == "stealing" &
-                           regrowth %in% focus_r, ]
+  regrowth %in% focus_r, ]
 
 # remove zero vlaues for stealing in foragers only
 data_strat <- data_strat[!(sim_type == "foragers" & variable == "stealing"), ]
 
 # dcast
 data_strat <- dcast(data_strat, sim_type + replicate +
-                      regrowth + gen + pop_fitness + conflicts ~ variable,
-                    value.var = "value"
+  regrowth + gen + pop_fitness + conflicts ~ variable,
+value.var = "value"
 )
 
 # join with land data
 data_strat <- merge(data_strat, data,
-                    by = c("gen", "replicate", "regrowth", "sim_type"),
-                    all.y = TRUE
+  by = c("gen", "replicate", "regrowth", "sim_type"),
+  all.y = TRUE
 )
 
 # join with data_wt
@@ -141,28 +143,28 @@ data_strat <- merge(data_strat, wt_handler)
 data <- copy(data_strat)
 
 data <- melt(data,
-             id.vars = c(
-               "gen", "replicate",
-               "regrowth", "sim_type"
-             )
+  id.vars = c(
+    "gen", "replicate",
+    "regrowth", "sim_type"
+  )
 )
 
 # set factor order
 data$sim_type <- factor(data$sim_type,
-                        levels = c("foragers", "obligate", "facultative")
+  levels = c("foragers", "obligate", "facultative")
 )
 
 # remove variables
 data <- data[variable %in%
-               c("stealing", "p_clueless", "klept_strategy", "pref_handlers"), ]
+  c("stealing", "p_clueless", "klept_strategy", "pref_handlers"), ]
 
 # split data
 data <- split(data, by = "sim_type")
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 # this green
-this_green = viridisLite::mako(5)[4]
+this_green <- viridisLite::mako(5)[4]
 
 # make subplots
 subplots <- lapply(data, function(df) {
@@ -174,12 +176,12 @@ subplots <- lapply(data, function(df) {
     x_lim <- c(0, 50)
     df <- df[gen <= 50, ]
   }
-  
+
   ggplot(df) +
     geom_path(
       aes(gen, value,
-          col = variable,
-          group = interaction(replicate, variable)
+        col = variable,
+        group = interaction(replicate, variable)
       )
     ) +
     scale_colour_manual(
@@ -210,7 +212,7 @@ subplots <- lapply(data, function(df) {
       expand = F
     ) +
     kleptomoveMS::theme_custom(grid = F, base_size = 8) +
-    theme(legend.position = "top")+
+    theme(legend.position = "top") +
     labs(
       x = "Generation",
       y = "Proportion",
@@ -218,15 +220,15 @@ subplots <- lapply(data, function(df) {
     ) +
     guides(colour = guide_legend(nrow = 1, byrow = TRUE))
 })
-```
 
-## Show landscape for each sim type
-
-Here we show a landscape with and without clues at 1, 10, and 40th generation for $r_{max}$ = 0.01.
-
-### Items landscape
-
-```{r}
+#'
+#' ## Show landscape for each sim type
+#'
+#' Here we show a landscape with and without clues at 1, 10, and 40th generation for $r_{max}$ = 0.01.
+#'
+#' ### Items landscape
+#'
+## -----------------------------------------------------------------------------
 # list folders
 paths <- list.dirs("data_sim/for_landscape/", recursive = F)
 
@@ -247,10 +249,10 @@ landscape_data$image <- glue_data(landscape_data, "{path}/{gen}.png")
 
 # get data
 landscape_data$data <- lapply(landscape_data$image,
-                              kleptomoveMS::read_landscape,
-                              layer = 4,
-                              crop_dim = 60,
-                              type = "items"
+  kleptomoveMS::read_landscape,
+  layer = 4,
+  crop_dim = 60,
+  type = "items"
 )
 
 # convert gen to numeric
@@ -258,29 +260,29 @@ landscape_data[, gen := as.numeric(gen)]
 
 # unlst
 landscape_items <- landscape_data[, unlist(data, recursive = F),
-                                  by = c("sim_type", "gen")
-                                  ]
-```
+  by = c("sim_type", "gen")
+]
 
-### Gradient landscape
-
-```{r}
+#'
+#' ### Gradient landscape
+#'
+## -----------------------------------------------------------------------------
 # get data
 landscape_data$data <- lapply(landscape_data$image,
-                              kleptomoveMS::read_landscape,
-                              layer = 4,
-                              crop_dim = 60,
-                              type = "gradient"
+  kleptomoveMS::read_landscape,
+  layer = 4,
+  crop_dim = 60,
+  type = "gradient"
 )
 # unlst
 landscape_gradient <- landscape_data[, unlist(data, recursive = F),
-                                     by = c("sim_type", "gen")
-                                     ]
-```
+  by = c("sim_type", "gen")
+]
 
-### Merge landscapes
-
-```{r}
+#'
+#' ### Merge landscapes
+#'
+## -----------------------------------------------------------------------------
 # landscape overall
 landscape <- (landscape_gradient)
 
@@ -289,22 +291,22 @@ landscape <- melt(landscape, id.vars = c("sim_type", "gen", "x", "y"))
 
 # split by sim_type
 landscape <- split(landscape, by = c("sim_type", "variable"))
-```
 
-
-### Plot landscape
-
-```{r}
+#'
+#'
+#' ### Plot landscape
+#'
+## -----------------------------------------------------------------------------
 subplot_land <- lapply(landscape, function(df) {
   pal <- viridisLite::mako(5)[4]
   # set palette
   if (unique(df$variable) == "items") {
     pal <- viridis::viridis(5, direction = -1)
   }
-  
+
   ggplot(df) +
     geom_tile(aes(x, y, fill = (value)),
-              show.legend = F
+      show.legend = F
     ) +
     facet_grid(~gen, labeller = label_both) +
     scale_fill_gradientn(
@@ -327,11 +329,11 @@ sim_types <- c("foragers", "obligate", "facultative")
 fignames <- c(glue("{sim_types}.gradient"))
 # arrange plots in order
 subplot_land <- subplot_land[fignames]
-```
 
-## Figure 5
-
-```{r}
+#'
+#' ## Figure 5
+#'
+## -----------------------------------------------------------------------------
 # make figure 5
 figure_5 <-
   wrap_plots(
@@ -341,13 +343,13 @@ figure_5 <-
     nrow = 3
     # design = "AABB\nCCDD\nEEFF"
   ) &
-  theme(
-    plot.tag = element_text(
-      face = "bold",
-      size = 8
-    ),
-    legend.position = "top"
-  )
+    theme(
+      plot.tag = element_text(
+        face = "bold",
+        size = 8
+      ),
+      legend.position = "top"
+    )
 
 # why is this not compatible with lapply, or anything similar!
 figure_5[[1]] <- figure_5[[1]] +
@@ -370,7 +372,7 @@ figure_5[[3]] <- figure_5[[3]] +
 
 figure_5 <-
   figure_5 +
-  plot_annotation(tag_levels = c("A", "1")) 
+  plot_annotation(tag_levels = c("A", "1"))
 
 ggsave(
   figure_5,
@@ -379,5 +381,5 @@ ggsave(
   units = "mm",
   filename = "figures/fig_05.png"
 )
-```
 
+#'

@@ -1,12 +1,12 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-
-# Behavioural syndrome
-
-```{r}
+#' ---
+#' output: html_document
+#' editor_options:
+#'   chunk_output_type: console
+#' ---
+#'
+#' # Behavioural syndrome
+#'
+## -----------------------------------------------------------------------------
 # to handle data and plot
 library(data.table)
 library(glue)
@@ -14,11 +14,11 @@ library(glue)
 library(ggplot2)
 library(colorspace)
 library(patchwork)
-```
 
-## show node weight
-
-```{r}
+#'
+#' ## show node weight
+#'
+## -----------------------------------------------------------------------------
 # get raw data
 data_nodes <- fread("data_sim/results/data_early_0_100_weight_evolution.csv")
 # subset
@@ -31,9 +31,9 @@ data_nodes[, weight_num := as.numeric(
     regex = "[-0-9]+\\.\\d{2}"
   )
 )]
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 fig3a <-
   ggplot(data_nodes[weight_prop > 0.001 &
     weight_id == 5 &
@@ -53,7 +53,7 @@ fig3a <-
   ) +
   scale_fill_continuous_sequential(
     palette = "Light Grays"
-  )+
+  ) +
   scale_y_continuous(
     breaks = c(-1.75, 1.75),
     labels = c("Klept.", "Forager")
@@ -74,17 +74,17 @@ fig3a <-
     x = "Generation", y = "Behavioural strategy",
     fill = "Prop. indivs."
   )
-```
 
-## Prepare strategy-wise weight data WIP
-
-```{r}
+#'
+#' ## Prepare strategy-wise weight data WIP
+#'
+## -----------------------------------------------------------------------------
 data_strategy_weight <- fread("data_sim/results/data_syndrome_by_strategy.csv")
 data_strategy_weight <- split(data_strategy_weight, by = "klept_bias")
-```
 
-
-```{r}
+#'
+#'
+## -----------------------------------------------------------------------------
 subplots_syndrome <- Map(function(df, val) {
   colours <- sequential_hcl(n = 10, palette = "Reds 3", rev = T)
   fill_lab <- "Prop. klepts."
@@ -139,9 +139,9 @@ fig3b <- wrap_plots(
   subplots_syndrome,
   ncol = 1
 )
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 # get data
 data <- fread("data_sim/results/data_syndrome.csv")
 
@@ -157,9 +157,9 @@ data[, c(
   factor(ifelse(item_pref, "prefers items", "avoids items")),
   factor(ifelse(nh_pref, "prefers nh", "avoids nh"))
 )]
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 # counter by klept and handler
 data <- data[, list(N = sum(N)),
   by = c("sim_type", "replicate", "regrowth", "klept_bias", "handler_pref", "gen")
@@ -169,9 +169,9 @@ data <- data[, list(N = sum(N)),
 data[, prop_per_strat := N / sum(N),
   by = c("gen", "klept_bias", "regrowth", "replicate")
 ]
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 fig3c <-
   ggplot(data[regrowth == 0.01 &
     handler_pref == "prefers handlers", ]) +
@@ -218,18 +218,20 @@ fig3c <-
     y = "Prop. handler preference"
   ) +
   scale_x_log10() +
-  annotation_logticks(sides = "b",
-                      colour = "grey",
-                      size = 0.2) +
+  annotation_logticks(
+    sides = "b",
+    colour = "grey",
+    size = 0.2
+  ) +
   kleptomoveMS::theme_custom(grid = F, base_size = 8) +
   theme(
     legend.position = "bottom",
     legend.key.height = unit(1, units = "mm")
   ) +
   guides(colour = guide_legend(nrow = 4, byrow = TRUE))
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 fig_3 <-
   wrap_plots(
     fig3a, fig3b, fig3c,
@@ -244,14 +246,14 @@ fig_3 <-
         size = 12
       )
     )
-```
 
-
-```{r}
+#'
+#'
+## -----------------------------------------------------------------------------
 ggsave(fig_3,
   filename = "figures/fig_03.png",
   width = 125,
   height = 150, units = "mm"
 )
-```
 
+#'

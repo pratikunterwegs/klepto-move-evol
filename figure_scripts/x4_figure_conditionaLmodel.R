@@ -1,36 +1,36 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-
-figure 4 for the conditional strategy case
-
-load libs
-
-```{r}
+#' ---
+#' output: html_document
+#' editor_options:
+#'   chunk_output_type: console
+#' ---
+#'
+#' figure 4 for the conditional strategy case
+#'
+#' load libs
+#'
+## -----------------------------------------------------------------------------
 library(data.table)
 
 library(ggplot2)
 library(patchwork)
-```
 
-get data
-
-population activity data
-
-```{r}
+#'
+#' get data
+#'
+#' population activity data
+#'
+## -----------------------------------------------------------------------------
 # activity data
 data_activity <- fread("data_sim/results/data_strategy_gen.csv")
 data_activity <- data_activity[
   sim_type == "facultative" &
     regrowth == 0.01
 ]
-```
 
-population klept response to handlers
-
-```{r}
+#'
+#' population klept response to handlers
+#'
+## -----------------------------------------------------------------------------
 # get data and filter for weight 5 which is the bias
 data_klept_prop <- fread("data_sim/results/data_early_0_100_weight_evolution.csv")
 data_klept_prop <- data_klept_prop[sim_type == "facultative" &
@@ -52,11 +52,11 @@ data_klept_prop <- data_klept_prop[weight_num < 0,
     "gen"
   )
 ]
-```
 
-make population activity budget plot with weight evolution
-
-```{r}
+#'
+#' make population activity budget plot with weight evolution
+#'
+## -----------------------------------------------------------------------------
 fig_activity <-
   ggplot(data_activity[gen <= 50, ]) +
   geom_path(
@@ -109,11 +109,11 @@ fig_activity <-
     colour = NULL
   ) +
   guides(colour = guide_legend(nrow = 2, byrow = TRUE))
-```
 
-figure intake
-
-```{r}
+#'
+#' figure intake
+#'
+## -----------------------------------------------------------------------------
 fig_intake <-
   ggplot(unique(data_activity[gen <= 50, ],
     by = c("gen", "replicate", "pop_fitness")
@@ -137,11 +137,11 @@ fig_intake <-
     x = "Generation",
     y = "Population intake"
   )
-```
 
-## get matching data
-
-```{r}
+#'
+#' ## get matching data
+#'
+## -----------------------------------------------------------------------------
 # raw correlation data
 data_match <- fread("data_sim/results/data_matching_rule.csv")
 data_match <- data_match[sim_type == "facultative" & regrowth == 0.01, ]
@@ -150,9 +150,9 @@ data_match <- data_match[sim_type == "facultative" & regrowth == 0.01, ]
 data_match_smooth <- fread("data_sim/results/data_matching_rule_smooth.csv")[
   sim_type == "facultative" & regrowth == 0.01,
 ]
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 fig_matching <-
   ggplot() +
   geom_hline(
@@ -160,7 +160,7 @@ fig_matching <-
     col = "red"
   ) +
   geom_point(
-    data = data_match[gen < 50,],
+    data = data_match[gen < 50, ],
     aes(
       x = gen,
       y = cf
@@ -180,17 +180,17 @@ fig_matching <-
     x = "Generation",
     y = "Corr. indivs. ~ potential intake"
   )
-```
 
-## correlation with quality
-
-```{r}
+#'
+#' ## correlation with quality
+#'
+## -----------------------------------------------------------------------------
 # raw correlation data
 data_quality <- fread("data_sim/results/data_quality_matching_rule.csv")
 data_quality <- data_quality[sim_type == "facultative" & regrowth == 0.01, ]
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 fig_matching_quality <-
   ggplot() +
   geom_hline(
@@ -198,7 +198,7 @@ fig_matching_quality <-
     col = "red"
   ) +
   geom_point(
-    data = data_quality[gen < 50,],
+    data = data_quality[gen < 50, ],
     aes(
       x = gen,
       y = cf
@@ -218,12 +218,12 @@ fig_matching_quality <-
     x = "Generation",
     y = "Corr. indivs. ~ cell quality"
   )
-```
 
-
-prepare landscape at 0 and 25
-
-```{r}
+#'
+#'
+#' prepare landscape at 0 and 25
+#'
+## -----------------------------------------------------------------------------
 # get landscape data
 data_land <- fread("data_sim/results/data_landscape_item_count_1_50.csv")
 data_land <- data_land[sim_type == "facultative", ]
@@ -231,11 +231,11 @@ data_land <- data_land[sim_type == "facultative", ]
 # get agents
 data_agent <- fread("data_sim/results/data_agent_count_1_50.csv")
 data_agent <- data_agent[sim_type == "facultative", ]
-```
 
-plot landscape facultative model
-
-```{r}
+#'
+#' plot landscape facultative model
+#'
+## -----------------------------------------------------------------------------
 fig_land_conditional <-
   ggplot(data_land) +
   geom_tile(aes(x, y, fill = items)) +
@@ -261,13 +261,13 @@ fig_land_conditional <-
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
   theme(legend.position = "bottom") +
   labs(fill = "# Items", size = "# Indiv.")
-```
 
-## Figure 4 Conditional model
-
-wrap figures together
-
-```{r}
+#'
+#' ## Figure 4 Conditional model
+#'
+#' wrap figures together
+#'
+## -----------------------------------------------------------------------------
 figure_4_conditional_model <-
   wrap_plots(
     fig_activity, fig_intake, fig_land_conditional,
@@ -281,15 +281,15 @@ figure_4_conditional_model <-
       face = "bold",
       size = 12
     ))
-```
 
-save figure
-
-```{r}
+#'
+#' save figure
+#'
+## -----------------------------------------------------------------------------
 ggsave(
   figure_4_conditional_model,
   filename = "figures/fig_04.png",
   height = 150, width = 125, units = "mm"
 )
-```
 
+#'

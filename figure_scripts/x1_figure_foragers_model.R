@@ -1,22 +1,22 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-
-load libs
-
-```{r}
+#' ---
+#' output: html_document
+#' editor_options:
+#'   chunk_output_type: console
+#' ---
+#'
+#' load libs
+#'
+## -----------------------------------------------------------------------------
 library(data.table)
 
 library(ggplot2)
 library(patchwork)
 library(colorspace)
-```
 
-## get data
-
-```{r}
+#'
+#' ## get data
+#'
+## -----------------------------------------------------------------------------
 # activity data
 data_activity <- fread("data_sim/results/data_strategy_gen.csv")
 data_activity <- data_activity[
@@ -24,11 +24,11 @@ data_activity <- data_activity[
     regrowth == 0.01 &
     variable != "stealing"
 ]
-```
 
-## activity budget plot
-
-```{r}
+#'
+#' ## activity budget plot
+#'
+## -----------------------------------------------------------------------------
 fig_activity <-
   ggplot(data_activity[gen <= 50, ]) +
   geom_path(
@@ -67,11 +67,11 @@ fig_activity <-
     y = "Prop. population time",
     colour = NULL
   )
-```
 
-## figure intake
-
-```{r}
+#'
+#' ## figure intake
+#'
+## -----------------------------------------------------------------------------
 fig_intake <-
   ggplot(
     unique(data_activity[gen <= 50, ],
@@ -97,11 +97,11 @@ fig_intake <-
     x = "Generation",
     y = "Population intake"
   )
-```
 
-## get matching data
-
-```{r}
+#'
+#' ## get matching data
+#'
+## -----------------------------------------------------------------------------
 # raw correlation data
 data_match <- fread("data_sim/results/data_matching_rule.csv")
 data_match <- data_match[sim_type == "foragers" & regrowth == 0.01, ]
@@ -110,9 +110,9 @@ data_match <- data_match[sim_type == "foragers" & regrowth == 0.01, ]
 data_match_smooth <- fread("data_sim/results/data_matching_rule_smooth.csv")[
   sim_type == "foragers" & regrowth == 0.01,
 ]
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 fig_matching <-
   ggplot() +
   geom_hline(
@@ -140,17 +140,17 @@ fig_matching <-
     x = "Generation",
     y = "Corr. indivs. ~ potential intake"
   )
-```
 
-## correlation with quality
-
-```{r}
+#'
+#' ## correlation with quality
+#'
+## -----------------------------------------------------------------------------
 # raw correlation data
 data_quality <- fread("data_sim/results/data_quality_matching_rule.csv")
 data_quality <- data_quality[sim_type == "foragers" & regrowth == 0.01, ]
-```
 
-```{r}
+#'
+## -----------------------------------------------------------------------------
 fig_matching_quality <-
   ggplot() +
   geom_hline(
@@ -178,11 +178,11 @@ fig_matching_quality <-
     x = "Generation",
     y = "Corr. indivs. ~ cell quality"
   )
-```
 
-prepare landscape at 0 and 25
-
-```{r}
+#'
+#' prepare landscape at 0 and 25
+#'
+## -----------------------------------------------------------------------------
 # get landscape data
 data_land <- fread("data_sim/results/data_landscape_item_count_1_50.csv")
 data_land <- data_land[sim_type == "foragers", ]
@@ -191,11 +191,11 @@ data_land <- data_land[sim_type == "foragers", ]
 data_agent <- fread("data_sim/results/data_agent_count_1_50.csv")[
   sim_type == "foragers",
 ]
-```
 
-plot landscape foragers model
-
-```{r}
+#'
+#' plot landscape foragers model
+#'
+## -----------------------------------------------------------------------------
 fig_land_foragers <-
   ggplot(data_land) +
   geom_tile(aes(x, y, fill = items)) +
@@ -218,13 +218,13 @@ fig_land_foragers <-
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
   theme(legend.position = "bottom") +
   labs(fill = "# Items", size = "# Indiv.")
-```
 
-## Figure 1 Foragers model
-
-wrap figures together
-
-```{r}
+#'
+#' ## Figure 1 Foragers model
+#'
+#' wrap figures together
+#'
+## -----------------------------------------------------------------------------
 figure_1_forager_model <-
   wrap_plots(
     fig_activity, fig_intake,
@@ -239,13 +239,12 @@ figure_1_forager_model <-
       face = "bold",
       size = 12
     ))
-```
 
-save figure
-
-```{r}
+#'
+#' save figure
+#'
+## -----------------------------------------------------------------------------
 ggsave(figure_1_forager_model,
   filename = "figures/fig_01.png",
   height = 150, width = 125, units = "mm"
 )
-```
