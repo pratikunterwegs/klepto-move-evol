@@ -8,7 +8,8 @@ get_pref_handler_by_strat(
   data_folder,
   generations,
   weight_klept_bias,
-  weight_of_interest
+  weight_of_interest,
+  handler_pref_by_strategy = FALSE
 )
 }
 \arguments{
