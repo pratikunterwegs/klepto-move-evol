@@ -1,7 +1,37 @@
 #### helper functions for kleptomove ####
 
+#' Prepare the Kleptomove extractor.
+#'
+#' @param filepath The simulation filepath.
+#'
+#' @return An environment containing extractor functions.
+#' @export
+#'
+prepare_extractor = function(filepath) {
+  # get filepath of the function sourceME.r
+  toSource <- list.files(
+    path = filepath,
+    pattern = "sourceMe.R",
+    full.names = TRUE
+  )
+  
+  env = new.env()
+  
+  # source it
+  source(toSource, local = env)
+  attach(env, name = "kleptomove_extractor")
+}
+
+#' Get generation data.
+#'
+#' @param filepath Simulation output path.
+#' @param which_gen Which generation to get.
+#'
+#' @return A \code{generation} object.
+#' @export
+#'
 get_generation_data <- function(filepath,
-                                generation = 991) {
+                                which_gen = 991) {
 
   # get filepath of the function sourceME.r
   toSource <- list.files(
@@ -11,14 +41,12 @@ get_generation_data <- function(filepath,
   )
 
   # source it
-  source(toSource)
+  source(toSource, local = T)
   # get summary data
-  temp_gen_data <- generation(991)
+  temp_gen_data <- generation(which_gen)
 
-  return(temp_gen_data)
+  temp_gen_data
 }
-
-# a generalised function
 
 #' Get weight data from \code{generation} output.
 #'
@@ -65,7 +93,7 @@ get_weights_prop <- function(gen_data, weight_w,
     weight_value = weight_value_names,
     weight_prop = as.vector(weight_prop)
   )
-  return(weight_data)
+  weight_data
 }
 
 #' Get weight proportions across generations.
@@ -111,11 +139,6 @@ get_weights_timeline <- function(generations,
     # bind the list
     weight_data <- data.table::rbindlist(weight_data)
 
-    # assertthat::assert_that(
-    #   is.data.table(weight_data),
-    #   message(sprintf("not a data table, has class %s", class(weight_data)[1]))
-    # )
-
     # set datatable
     data.table::setDT(weight_data)
     # add generation
@@ -127,7 +150,7 @@ get_weights_timeline <- function(generations,
   # bind all generations
   weight_data_gen <- data.table::rbindlist(weight_data_gen)
 
-  return(weight_data_gen)
+  weight_data_gen
 }
 
 #' Get weight evolution data for a simulation replicate.
@@ -161,19 +184,6 @@ get_sim_weight_evol <- function(data_folder,
     max_w_val = 1.01,
     steps = 50
   )
-
-  # # get named vector corresponding to weights
-  # # this is reall silly but oh well
-  # if (is.null(weight_names)) {
-  #   weight_names <- sprintf(
-  #     "wt_%s",
-  #     as.character(seq(
-  #       max(weight_data_gen$weight_id) + 1
-  #     )[-1])
-  #   )
-  # }
-  # names(weight_names) <- seq(length(weight_names) + 1)[-1]
-
   # return the ggplot
   return(weight_data_gen)
 }
