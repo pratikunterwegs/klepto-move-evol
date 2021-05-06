@@ -6,9 +6,12 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^doc$
-^data/.+$
-^sim_output$
+^docs$
+^data_sim$
+^figures$
+^figure_scripts$
+^scripts$
+^supplementary_material$
 ^Meta$
 ^codemeta\.json$
 ^\.github$
