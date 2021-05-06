@@ -14,12 +14,15 @@ library(kleptomoveMS)
 #'
 ## -----------------------------------------------------------------------------
 # read parameter combinations
-data <- fread("data_sim/results/data_param_combinations.csv")
+data <- fread("data_sim/results/data_param_combinations.csv")[10]
 
 data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
 
 # no random
-# data = data[sim_type != "random", ]
+data = data[sim_type != "random", ]
+
+# check extractor
+prepare_extractor(data$folder_path)
 
 #'
 ## -----------------------------------------------------------------------------
