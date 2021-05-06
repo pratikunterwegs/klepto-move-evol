@@ -15,11 +15,10 @@ prepare_extractor = function(filepath) {
     full.names = TRUE
   )
   
-  env = new.env()
+  kleptomove_extractor = new.env()
   
   # source it
-  source(toSource, local = env)
-  attach(env, name = "kleptomove_extractor")
+  source(toSource, local = kleptomove_extractor)
 }
 
 #' Get generation data.
