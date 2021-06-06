@@ -96,3 +96,5 @@ The supplementary material provided with this manuscript is generated from the `
 - `supplementary_material/figures` Figure output for the supplementary material file.
 
 ## Other Directories
+
+- `bash/` Some useful shell scripts for output rendering.
