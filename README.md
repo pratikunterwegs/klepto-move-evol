@@ -1,4 +1,4 @@
-# Source Code and Supplementary Material for _The joint evolution of movement and competition strategies_
+# Source Code and Supplementary Material for _The Joint Evolution of Movement and Competition Strategies_
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) 
 UPDATE TO REAL PREPRINT -- [![DOI:10.1101/2020.12.15.422876](https://img.shields.io/badge/bioRxiv-doi.org/10.1101/2020.12.15.422876-red?style=flat-square)](https://www.biorxiv.org/content/10.1101/2020.12.15.422876v3)
