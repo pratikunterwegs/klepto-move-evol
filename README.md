@@ -1,8 +1,17 @@
 # Source Code and Supplementary Material for _The joint evolution of movement and competition strategies_
 
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) 
+UPDATE TO REAL PREPRINT -- [![DOI:10.1101/2020.12.15.422876](https://img.shields.io/badge/bioRxiv-doi.org/10.1101/2020.12.15.422876-red?style=flat-square)](https://www.biorxiv.org/content/10.1101/2020.12.15.422876v3)
+UPDATE TO REAL ZENODO -- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4287462.svg)](https://doi.org/10.5281/zenodo.4287462)
 
 This is the source code for the analyses and figures for a manuscript that reports on models the joint evolution of movement and competition strategies using massive, spatial, individual-based models.
+This work was developed in the [Modelling Adaptive Response Mechanisms Group (Weissing Lab)](https://www.marmgroup.eu/) at the Groningen Institute for Evolutionary Life Science, at the University of Groningen.
+
+## Contact and Attribution
+
+Please contact [Pratik Gupte](p.r.gupte@rug.nl) or [Franjo Weissing (PI)](f.j.weissing@rug.nl) for questions about the associated manuscript.
+
+The work can be cited as **DO BIBTEX KEY -- WIP**.
 
 ## Simulation Source Code
 
