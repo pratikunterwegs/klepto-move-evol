@@ -12,8 +12,6 @@ This work was developed in the [Modelling Adaptive Response Mechanisms Group (We
 
 Please contact [Pratik Gupte](p.r.gupte@rug.nl) or [Franjo Weissing (PI)](f.j.weissing@rug.nl) for questions about the associated manuscript.
 
-The work can be cited as **DO BIBTEX KEY -- WIP**.
-
 ## Simulation Source Code
 
 The simulation source code is provided at a different repository, [_Kleptomove_](github.com/pratikunterwegs/Kleptomove).
