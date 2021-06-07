@@ -125,12 +125,17 @@ subplots <- lapply(data, function(df) {
   }
 
   ggplot(df) +
+    geom_vline(
+      xintercept = c(1, 10, 50),
+      colour = "grey",
+      lty = 2,
+      size = 0.3
+    )+
     geom_path(
       aes(gen, value,
         col = variable,
         group = interaction(replicate, variable)
-      ),
-      size = 1
+      )
     ) +
     scale_colour_manual(
       values = c(
@@ -138,7 +143,7 @@ subplots <- lapply(data, function(df) {
         pref_handlers = "lightslateblue"
       ),
       labels = c(
-        p_clueless = "Higher prey density\ninneighbourhood",
+        p_clueless = "Higher prey density\nin neighbourhood",
         pref_handlers = "Tendency to move\ntowards handlers"
       ),
       breaks = c(
@@ -163,6 +168,9 @@ subplots <- lapply(data, function(df) {
     ) +
     guides(colour = guide_legend(nrow = 1, byrow = TRUE))
 })
+
+# arrange order
+subplots = subplots[c("foragers", "obligate", "facultative")]
 
 #'
 #' ## Show landscape for each sim type
@@ -244,18 +252,30 @@ subplot_land <- lapply(landscape, function(df) {
   ggplot(df) +
     geom_tile(
       aes(x, y, 
-          fill = value),
-      show.legend = F
+          fill = value >= 0.7),
+      show.legend = T
     ) +
     facet_grid(~gen, labeller = label_both) +
-    scale_fill_gradientn(
-      colours = this_green,
-      na.value = "white",
-      limits = c(0.7, NA)
+    scale_fill_manual(
+      values = c(
+        "TRUE" = this_green,
+        "FALSE" = "white"
+      ),
+      labels = c(
+        "TRUE" = "Higher prey density\nin neighbourhood",
+        "FALSE" = "Neighbourhood has\nsame prey density"
+      ),
+      breaks = c("TRUE", "FALSE"),
+      name = NULL
     ) +
     coord_equal(expand = F) +
     kleptomoveMS::theme_custom(landscape = T, base_size = 8) +
     theme(
+      legend.position = "top",
+      legend.key = element_rect(
+        fill = NA,
+        colour = "grey"
+      ),
       axis.text = element_blank(),
       axis.title = element_blank()
     )
@@ -274,54 +294,31 @@ subplot_land <- subplot_land[fignames]
 #'
 ## -----------------------------------------------------------------------------
 # make figure 5
-figure_5 <-
-  wrap_plots(
-    wrap_plots(subplot_land[["foragers.gradient"]], subplots[["foragers"]],
-               design = "AAABB"),
-    wrap_plots(subplot_land[["obligate.gradient"]], subplots[["obligate"]],
-               design = "AAABB"),
-    wrap_plots(subplot_land[["facultative.gradient"]], subplots[["facultative"]],
-               design = "AAABB"),
-    nrow = 3
-  )
+# wrap cues per gen plots
+plots_cues = wrap_plots(subplots, ncol = 1) +
+  plot_layout(guides= "collect", tag_level = "new") &
+  theme(legend.position = "top")
 
-# why is this not compatible with lapply, or anything similar!
-figure_5[[1]] <- figure_5[[1]] +
-  plot_layout(
-    guides = "collect",
-    tag_level = "new"
-  )
+# wrap landscape plots
+plots_land = wrap_plots(subplot_land, ncol = 1) +
+  plot_layout(guides= "collect", tag_level = "new") &
+  theme(legend.position = "top")
 
-figure_5[[2]] <- figure_5[[2]] +
-  plot_layout(
-    guides = "collect",
-    tag_level = "new"
-  )
-
-figure_5[[3]] <- figure_5[[3]] +
-  plot_layout(
-    guides = "collect",
-    tag_level = "new"
-  )
-
-figure_5 <-
-  figure_5 &
-  plot_layout(
-    guides = "collect"
-  ) &
-    plot_annotation(tag_levels = c("A", "1")) &
+# make figure 5
+figure_5 = wrap_plots(plots_land, plots_cues, 
+                      design = "AAAABB") &
+  plot_annotation(tag_levels = c("A", "1")) &
   theme(
     plot.tag = element_text(
       face = "bold",
       size = 8
-    ),
-    legend.position = "top"
+    )
   )
 
 ggsave(
   figure_5,
-  height = 160,
-  width = 120,
+  height = 150,
+  width = 180,
   units = "mm",
   filename = "figures/fig_05.png"
 )
