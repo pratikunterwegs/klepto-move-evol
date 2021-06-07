@@ -116,5 +116,12 @@ data_landscape <- data_landscape[, unlist(agent_data, recursive = F),
   by = c("sim_type", "gen", "regrowth")
 ]
 
+# rename items to agents
+setnames(data_landscape, "items", "agents")
+
+# rescale
+data_landscape$agents = data_landscape$agents / 
+  (min(data_landscape$agents[data_landscape$agents > 0]))
+
 # save data
 fwrite(data_landscape, file = "data_sim/results/data_agent_count_1_50.csv")
