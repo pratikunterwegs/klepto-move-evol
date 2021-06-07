@@ -179,7 +179,7 @@ fig_land_foragers <-
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
   theme(legend.position = "bottom") +
-  labs(fill = "# Items", size = "# Indiv.")
+  labs(fill = "# Items")
 
 #'
 #' ## Figure 1 Foragers model
