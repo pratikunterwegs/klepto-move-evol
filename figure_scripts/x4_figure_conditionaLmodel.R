@@ -139,49 +139,6 @@ fig_intake <-
   )
 
 #'
-#' ## get matching data
-#'
-## -----------------------------------------------------------------------------
-# raw correlation data
-data_match <- fread("data_sim/results/data_matching_rule.csv")
-data_match <- data_match[sim_type == "facultative" & regrowth == 0.01, ]
-
-# smoothed data
-data_match_smooth <- fread("data_sim/results/data_matching_rule_smooth.csv")[
-  sim_type == "facultative" & regrowth == 0.01,
-]
-
-#'
-## -----------------------------------------------------------------------------
-fig_matching <-
-  ggplot() +
-  geom_hline(
-    yintercept = 0,
-    col = "red"
-  ) +
-  geom_point(
-    data = data_match[gen < 50, ],
-    aes(
-      x = gen,
-      y = cf
-    ),
-    colour = "steelblue",
-    show.legend = F,
-    shape = 1
-  ) +
-  theme_classic(base_size = 8) +
-  coord_cartesian(
-    ylim = c(-0.5, 0.5),
-    xlim = c(0, 50),
-    expand = F
-  ) +
-  xlim(0, 50) +
-  labs(
-    x = "Generation",
-    y = "Corr. indivs. ~ potential intake"
-  )
-
-#'
 #' ## correlation with quality
 #'
 ## -----------------------------------------------------------------------------
@@ -226,11 +183,11 @@ fig_matching_quality <-
 ## -----------------------------------------------------------------------------
 # get landscape data
 data_land <- fread("data_sim/results/data_landscape_item_count_1_50.csv")
-data_land <- data_land[sim_type == "facultative", ]
+data_land <- data_land[sim_type == "facultative" & regrowth == 0.01, ]
 
 # get agents
 data_agent <- fread("data_sim/results/data_agent_count_1_50.csv")
-data_agent <- data_agent[sim_type == "facultative", ]
+data_agent <- data_agent[sim_type == "facultative" & regrowth == 0.01, ]
 
 #'
 #' plot landscape facultative model
@@ -241,16 +198,18 @@ fig_land_conditional <-
   geom_tile(aes(x, y, fill = items)) +
   geom_point(
     data = data_agent[agents > 0, ],
-    aes(x, y, size = agents),
-    shape = 1,
-    colour = "grey20"
+    aes(x, y, colour = agents),
+    shape = 19,
+    alpha = 0.6
   ) +
   facet_grid(~gen,
-    labeller = label_both
+             labeller = label_both
   ) +
-  scale_size(
-    breaks = c(1, 2, 3, 4)
-  ) +
+  scale_colour_viridis_c(
+    option = "C", begin = 0.2,
+    direction = 1,
+    name = "# Consumers"
+  )+
   scale_fill_viridis_c(
     option = "G",
     limits = c(1, NA),
@@ -260,7 +219,7 @@ fig_land_conditional <-
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
   theme(legend.position = "bottom") +
-  labs(fill = "# Items", size = "# Indiv.")
+  labs(fill = "# Items")
 
 #'
 #' ## Figure 4 Conditional model
@@ -270,17 +229,18 @@ fig_land_conditional <-
 ## -----------------------------------------------------------------------------
 figure_4_conditional_model <-
   wrap_plots(
-    fig_activity, fig_intake, fig_land_conditional,
-    fig_matching, fig_matching_quality,
-    design = "AABB\nCCCC\nDDEE"
+    fig_land_conditional,
+    fig_activity, fig_intake,
+    fig_matching_quality,
+    design = "AAAAAA\nBBCCDD"
   ) +
-    plot_annotation(
-      tag_levels = "A"
-    ) &
-    theme(plot.tag = element_text(
-      face = "bold",
-      size = 12
-    ))
+  plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(plot.tag = element_text(
+    face = "bold",
+    size = 12
+  ))
 
 #'
 #' save figure
@@ -289,7 +249,7 @@ figure_4_conditional_model <-
 ggsave(
   figure_4_conditional_model,
   filename = "figures/fig_04.png",
-  height = 150, width = 125, units = "mm"
+  height = 120, width = 150, units = "mm"
 )
 
 #'
