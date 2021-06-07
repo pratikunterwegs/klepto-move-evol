@@ -1,8 +1,7 @@
 # Source Code and Supplementary Material for _The Joint Evolution of Movement and Competition Strategies_
 
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) 
-UPDATE TO REAL PREPRINT -- [![DOI:10.1101/2020.12.15.422876](https://img.shields.io/badge/bioRxiv-doi.org/10.1101/2020.12.15.422876-red?style=flat-square)](https://www.biorxiv.org/content/10.1101/2020.12.15.422876v3)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4904497.svg)](https://doi.org/10.5281/zenodo.4904497)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4905475.svg)](https://doi.org/10.5281/zenodo.4905475)
 
 
 This is the source code for the analyses and figures for a manuscript that reports on models the joint evolution of movement and competition strategies using massive, spatial, individual-based models.
