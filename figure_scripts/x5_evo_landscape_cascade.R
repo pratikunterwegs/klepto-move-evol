@@ -24,7 +24,7 @@ data <- fread("data_sim/results/data_early_0_100_weight_evolution.csv")
 # data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
 
 # select growth rates of 0.001, 0.01, 0.1, 0.25
-focus_r <- c(0.001, 0.01, 0.05)
+focus_r <- c(0.01)
 data <- data[regrowth %in% focus_r, ]
 
 # handle weight value ranges and use UPPER bound
@@ -56,29 +56,6 @@ wt_handler <- wt_handler[, list(pref_handlers = sum(weight_prop)),
 ]
 
 #'
-#' Kleptoparasite bias for fixed strategy
-#'
-## -----------------------------------------------------------------------------
-klept_bias <- data[weight_id == 5 & weight_num < 0 &
-  sim_type != "facultative", ]
-klept_bias <- klept_bias[, list(klept_strategy = sum(weight_prop)),
-  by = c("sim_type", "replicate", "regrowth", "gen")
-]
-
-#'
-#' Handler strategy
-#'
-## -----------------------------------------------------------------------------
-handler_strategy <- data[sim_type == "facultative"
-& weight_id == 7 & weight_num < 0, ]
-handler_strategy <- handler_strategy[, list(klept_strategy = sum(weight_prop)),
-  by = c(
-    "sim_type", "replicate", "regrowth",
-    "gen"
-  )
-]
-
-#'
 #' ### Merge weight strategy
 #'
 ## -----------------------------------------------------------------------------
@@ -106,38 +83,8 @@ data <- data[sim_type != "random"]
 # 1 - p_clueless
 data$p_clueless <- 1 - data$p_clueless
 
-#'
-#' ## Read proportion strategy data
-#'
-## -----------------------------------------------------------------------------
-# get data
-data_strat <- fread("data_sim/results/data_strategy_gen.csv")
-data_strat <- data_strat[sim_type != "random"]
-
-# subset for klept prop
-data_strat <- data_strat[variable == "stealing" &
-  regrowth %in% focus_r, ]
-
-# remove zero vlaues for stealing in foragers only
-data_strat <- data_strat[!(sim_type == "foragers" & variable == "stealing"), ]
-
-# dcast
-data_strat <- dcast(data_strat, sim_type + replicate +
-  regrowth + gen + pop_fitness + conflicts ~ variable,
-value.var = "value"
-)
-
-# join with land data
-data_strat <- merge(data_strat, data,
-  by = c("gen", "replicate", "regrowth", "sim_type"),
-  all.y = TRUE
-)
-
 # join with data_wt
-data_strat <- merge(data_strat, data_wt)
-
-# join with handler preference
-data_strat <- merge(data_strat, wt_handler)
+data_strat <- merge(data, wt_handler)
 
 # melt
 data <- copy(data_strat)
@@ -156,7 +103,7 @@ data$sim_type <- factor(data$sim_type,
 
 # remove variables
 data <- data[variable %in%
-  c("stealing", "p_clueless", "klept_strategy", "pref_handlers"), ]
+  c("p_clueless", "pref_handlers"), ]
 
 # split data
 data <- split(data, by = "sim_type")
@@ -164,7 +111,7 @@ data <- split(data, by = "sim_type")
 #'
 ## -----------------------------------------------------------------------------
 # this green
-this_green <- viridisLite::mako(5)[4]
+this_green <- "forestgreen"
 
 # make subplots
 subplots <- lapply(data, function(df) {
@@ -182,24 +129,20 @@ subplots <- lapply(data, function(df) {
       aes(gen, value,
         col = variable,
         group = interaction(replicate, variable)
-      )
+      ),
+      size = 1
     ) +
     scale_colour_manual(
       values = c(
         p_clueless = this_green,
-        stealing = "red",
-        klept_strategy = "darkorange",
-        pref_handlers = "steelblue"
+        pref_handlers = "lightslateblue"
       ),
       labels = c(
-        p_clueless = "Movement increases intake",
-        stealing = "Time stealing",
-        klept_strategy = "Prop. klept.",
-        pref_handlers = "Pref. handler"
+        p_clueless = "Higher prey density\ninneighbourhood",
+        pref_handlers = "Tendency to move\ntowards handlers"
       ),
       breaks = c(
-        "pref_handlers", "klept_strategy",
-        "stealing", "p_clueless"
+        "p_clueless", "pref_handlers"
       )
     ) +
     scale_y_continuous(
@@ -298,19 +241,15 @@ landscape <- split(landscape, by = c("sim_type", "variable"))
 #'
 ## -----------------------------------------------------------------------------
 subplot_land <- lapply(landscape, function(df) {
-  pal <- viridisLite::mako(5)[4]
-  # set palette
-  if (unique(df$variable) == "items") {
-    pal <- viridis::viridis(5, direction = -1)
-  }
-
   ggplot(df) +
-    geom_tile(aes(x, y, fill = (value)),
+    geom_tile(
+      aes(x, y, 
+          fill = value),
       show.legend = F
     ) +
     facet_grid(~gen, labeller = label_both) +
     scale_fill_gradientn(
-      colours = pal,
+      colours = this_green,
       na.value = "white",
       limits = c(0.7, NA)
     ) +
@@ -337,42 +276,47 @@ subplot_land <- subplot_land[fignames]
 # make figure 5
 figure_5 <-
   wrap_plots(
-    wrap_plots(subplot_land[["foragers.gradient"]], subplots[["foragers"]]),
-    wrap_plots(subplot_land[["obligate.gradient"]], subplots[["obligate"]]),
-    wrap_plots(subplot_land[["facultative.gradient"]], subplots[["facultative"]]),
+    wrap_plots(subplot_land[["foragers.gradient"]], subplots[["foragers"]],
+               design = "AAABB"),
+    wrap_plots(subplot_land[["obligate.gradient"]], subplots[["obligate"]],
+               design = "AAABB"),
+    wrap_plots(subplot_land[["facultative.gradient"]], subplots[["facultative"]],
+               design = "AAABB"),
     nrow = 3
-    # design = "AABB\nCCDD\nEEFF"
-  ) &
-    theme(
-      plot.tag = element_text(
-        face = "bold",
-        size = 8
-      ),
-      legend.position = "top"
-    )
+  )
 
 # why is this not compatible with lapply, or anything similar!
 figure_5[[1]] <- figure_5[[1]] +
   plot_layout(
-    guide = "collect",
+    guides = "collect",
     tag_level = "new"
   )
 
 figure_5[[2]] <- figure_5[[2]] +
   plot_layout(
-    guide = "collect",
+    guides = "collect",
     tag_level = "new"
   )
 
 figure_5[[3]] <- figure_5[[3]] +
   plot_layout(
-    guide = "collect",
+    guides = "collect",
     tag_level = "new"
   )
 
-figure_5 <-
-  figure_5 +
-  plot_annotation(tag_levels = c("A", "1"))
+# figure_5 <-
+  figure_5 &
+  plot_layout(
+    guides = "collect"
+  ) &
+    plot_annotation(tag_levels = c("A", "1")) &
+  theme(
+    plot.tag = element_text(
+      face = "bold",
+      size = 8
+    ),
+    legend.position = "top"
+  )
 
 ggsave(
   figure_5,
