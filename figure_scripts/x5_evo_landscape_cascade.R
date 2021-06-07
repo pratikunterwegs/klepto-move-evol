@@ -304,7 +304,7 @@ figure_5[[3]] <- figure_5[[3]] +
     tag_level = "new"
   )
 
-# figure_5 <-
+figure_5 <-
   figure_5 &
   plot_layout(
     guides = "collect"
