@@ -129,7 +129,7 @@ subplots_syndrome <- Map(function(df, val) {
     ) +
     labs(
       x = "Generation",
-      y = "Handler response",
+      y = "Response to\nhandlers",
       fill = fill_lab
     )
 }, data_strategy_weight, names(data_strategy_weight))
