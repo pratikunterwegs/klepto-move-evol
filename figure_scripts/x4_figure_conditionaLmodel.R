@@ -173,7 +173,7 @@ fig_matching_quality <-
   xlim(0, 50) +
   labs(
     x = "Generation",
-    y = "Corr. indivs. ~ cell quality"
+    y = "Corr. # indivs. ~ cell quality"
   )
 
 #'
