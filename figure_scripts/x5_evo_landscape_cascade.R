@@ -45,21 +45,47 @@ data <- data[sim_type != "random", ]
 #'
 ## -----------------------------------------------------------------------------
 # get positive weights for handlers (weight 3)
+# process scenario 2 (obligate) separately as for figure 3
 wt_handler <- data[weight_id == 3 &
   weight_num > 0 &
   regrowth == 0.01 &
-  sim_type != "random", ]
+  !sim_type %in% c("random", "obligate"), ]
 
 # sum proportions
 wt_handler <- wt_handler[, list(pref_handlers = sum(weight_prop)),
   by = c("sim_type", "replicate", "regrowth", "gen")
 ]
 
-#'
-#' ### Merge weight strategy
-#'
-## -----------------------------------------------------------------------------
-data_wt <- rbindlist(list(klept_bias, handler_strategy))
+# set strategy descriptor
+wt_handler[, strategy := "consumer"]
+
+# HANDLE SCENARIO 2
+wt_handler_s2 = fread("data_sim/results/data_syndrome.csv")
+wt_handler_s2 = wt_handler_s2[regrowth == 0.01, list(N = sum(N)),
+                              by = c("sim_type", "replicate", "regrowth", 
+                                     "klept_bias", "handler_pref", "gen")
+                              ]
+wt_handler_s2[, c("klept_bias", "handler_pref") := list(
+  factor(ifelse(klept_bias, "forager", "klept")),
+  factor(ifelse(handler_pref, "prefers handlers", "avoids handlers"),
+         levels = c("prefers handlers", "avoids handlers")
+  )
+)]
+wt_handler_s2[, prop_per_strat := N / sum(N),
+              by = c("gen", "klept_bias", "regrowth", "replicate")
+              ]
+# subset data
+wt_handler_s2 = wt_handler_s2[handler_pref == "prefers handlers",]
+wt_handler_s2[, c("handler_pref", "N") := NULL]
+setnames(wt_handler_s2, old = c("klept_bias", "prop_per_strat"),
+         new = c("strategy", "pref_handlers"))
+
+#' ### Merge data
+wt_handler = rbindlist(list(wt_handler, wt_handler_s2), use.names = TRUE)
+wt_handler$gen = as.numeric(wt_handler$gen)
+
+# make factor
+wt_handler$strategy = factor(wt_handler$strategy)
 
 #'
 #' ## Read p clueless
@@ -83,30 +109,15 @@ data <- data[sim_type != "random"]
 # 1 - p_clueless
 data$p_clueless <- 1 - data$p_clueless
 
-# join with data_wt
-data_strat <- merge(data, wt_handler)
-
-# melt
-data <- copy(data_strat)
-
-data <- melt(data,
-  id.vars = c(
-    "gen", "replicate",
-    "regrowth", "sim_type"
-  )
-)
-
 # set factor order
 data$sim_type <- factor(data$sim_type,
   levels = c("foragers", "obligate", "facultative")
 )
 
-# remove variables
-data <- data[variable %in%
-  c("p_clueless", "pref_handlers"), ]
-
 # split data
 data <- split(data, by = "sim_type")
+wt_handler = split(wt_handler, by = "sim_type")
+wt_handler = wt_handler[c("foragers", "obligate", "facultative")]
 
 #'
 ## -----------------------------------------------------------------------------
@@ -114,17 +125,17 @@ data <- split(data, by = "sim_type")
 this_green <- "forestgreen"
 
 # make subplots
-subplots <- lapply(data, function(df) {
-  if (unique(df$sim_type) == "foragers") {
-    x_lim <- c(0, 100)
-    df <- df[gen <= 100, ]
-    df[variable == "klept_strategy", "value"] <- NA
+subplots <- Map(function(df_wt, df_land) {
+  if (unique(df_wt$sim_type) == "foragers") {
+    x_lim <- c(1, 100)
+    df_wt <- df_wt[gen <= 100, ]
+    # df[variable == "klept_strategy", "value"] <- NA
   } else {
-    x_lim <- c(0, 50)
-    df <- df[gen <= 50, ]
+    x_lim <- c(1, 50)
+    df_wt <- df_wt[gen <= 50, ]
   }
 
-  ggplot(df) +
+  ggplot() +
     geom_vline(
       xintercept = c(1, 10, 50),
       colour = "grey",
@@ -132,22 +143,35 @@ subplots <- lapply(data, function(df) {
       size = 0.3
     )+
     geom_path(
-      aes(gen, value,
-        col = variable,
-        group = interaction(replicate, variable)
+      data = df_land,
+      aes(
+        gen, p_clueless,
+        group = replicate
+      ),
+      colour = this_green
+    )+
+    geom_path(
+      data = df_wt,
+      aes(gen, pref_handlers,
+        col = strategy,
+        group = interaction(replicate, strategy)
       )
     ) +
     scale_colour_manual(
       values = c(
-        p_clueless = this_green,
-        pref_handlers = "lightslateblue"
+        # land = this_green,
+        consumer = "steelblue",
+        klept = "red",
+        forager = "dodgerblue"
       ),
       labels = c(
-        p_clueless = "Higher prey density\nin neighbourhood",
-        pref_handlers = "Tendency to move\ntowards handlers"
+        # land = "Higher prey density\nin neighbourhood",
+        consumer = "Tendency to move\ntowards handlers",
+        klept = "Klept. tendency to move\ntowards handlers",
+        forager = "Forager tendency to move\ntowards handlers"
       ),
       breaks = c(
-        "p_clueless", "pref_handlers"
+        "consumer", "forager", "klept"
       )
     ) +
     scale_y_continuous(
@@ -166,12 +190,13 @@ subplots <- lapply(data, function(df) {
       y = "Proportion",
       colour = NULL
     ) +
-    guides(colour = guide_legend(nrow = 1, byrow = TRUE))
-})
+    guides(colour = guide_legend(nrow = 1, byrow = F))
+}, wt_handler, data)
 
 # arrange order
 subplots = subplots[c("foragers", "obligate", "facultative")]
-
+wrap_plots(subplots, ncol = 1) &
+  theme(legend.position = "top")
 #'
 #' ## Show landscape for each sim type
 #'
@@ -296,7 +321,7 @@ subplot_land <- subplot_land[fignames]
 # make figure 5
 # wrap cues per gen plots
 plots_cues = wrap_plots(subplots, ncol = 1) +
-  plot_layout(guides= "collect", tag_level = "new") &
+  plot_layout(tag_level = "new") &
   theme(legend.position = "top")
 
 # wrap landscape plots
@@ -305,10 +330,12 @@ plots_land = wrap_plots(subplot_land, ncol = 1) +
   theme(legend.position = "top")
 
 # make figure 5
-figure_5 = wrap_plots(plots_land, plots_cues, 
-                      design = "AAAABB") &
+figure_5 =
+  wrap_plots(plots_land, plots_cues, 
+             design = "AAAABB") &
   plot_annotation(tag_levels = c("A", "1")) &
   theme(
+    legend.position = "top",
     plot.tag = element_text(
       face = "bold",
       size = 8
@@ -317,7 +344,7 @@ figure_5 = wrap_plots(plots_land, plots_cues,
 
 ggsave(
   figure_5,
-  height = 150,
+  height = 180,
   width = 180,
   units = "mm",
   filename = "figures/fig_05.png"
