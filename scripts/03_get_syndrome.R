@@ -22,9 +22,8 @@ param_combinations <- fread("data_sim/results/data_param_combinations.csv")
 param_combinations[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
 
 # select obligate sims
-# param_combinations <- param_combinations[sim_type == "obligate", ]
-# weight data
-
+param_combinations <- param_combinations[sim_type == "obligate", ]
+# get weight data
 syndrome_data <- lapply(param_combinations$folder_path, function(path) {
   kleptomoveMS::get_pref_handler_by_strat(
     data_folder = path,
