@@ -92,9 +92,9 @@ fig_strategy_fitness <-
       facultative = "gold"
     ),
     labels = c(
-      foragers = "Foragers",
-      obligate = "Fixed",
-      facultative = "Conditional"
+      foragers = "Scenario 1",
+      obligate = "Scenario 2",
+      facultative = "Scenario 3"
     )
   ) +
   scale_colour_manual(
@@ -104,9 +104,9 @@ fig_strategy_fitness <-
       facultative = "gold"
     ),
     labels = c(
-      foragers = "Foragers",
-      obligate = "Fixed",
-      facultative = "Conditional"
+      foragers = "Scenario 1",
+      obligate = "Scenario 2",
+      facultative = "Scenario 3"
     )
   ) +
   scale_x_continuous(breaks = c(
@@ -194,9 +194,9 @@ subfigures_strategy_growth <- Map(function(df, name) {
         facultative = "gold"
       ),
       labels = c(
-        foragers = "Foragers",
-        obligate = "Fixed",
-        facultative = "Conditional"
+        foragers = "Scenario 1",
+        obligate = "Scenario 2",
+        facultative = "Scenario 3"
       )
     ) +
     scale_colour_manual(
@@ -206,9 +206,9 @@ subfigures_strategy_growth <- Map(function(df, name) {
         facultative = "gold"
       ),
       labels = c(
-        foragers = "Foragers",
-        obligate = "Fixed",
-        facultative = "Conditional"
+        foragers = "Scenario 1",
+        obligate = "Scenario 2",
+        facultative = "Scenario 3"
       )
     ) +
     scale_y_continuous(
