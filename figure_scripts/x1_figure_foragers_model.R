@@ -139,10 +139,6 @@ fig_matching_quality <-
     stroke = 0.5,
     show.legend = F
   ) +
-  scale_colour_continuous_sequential(
-    palette = "Blues3",
-    begin = 0.3
-  )+
   theme_classic(base_size = 8) +
   coord_cartesian(
     ylim = c(-0.5, 0.5),
@@ -199,7 +195,6 @@ fig_land_foragers <-
     na.value = "white",
     name = "# Consumers"
   )+
-  labs(fill = "# Items", colour = "# Consumers")+
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
   theme(legend.position = "bottom")
