@@ -31,18 +31,26 @@ data_activity <- data_activity[
 ## -----------------------------------------------------------------------------
 fig_activity <-
   ggplot(data_activity[gen <= 50, ]) +
+  geom_jitter(
+    aes(
+      gen, value,
+      colour = variable,
+      group = interaction(variable, replicate)
+    ),
+    shape = 1
+  ) +
   geom_path(
     aes(
       gen, value,
       colour = variable,
       group = interaction(variable, replicate)
     ),
-    position = position_jitter()
+    size = 0.2
   ) +
   scale_colour_manual(
     values = c(
-      foraging = "darkblue",
-      handling = "seagreen"
+      foraging = "dodgerblue4",
+      handling = "forestgreen"
     ),
     labels = c(foraging = "Searching", handling = "Handling"),
     breaks = c("foraging", "handling")
@@ -52,8 +60,8 @@ fig_activity <-
     breaks = seq(0, 1, 0.25),
     labels = c("0", "0.25", "0.5", "0.75", "1")
   ) +
-  scale_x_continuous(
-    breaks = c(1, seq(10, 50, 10))
+  scale_x_log10(
+    breaks = c(1, 3, 10, 30, 50)
   ) +
   coord_cartesian(
     xlim = c(1, 50),
@@ -78,14 +86,20 @@ fig_intake <-
       by = c("gen", "replicate", "pop_fitness")
     )
   ) +
+  geom_jitter(
+    aes(gen, pop_fitness,
+      group = replicate
+    ),
+    shape = 1
+  ) +
   geom_path(
     aes(gen, pop_fitness,
       group = replicate
     ),
-    position = position_jitter()
+    size = 0.2
   ) +
-  scale_x_continuous(
-    breaks = c(1, seq(10, 50, 10))
+  scale_x_log10(
+    breaks = c(1, 3, 10, 30, 50)
   ) +
   coord_cartesian(
     xlim = c(1, 50),
@@ -120,10 +134,15 @@ fig_matching_quality <-
       x = gen,
       y = cf
     ),
+    colour = "dodgerblue4",
     shape = 1,
-    colour = "steelblue",
+    stroke = 0.5,
     show.legend = F
   ) +
+  scale_colour_continuous_sequential(
+    palette = "Blues3",
+    begin = 0.3
+  )+
   theme_classic(base_size = 8) +
   coord_cartesian(
     ylim = c(-0.5, 0.5),
@@ -159,27 +178,32 @@ fig_land_foragers <-
   geom_point(
     data = data_agent[agents > 0, ],
     aes(x, y, colour = agents),
-    shape = 19,
-    alpha = 0.6
+    shape = 4,
+    size = 0.5,
+    stroke = 1,
+    alpha = 0.8
   ) +
   facet_grid(~gen,
     labeller = label_both
   ) +
-  scale_colour_viridis_c(
-    option = "C", begin = 0.2,
-    direction = 1,
-    name = "# Consumers"
-  )+
-  scale_fill_viridis_c(
-    option = "G",
+  scale_fill_continuous_sequential(
+    palette = "Blues3",
+    begin = 0.1,
     limits = c(1, NA),
     na.value = "white",
-    direction = -1
-  ) +
+    name = "# Items"
+  )+
+  scale_colour_continuous_sequential(
+    palette = "Reds",
+    begin = 0.2,
+    na.value = "white",
+    name = "# Consumers"
+  )+
+  labs(fill = "# Items", colour = "# Consumers")+
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
-  theme(legend.position = "bottom") +
-  labs(fill = "# Items")
+  theme(legend.position = "bottom")
+  
 
 #'
 #' ## Figure 1 Foragers model
@@ -210,3 +234,4 @@ ggsave(figure_1_forager_model,
   filename = "figures/fig_01.png",
   height = 120, width = 150, units = "mm"
 )
+
