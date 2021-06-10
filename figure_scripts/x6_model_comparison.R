@@ -9,20 +9,23 @@ library(data.table)
 # plotting
 library(ggplot2)
 library(patchwork)
+library(colorspace)
 
 #'
 ## -----------------------------------------------------------------------------
+# read in data
 data <- fread("data_sim/results/data_strategy_gen.csv")
+
+# remove random data
+data = data[sim_type != "random",]
+
 # rearrange
 data$sim_type <- factor(data$sim_type,
-  levels = c("foragers", "obligate", "facultative", "random")
+  levels = c("foragers", "obligate", "facultative")
 )
 
 # remove excess growth
 data <- data[regrowth <= 0.1, ]
-
-# remove random
-data <- data[sim_type != "random", ]
 
 #'
 #' ### Fitness in relation to regrowth and scenario
@@ -53,6 +56,10 @@ data_fitness_summary <-
   by = c("sim_type", "regrowth")
   ]
 
+# make a manual colorscale
+manual_colours = colorspace::qualitative_hcl(n = 3, palette = "Harmonic")
+names(manual_colours) = levels(data_fitness_summary$sim_type)
+
 # boxplot fitness
 fig_strategy_fitness <-
   ggplot() +
@@ -65,8 +72,7 @@ fig_strategy_fitness <-
         pop_fitness.sd,
       group = sim_type,
       colour = sim_type
-    ),
-    size = 0.1
+    )
   ) +
   geom_line(
     data = data_fitness_summary,
@@ -74,7 +80,8 @@ fig_strategy_fitness <-
       y = pop_fitness.median,
       col = sim_type,
       group = sim_type
-    )
+    ),
+    size = 1
   ) +
   geom_point(
     data = data_fitness_summary,
@@ -83,14 +90,11 @@ fig_strategy_fitness <-
       fill = sim_type,
       group = sim_type
     ),
-    shape = 21
+    shape = 21,
+    size = 1
   ) +
   scale_fill_manual(
-    values = c(
-      foragers = "maroon",
-      obligate = "dodgerblue",
-      facultative = "gold"
-    ),
+    values = manual_colours,
     labels = c(
       foragers = "Scenario 1",
       obligate = "Scenario 2",
@@ -98,11 +102,7 @@ fig_strategy_fitness <-
     )
   ) +
   scale_colour_manual(
-    values = c(
-      foragers = "maroon",
-      obligate = "dodgerblue",
-      facultative = "gold"
-    ),
+    values = manual_colours,
     labels = c(
       foragers = "Scenario 1",
       obligate = "Scenario 2",
@@ -146,6 +146,14 @@ data_strategy_summary <- data_equi[variable %in% c(
 ) &
   regrowth <= 0.05, ]
 
+# set sim type as factor
+data_strategy_summary$sim_type = factor(data_strategy_summary$sim_type)
+
+# remove stealing in foragers
+data_strategy_summary = data_strategy_summary[
+  !(variable == "stealing" & sim_type == "foragers"),
+]
+
 # summarise proportion per sim type and growth rate
 data_strategy_summary <-
   data_strategy_summary[, unlist(lapply(.SD, function(x) {
@@ -165,10 +173,9 @@ data_strategy_summary <- split(data_strategy_summary,
 
 #'
 ## -----------------------------------------------------------------------------
+
 subfigures_strategy_growth <- Map(function(df, name) {
   yaxis_name <- sprintf("Prop. %s", stringr::str_to_sentence(name))
-  # colour <- ifelse(name == "stealing", pal[1], pal[2])
-
   # plot figure
   ggplot(df) +
     geom_errorbar(
@@ -177,22 +184,26 @@ subfigures_strategy_growth <- Map(function(df, name) {
         ymax = value.median + value.sd,
         colour = sim_type
       ),
-      size = 0.1
+      show.legend = F
     ) +
-    geom_path(aes(regrowth, value.median,
-      group = interaction(sim_type, variable),
-      colour = sim_type
-    )) +
-    geom_point(aes(regrowth, value.median,
-      group = interaction(sim_type, variable),
-      fill = sim_type
-    ), shape = 21) +
-    scale_fill_manual(
-      values = c(
-        foragers = "maroon",
-        obligate = "dodgerblue",
-        facultative = "gold"
+    geom_path(
+      aes(regrowth, value.median,
+        group = interaction(sim_type, variable),
+        colour = sim_type
       ),
+      size = 1,
+      show.legend = F
+    ) +
+    geom_point(
+      aes(regrowth, value.median,
+        group = interaction(sim_type, variable),
+        fill = sim_type
+      ),
+      show.legend = F,
+      size = 1, 
+      shape = 21) +
+    scale_fill_manual(
+      values = manual_colours,
       labels = c(
         foragers = "Scenario 1",
         obligate = "Scenario 2",
@@ -200,11 +211,7 @@ subfigures_strategy_growth <- Map(function(df, name) {
       )
     ) +
     scale_colour_manual(
-      values = c(
-        foragers = "maroon",
-        obligate = "dodgerblue",
-        facultative = "gold"
-      ),
+      values = manual_colours,
       labels = c(
         foragers = "Scenario 1",
         obligate = "Scenario 2",
