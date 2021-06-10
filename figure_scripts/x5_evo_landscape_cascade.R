@@ -116,6 +116,10 @@ data$sim_type <- factor(data$sim_type,
 
 # split data
 data <- split(data, by = "sim_type")
+# set order
+data = data[c("foragers", "obligate", "facultative")]
+
+# split preference data
 wt_handler = split(wt_handler, by = "sim_type")
 wt_handler = wt_handler[c("foragers", "obligate", "facultative")]
 
@@ -128,11 +132,11 @@ this_green <- "forestgreen"
 subplots <- Map(function(df_wt, df_land) {
   if (unique(df_wt$sim_type) == "foragers") {
     x_lim <- c(1, 100)
-    df_wt <- df_wt[gen <= 100, ]
+    df_wt <- df_wt[gen <= 100 & (gen %% 3 == 0 | gen == 1) , ]
     # df[variable == "klept_strategy", "value"] <- NA
   } else {
     x_lim <- c(1, 50)
-    df_wt <- df_wt[gen <= 50, ]
+    df_wt <- df_wt[gen <= 50 & (gen %% 3 == 0 | gen == 1) , ]
   }
 
   ggplot() +
@@ -148,13 +152,49 @@ subplots <- Map(function(df_wt, df_land) {
         gen, p_clueless,
         group = replicate
       ),
-      colour = this_green
+      colour = this_green,
+      size = 0.1
+    )+
+    geom_point(
+      data = df_land,
+      aes(
+        gen, p_clueless,
+        group = replicate
+      ),
+      colour = this_green,
+      shape = 1
     )+
     geom_path(
       data = df_wt,
       aes(gen, pref_handlers,
         col = strategy,
         group = interaction(replicate, strategy)
+      ),
+      size = 0.1
+    ) +
+    geom_point(
+      data = df_wt,
+      aes(gen, pref_handlers,
+        col = strategy,
+        group = interaction(replicate, strategy),
+        shape = strategy
+      )
+    ) +
+    scale_shape_manual(
+      values = c(
+        # land = this_green,
+        consumer = 0,
+        klept = 6,
+        forager = 2
+      ),
+      labels = c(
+        # land = "Higher prey density\nin neighbourhood",
+        consumer = "Tendency to move\ntowards handlers",
+        klept = "Klept. tendency\nto move\ntowards handlers",
+        forager = "Forager tendency\nto move\ntowards handlers"
+      ),
+      breaks = c(
+        "consumer", "forager", "klept"
       )
     ) +
     scale_colour_manual(
@@ -167,20 +207,21 @@ subplots <- Map(function(df_wt, df_land) {
       labels = c(
         # land = "Higher prey density\nin neighbourhood",
         consumer = "Tendency to move\ntowards handlers",
-        klept = "Klept. tendency to move\ntowards handlers",
-        forager = "Forager tendency to move\ntowards handlers"
+        klept = "Klept. tendency\nto move\ntowards handlers",
+        forager = "Forager tendency\nto move\ntowards handlers"
       ),
       breaks = c(
         "consumer", "forager", "klept"
       )
     ) +
     scale_y_continuous(
+      limits = c(0, 1.05),
       breaks = seq(0, 1, 0.25),
       labels = c("0", "0.25", "0.5", "0.75", "1")
     ) +
     coord_cartesian(
       xlim = x_lim,
-      ylim = c(0, 1),
+      ylim = c(0, 1.05),
       expand = F
     ) +
     kleptomoveMS::theme_custom(grid = F, base_size = 8) +
@@ -188,7 +229,8 @@ subplots <- Map(function(df_wt, df_land) {
     labs(
       x = "Generation",
       y = "Proportion",
-      colour = NULL
+      colour = NULL,
+      shape = NULL
     ) +
     guides(colour = guide_legend(nrow = 1, byrow = F))
 }, wt_handler, data)
