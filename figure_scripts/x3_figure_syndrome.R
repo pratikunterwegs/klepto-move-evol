@@ -11,6 +11,7 @@
 library(data.table)
 library(glue)
 
+# libraries for figures
 library(ggplot2)
 library(colorspace)
 library(patchwork)
@@ -21,10 +22,11 @@ library(patchwork)
 ## -----------------------------------------------------------------------------
 # get raw data
 data_nodes <- fread("data_sim/results/data_early_0_100_weight_evolution.csv")
-# subset
+# subset for obligate strategies
 data_nodes <- data_nodes[sim_type == "obligate" &
   regrowth == 0.01 &
   weight_id %in% c(3, 5), ]
+
 # get numeric lower bounds
 data_nodes[, weight_num := as.numeric(
   stringi::stri_extract_last(weight_value,
@@ -52,14 +54,17 @@ fig3a <-
     size = 0.3
   ) +
   scale_fill_continuous_sequential(
-    palette = "Light Grays"
+    palette = "Light Grays",
+    labels = scales::percent
   ) +
   scale_y_continuous(
-    breaks = c(-1.75, 1.75),
+    breaks = c(-0.7, 0.7),
     labels = c("Klept.", "Forager")
   ) +
-  coord_cartesian(
-    expand = F
+  coord_fixed(
+    expand = F,
+    ratio = 15,
+    ylim = c(-1, 1)
   ) +
   kleptomoveMS::theme_custom(base_size = 8) +
   theme(
@@ -71,8 +76,9 @@ fig3a <-
   ) +
   facet_grid(~replicate, labeller = label_both) +
   labs(
-    x = "Generation", y = "Behavioural strategy",
-    fill = "Prop. indivs."
+    x = "Generation", 
+    y = NULL,
+    fill = "% individuals"
   )
 
 #'
@@ -87,9 +93,9 @@ data_strategy_weight <- split(data_strategy_weight, by = "klept_bias")
 ## -----------------------------------------------------------------------------
 subplots_syndrome <- Map(function(df, val) {
   colours <- sequential_hcl(n = 10, palette = "Reds 3", rev = T)
-  fill_lab <- "Prop. klepts."
+  fill_lab <- "% klepts."
   if (val == "1") {
-    fill_lab <- "Prop. foragers"
+    fill_lab <- "% foragers"
     colours <- sequential_hcl(n = 10, palette = "Blues 3", rev = T)
   }
 
@@ -234,8 +240,9 @@ fig3c <-
 ## -----------------------------------------------------------------------------
 fig_3 <-
   wrap_plots(
-    fig3a, fig3b, fig3c,
-    design = "AAA\nBBC\nBBC\nBBC\nBB#"
+    fig3a, fig3b,
+    nrow = 2,
+    design = "AAA\nBBB\nBBB\nBBB\nBBB"
   ) +
     plot_annotation(
       tag_levels = "A"
