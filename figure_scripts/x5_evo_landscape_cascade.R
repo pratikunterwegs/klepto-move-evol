@@ -152,17 +152,7 @@ subplots <- Map(function(df_wt, df_land) {
         gen, p_clueless,
         group = replicate
       ),
-      colour = this_green,
-      size = 0.1
-    )+
-    geom_point(
-      data = df_land,
-      aes(
-        gen, p_clueless,
-        group = replicate
-      ),
-      colour = this_green,
-      shape = 1
+      colour = this_green
     )+
     geom_path(
       data = df_wt,
@@ -170,7 +160,7 @@ subplots <- Map(function(df_wt, df_land) {
         col = strategy,
         group = interaction(replicate, strategy)
       ),
-      size = 0.1
+      size = 0.2
     ) +
     geom_point(
       data = df_wt,
