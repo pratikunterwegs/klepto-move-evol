@@ -132,11 +132,11 @@ this_green <- "forestgreen"
 subplots <- Map(function(df_wt, df_land) {
   if (unique(df_wt$sim_type) == "foragers") {
     x_lim <- c(1, 100)
-    df_wt <- df_wt[gen <= 100 & (gen %% 3 == 0 | gen == 1) , ]
+    df_wt <- df_wt[gen <= 100, ]
     # df[variable == "klept_strategy", "value"] <- NA
   } else {
     x_lim <- c(1, 50)
-    df_wt <- df_wt[gen <= 50 & (gen %% 3 == 0 | gen == 1) , ]
+    df_wt <- df_wt[gen <= 50, ]
   }
 
   ggplot() +
@@ -159,15 +159,6 @@ subplots <- Map(function(df_wt, df_land) {
       aes(gen, pref_handlers,
         col = strategy,
         group = interaction(replicate, strategy)
-      ),
-      size = 0.3
-    ) +
-    geom_point(
-      data = df_wt,
-      aes(gen, pref_handlers,
-        col = strategy,
-        group = interaction(replicate, strategy),
-        shape = strategy
       )
     ) +
     scale_shape_manual(
@@ -191,7 +182,7 @@ subplots <- Map(function(df_wt, df_land) {
       values = c(
         # land = this_green,
         consumer = "dodgerblue4",
-        klept = "red",
+        klept = "indianred",
         forager = "dodgerblue4"
       ),
       labels = c(
