@@ -69,7 +69,7 @@ get_weight_splots = function(this_list) {
       ggplot(df)+
       geom_hline(
         yintercept = 0,
-        colour = "steelblue"
+        colour = "dodgerblue4"
       )+
       geom_tile(
         aes(gen, weight_num,
