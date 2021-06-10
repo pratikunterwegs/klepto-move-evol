@@ -190,9 +190,9 @@ subplots <- Map(function(df_wt, df_land) {
     scale_colour_manual(
       values = c(
         # land = this_green,
-        consumer = "steelblue",
+        consumer = "dodgerblue4",
         klept = "red",
-        forager = "steelblue"
+        forager = "dodgerblue4"
       ),
       labels = c(
         # land = "Higher prey density\nin neighbourhood",
