@@ -160,7 +160,7 @@ subplots <- Map(function(df_wt, df_land) {
         col = strategy,
         group = interaction(replicate, strategy)
       ),
-      size = 0.2
+      size = 0.3
     ) +
     geom_point(
       data = df_wt,
@@ -192,7 +192,7 @@ subplots <- Map(function(df_wt, df_land) {
         # land = this_green,
         consumer = "steelblue",
         klept = "red",
-        forager = "dodgerblue"
+        forager = "steelblue"
       ),
       labels = c(
         # land = "Higher prey density\nin neighbourhood",
