@@ -212,18 +212,20 @@ fig_land_fixed <-
     labeller = label_both
   ) +
   scale_fill_continuous_sequential(
-    palette = "Blues3",
+    palette = "Blues2",
     begin = 0.1,
     limits = c(1, NA),
     na.value = "white",
-    name = "# Items"
+    name = "# Items",
+    guide = guide_legend(order = 1)
   )+
   scale_colour_continuous_sequential(
     palette = "Reds",
     begin = 0.2,
     limits = c(1, 5),
     na.value = "darkred",
-    name = "# Consumers"
+    name = "# Consumers",
+    guide = guide_legend(order = 2)
   )+
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
