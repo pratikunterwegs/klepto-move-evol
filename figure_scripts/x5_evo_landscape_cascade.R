@@ -197,8 +197,7 @@ subplots <- Map(function(df_wt, df_land) {
     ) +
     scale_y_continuous(
       limits = c(0, 1.05),
-      breaks = seq(0, 1, 0.25),
-      labels = c("0", "0.25", "0.5", "0.75", "1")
+      breaks = seq(0, 1, 0.25)
     ) +
     coord_cartesian(
       xlim = x_lim,

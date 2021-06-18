@@ -44,13 +44,15 @@ fig_activity <-
       foraging = "dodgerblue4",
       handling = "forestgreen"
     ),
-    labels = c(foraging = "Searching", handling = "Handling"),
+    labels = c(
+      foraging = "Searching for prey", 
+      handling = "Handling prey"
+      ),
     breaks = c("foraging", "handling")
   ) +
   scale_y_continuous(
     # labels = scales::percent,
-    breaks = seq(0, 1, 0.25),
-    labels = c("0", "0.25", "0.5", "0.75", "1")
+    breaks = seq(0, 1, 0.25)
   ) +
   scale_x_log10(
     breaks = c(1, 3, 10, 30, 50)
@@ -64,7 +66,7 @@ fig_activity <-
   theme(legend.position = "top") +
   labs(
     x = "Generation",
-    y = "Prop. population time",
+    y = "Proportion of time",
     colour = NULL
   )
 
@@ -173,7 +175,7 @@ fig_land_foragers <-
     begin = 0.1,
     limits = c(1, NA),
     na.value = "white",
-    name = "# Items",
+    name = "# Prey",
     guide = guide_legend(order = 1)
   )+
   scale_colour_continuous_sequential(

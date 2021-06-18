@@ -219,8 +219,7 @@ subfigures_strategy_growth <- Map(function(df, name) {
       )
     ) +
     scale_y_continuous(
-      breaks = seq(0, 1, 0.25),
-      labels = c("0", "0.25", "0.5", "0.75", "1")
+      breaks = seq(0, 1, 0.25)
     ) +
     scale_x_continuous(breaks = c(
       0.001,
