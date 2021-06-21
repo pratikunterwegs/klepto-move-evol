@@ -150,9 +150,9 @@ subplots <- Map(function(df_wt, df_land) {
       data = df_land,
       aes(
         gen, p_clueless,
+        colour = "land",
         group = replicate
-      ),
-      colour = this_green
+      )
     )+
     geom_path(
       data = df_wt,
@@ -161,38 +161,21 @@ subplots <- Map(function(df_wt, df_land) {
         group = interaction(replicate, strategy)
       )
     ) +
-    scale_shape_manual(
-      values = c(
-        # land = this_green,
-        consumer = 0,
-        klept = 6,
-        forager = 2
-      ),
-      labels = c(
-        # land = "Higher prey density\nin neighbourhood",
-        consumer = "Tendency to move\ntowards handlers",
-        klept = "Klept. tendency\nto move\ntowards handlers",
-        forager = "Forager tendency\nto move\ntowards handlers"
-      ),
-      breaks = c(
-        "consumer", "forager", "klept"
-      )
-    ) +
     scale_colour_manual(
       values = c(
-        # land = this_green,
+        land = this_green,
         consumer = "dodgerblue4",
         klept = "indianred",
         forager = "dodgerblue4"
       ),
       labels = c(
-        # land = "Higher prey density\nin neighbourhood",
+        land = "Higher prey density\nin neighbourhood",
         consumer = "Tendency to move\ntowards handlers",
         klept = "Klept. tendency\nto move\ntowards handlers",
         forager = "Forager tendency\nto move\ntowards handlers"
       ),
       breaks = c(
-        "consumer", "forager", "klept"
+        "land", "consumer", "forager", "klept"
       )
     ) +
     scale_y_continuous(
@@ -201,7 +184,7 @@ subplots <- Map(function(df_wt, df_land) {
     ) +
     coord_cartesian(
       xlim = x_lim,
-      ylim = c(0, 1.05),
+      ylim = c(0.2, 1.05),
       expand = F
     ) +
     kleptomoveMS::theme_custom(grid = F, base_size = 8) +
@@ -212,7 +195,7 @@ subplots <- Map(function(df_wt, df_land) {
       colour = NULL,
       shape = NULL
     ) +
-    guides(colour = guide_legend(nrow = 1, byrow = F))
+    guides(colour = guide_legend(nrow = 2, ncol = 2, byrow = T))
 }, wt_handler, data)
 
 # arrange order
@@ -288,14 +271,16 @@ landscape <- (landscape_gradient)
 landscape <- melt(landscape, id.vars = c("sim_type", "gen", "x", "y"))
 
 # split by sim_type
-landscape <- split(landscape, by = c("sim_type", "variable"))
+landscape <- split(landscape, by = c("sim_type"))
+
+landscape = landscape[c("foragers", "obligate", "facultative")]
 
 #'
 #'
 #' ### Plot landscape
 #'
 ## -----------------------------------------------------------------------------
-subplot_land <- lapply(landscape, function(df) {
+subplot_land <- Map(function(df, n) {
   ggplot(df) +
     geom_tile(
       aes(x, y, 
@@ -323,18 +308,14 @@ subplot_land <- lapply(landscape, function(df) {
         fill = NA,
         colour = "grey"
       ),
+      title = element_text(face = "bold"),
       axis.text = element_blank(),
       axis.title = element_blank()
+    )+
+    labs(
+      title = glue("Scenario {n}")
     )
-})
-
-# arrange order
-sim_types <- c("foragers", "obligate", "facultative")
-
-# figure names
-fignames <- c(glue("{sim_types}.gradient"))
-# arrange plots in order
-subplot_land <- subplot_land[fignames]
+}, landscape, seq(3))
 
 #'
 #' ## Figure 5
