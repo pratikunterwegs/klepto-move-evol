@@ -80,9 +80,9 @@ fig_activity <-
       p_klept = "darkorange"
     ),
     labels = c(
-      foraging = "Searching for prey",
-      handling = "Handling prey",
-      stealing = "Searching for handlers",
+      foraging = "Foraging",
+      handling = "Handling",
+      stealing = "Kleptop.",
       p_klept = "Prop. klept."
     ),
     breaks = c("foraging", "handling", "stealing", "p_klept")
@@ -102,14 +102,15 @@ fig_activity <-
   theme_classic(base_size = 8) +
   theme(
     legend.position = "top",
-    legend.key.height = unit(0, units = "mm")
+    legend.key.height = unit(3, units = "mm"),
+    legend.key.width = unit(2, units = "mm")
   ) +
   labs(
     x = "Generation",
     y = "Proportion of time",
     colour = NULL
   ) +
-  guides(colour = guide_legend(nrow = 2, byrow = TRUE))
+  guides(colour = guide_legend(nrow = 2, ncol = 2, byrow = F))
 
 #'
 #' figure intake
