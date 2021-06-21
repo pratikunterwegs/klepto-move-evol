@@ -57,7 +57,9 @@ data_fitness_summary <-
   ]
 
 # make a manual colorscale
-manual_colours = colorspace::qualitative_hcl(n = 3, palette = "Harmonic")
+manual_colours = colorspace::qualitative_hcl(n = 3, 
+                                             palette = "Harmonic", h = 150, 
+                                             c = 50, l = 60)
 names(manual_colours) = levels(data_fitness_summary$sim_type)
 
 # boxplot fitness
@@ -130,9 +132,9 @@ fig_strategy_fitness <-
   labs(
     x = "Regrowth rate",
     y = "Population intake",
-    colour = "Model",
-    fill = "Model",
-    shape = "Model"
+    colour = NULL,
+    fill = NULL,
+    shape = NULL
   )
 
 #'
@@ -236,11 +238,11 @@ subfigures_strategy_growth <- Map(function(df, name) {
     labs(
       x = "Regrowth rate",
       y = yaxis_name,
-      colour = "Model",
-      fill = "Model",
-      shape = "Model"
+      colour = NULL,
+      fill = NULL,
+      shape = NULL
     )
-}, data_strategy_summary, names(data_strategy_summary))
+}, data_strategy_summary, c("Searching for prey", "Searching for handlers"))
 
 #'
 #' ## Make Figure model comparison
