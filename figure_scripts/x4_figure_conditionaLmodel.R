@@ -79,10 +79,10 @@ fig_activity <-
       p_klept = "darkorange"
     ),
     labels = c(
-      foraging = "Foraging",
-      handling = "Handling",
-      stealing = "Kleptop.",
-      p_klept = "Pot. kleptop."
+      foraging = "Searching for prey",
+      handling = "Handling prey",
+      stealing = "Searching for handlers",
+      p_klept = "Prop. klept."
     ),
     breaks = c("foraging", "handling", "stealing", "p_klept")
   ) +
@@ -101,15 +101,14 @@ fig_activity <-
   theme_classic(base_size = 8) +
   theme(
     legend.position = "top",
-    legend.key.height = unit(3, units = "mm"),
-    legend.key.width = unit(2, units = "mm")
+    legend.key.height = unit(2, units = "mm")
   ) +
   labs(
     x = "Generation",
     y = "Proportion of time",
     colour = NULL
   ) +
-  guides(colour = guide_legend(nrow = 2, ncol = 2, byrow = F))
+  guides(colour = guide_legend(nrow = 1))
 
 #'
 #' figure intake
@@ -237,27 +236,39 @@ fig_land_conditional <-
 #' wrap figures together
 #'
 ## -----------------------------------------------------------------------------
-figure_4_conditional_model <-
+figure_4 <-
   wrap_plots(
-    fig_land_conditional,
     fig_activity, fig_intake,
-    fig_matching_quality,
-    design = "AAAAAA\nBBCCDD"
+    fig_matching_quality
+  ) +
+  plot_layout(guides = "collect") &
+  theme(
+    legend.position = "bottom"
+  )
+
+figure_4 =
+  wrap_plots(
+    fig_land_fixed,
+    figure_4,
+    ncol = 1
   ) +
   plot_annotation(
     tag_levels = "A"
   ) &
-  theme(plot.tag = element_text(
-    face = "bold",
-    size = 12
-  ))
+  theme(
+    plot.tag = element_text(
+      face = "bold",
+      size = 12
+    )
+  )
+
 
 #'
 #' save figure
 #'
 ## -----------------------------------------------------------------------------
 ggsave(
-  figure_4_conditional_model,
+  figure_4,
   filename = "figures/fig_04.png",
   height = 120, width = 150, units = "mm"
 )

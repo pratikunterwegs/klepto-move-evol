@@ -188,20 +188,22 @@ subplots <- Map(function(df_wt, df_land) {
       expand = F
     ) +
     kleptomoveMS::theme_custom(grid = F, base_size = 8) +
-    theme(legend.position = "top") +
+    theme(
+      legend.position = "right"
+      ) +
     labs(
       x = "Generation",
       y = "Proportion",
       colour = NULL,
       shape = NULL
     ) +
-    guides(colour = guide_legend(nrow = 2, ncol = 2, byrow = T))
+    guides(colour = guide_legend(nrow = 3, ncol = 1))
 }, wt_handler, data)
 
 # arrange order
 subplots = subplots[c("foragers", "obligate", "facultative")]
 wrap_plots(subplots, ncol = 1) &
-  theme(legend.position = "top")
+  theme(legend.position = "right")
 #'
 #' ## Show landscape for each sim type
 #'
@@ -308,13 +310,15 @@ subplot_land <- Map(function(df, n) {
         fill = NA,
         colour = "grey"
       ),
+      legend.key.height = unit(1, units = "mm"),
       title = element_text(face = "bold"),
       axis.text = element_blank(),
       axis.title = element_blank()
     )+
     labs(
       title = glue("Scenario {n}")
-    )
+    )+
+    guides(colour = guide_legend(nrow = 2, ncol = 1))
 }, landscape, seq(3))
 
 #'
@@ -325,12 +329,16 @@ subplot_land <- Map(function(df, n) {
 # wrap cues per gen plots
 plots_cues = wrap_plots(subplots, ncol = 1) +
   plot_layout(tag_level = "new") &
-  theme(legend.position = "top")
+  theme(legend.position = "right")
 
 # wrap landscape plots
-plots_land = wrap_plots(subplot_land, ncol = 1) +
+plots_land =
+  wrap_plots(subplot_land, ncol = 1) +
   plot_layout(guides= "collect", tag_level = "new") &
-  theme(legend.position = "top")
+  theme(
+    legend.key.width = unit(3, units = "mm"),
+    legend.position = "top"
+  )
 
 # make figure 5
 figure_5 =
@@ -338,7 +346,6 @@ figure_5 =
              design = "AAAABB") &
   plot_annotation(tag_levels = c("A", "1")) &
   theme(
-    legend.position = "top",
     plot.tag = element_text(
       face = "bold",
       size = 8
@@ -347,7 +354,7 @@ figure_5 =
 
 ggsave(
   figure_5,
-  height = 180,
+  height = 150,
   width = 180,
   units = "mm",
   filename = "figures/fig_05.png"

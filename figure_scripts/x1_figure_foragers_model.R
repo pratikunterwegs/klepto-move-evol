@@ -45,9 +45,9 @@ fig_activity <-
       handling = "forestgreen"
     ),
     labels = c(
-      foraging = "Foraging", 
-      handling = "Handling"
-      ),
+      foraging = "Searching for prey",
+      handling = "Handling prey"
+    ),
     breaks = c("foraging", "handling")
   ) +
   scale_y_continuous(
@@ -63,16 +63,16 @@ fig_activity <-
     expand = F
   ) +
   theme_classic(base_size = 8) +
-  theme(legend.position = "top",
-        legend.key.height = unit(3, units = "mm"),
-        legend.key.width = unit(2, units = "mm")
+  theme(
+    legend.position = "top",
+    legend.key.height = unit(2, units = "mm")
   ) +
   labs(
     x = "Generation",
     y = "Proportion of time",
     colour = NULL
   )+
-  guides(colour = guide_legend(nrow = 2, ncol = 2, byrow = T))
+  guides(colour = guide_legend(nrow = 1))
 
 #'
 #' ## figure intake
@@ -201,26 +201,38 @@ fig_land_foragers <-
 #' wrap figures together
 #'
 ## -----------------------------------------------------------------------------
-figure_1_forager_model <-
+figure_1 <-
+  wrap_plots(
+    fig_activity, fig_intake,
+    fig_matching_quality
+  ) +
+  plot_layout(guides = "collect") &
+  theme(
+    legend.position = "bottom"
+  )
+
+figure_1 =
   wrap_plots(
     fig_land_foragers,
-    fig_activity, fig_intake,
-    fig_matching_quality,
-    design = "AAAAAA\nBBCCDD"
+    figure_1,
+    ncol = 1
   ) +
-    plot_annotation(
-      tag_levels = "A"
-    ) &
-    theme(plot.tag = element_text(
+  plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(
+    plot.tag = element_text(
       face = "bold",
       size = 12
-    ))
+    )
+  )
+
 
 #'
 #' save figure
 #'
 ## -----------------------------------------------------------------------------
-ggsave(figure_1_forager_model,
+ggsave(figure_1,
   filename = "figures/fig_01.png",
   height = 120, width = 150, units = "mm"
 )
