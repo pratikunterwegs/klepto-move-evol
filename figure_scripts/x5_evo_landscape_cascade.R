@@ -169,7 +169,7 @@ subplots <- Map(function(df_wt, df_land) {
         forager = "dodgerblue4"
       ),
       labels = c(
-        land = "Higher prey density\nin neighbourhood",
+        land = "Different prey density\nin neighbourhood",
         consumer = "Tendency to move\ntowards handlers",
         klept = "Klept. tendency\nto move\ntowards handlers",
         forager = "Forager tendency\nto move\ntowards handlers"
@@ -296,7 +296,7 @@ subplot_land <- Map(function(df, n) {
         "FALSE" = "white"
       ),
       labels = c(
-        "TRUE" = "Higher prey density\nin neighbourhood",
+        "TRUE" = "Different prey density\nin neighbourhood",
         "FALSE" = "Neighbourhood has\nsame prey density"
       ),
       breaks = c("TRUE", "FALSE"),
