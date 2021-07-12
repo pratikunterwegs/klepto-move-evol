@@ -139,7 +139,7 @@ fig_intake <-
   theme_classic(base_size = 8) +
   labs(
     x = "Generation",
-    y = "Population intake"
+    y = "Per capita intake"
   )
 
 #'
