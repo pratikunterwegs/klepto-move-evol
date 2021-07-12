@@ -175,7 +175,7 @@ fig_land_foragers <-
     labeller = label_both
   ) +
   scale_fill_continuous_sequential(
-    palette = "Blues2",
+    palette = "Blues",
     begin = 0.1,
     limits = c(1, NA),
     na.value = "white",
