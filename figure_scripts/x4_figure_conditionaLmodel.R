@@ -12,6 +12,7 @@
 library(data.table)
 
 library(ggplot2)
+library(colorspace)
 library(patchwork)
 
 #'
@@ -211,7 +212,7 @@ fig_land_conditional <-
     labeller = label_both
   ) +
   scale_fill_continuous_sequential(
-    palette = "Blues2",
+    palette = "Blues",
     begin = 0.1,
     limits = c(1, NA),
     na.value = "white",
@@ -248,7 +249,7 @@ figure_4 <-
 
 figure_4 =
   wrap_plots(
-    fig_land_fixed,
+    fig_land_conditional,
     figure_4,
     ncol = 1
   ) +
@@ -261,7 +262,6 @@ figure_4 =
       size = 12
     )
   )
-
 
 #'
 #' save figure
