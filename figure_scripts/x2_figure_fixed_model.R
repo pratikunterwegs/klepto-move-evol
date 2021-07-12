@@ -12,6 +12,7 @@
 library(data.table)
 
 library(ggplot2)
+library(colorspace)
 library(patchwork)
 
 #'
@@ -161,14 +162,33 @@ fig_matching_quality <-
     data = data_quality[gen < 50, ],
     aes(
       x = gen,
-      y = cf
+      y = cf,
+      colour = strategy,
+      shape = strategy
     ),
-    colour = "dodgerblue4",
-    shape = 1,
     stroke = 0.5,
-    show.legend = F
+    show.legend = TRUE
   ) +
-  theme_classic(base_size = 8) +
+  scale_colour_discrete_diverging(
+    palette = "Blue-Red 2",
+    name = NULL,
+    labels = c("Foragers", "Klept.")
+  )+
+  scale_shape_manual(
+    values = c(
+      "klepts" = 2,
+      "foragers" = 0
+    ),
+    name = NULL,
+    breaks = c("foragers", "klepts"),
+    labels = c("Foragers", "Klept.")
+  )+
+  theme_classic(base_size = 6) +
+  theme(
+    legend.position = "bottom",
+    legend.key.height = unit(2, units = "mm"),
+    legend.key.width = unit(5, units = "mm")
+  )+
   coord_cartesian(
     ylim = c(-0.5, 0.5),
     xlim = c(0, 50),
@@ -177,7 +197,9 @@ fig_matching_quality <-
   xlim(0, 50) +
   labs(
     x = "Generation",
-    y = "Corr. # indivs. ~ cell quality"
+    y = "Corr. # indivs. ~ cell quality",
+    colour = NULL,
+    shape = NULL
   )
 
 #'
@@ -211,7 +233,7 @@ fig_land_fixed <-
     labeller = label_both
   ) +
   scale_fill_continuous_sequential(
-    palette = "Blues2",
+    palette = "Blues",
     begin = 0.1,
     limits = c(1, NA),
     na.value = "white",
