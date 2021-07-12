@@ -20,6 +20,8 @@ params$folder_path <- stringr::str_replace(
   "data_sim"
 )
 
+params = params[regrowth <= 0.05,]
+
 # remove params over 0.02
 # params = params[regrowth <= 0.02,]
 
@@ -42,16 +44,50 @@ params$image <- glue_data(params, "{folder_path}/{gen}.png")
 # copy as data
 data <- copy(params)
 
+# remove unused growth rates
+data = data[regrowth <= 0.05,]
+
+# separate data for scenario 2
+data_sc2 = data[sim_type == "obligate", ]
+
+# separate other data
+data = data[!data_sc2, on = names(data)]
+
+# handle data from scenario 2
+sc2_strat = data.table(strategy = c("foragers", "klepts"))
+data_sc2 = setkey(data_sc2[, c(k = 1, .SD)], k)[
+  sc2_strat[, c(k = 1, .SD)], allow.cartesian = TRUE]
+data_sc2[, k := NULL]
+
 #'
 ## -----------------------------------------------------------------------------
-# get data
+# get data for scenarios 1 and 3
 agent_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
-  layer = c(1, 3), # read only foragers and klepts
+  layer = c(1, 3), # read only foragers and klepts if any
   crop_dim = 60,
   type = "items"
 )
 
+# scenario 2 agent data
+agent_data_sc2 = Map(function(file, strategy) {
+  
+  layer = ifelse(strategy == "foragers", 3, 1)
+  
+  d = kleptomoveMS::read_landscape(
+    landscape_file = file, layer = layer,
+    crop_dim = 60,
+    type = "items"
+  )
+  
+  d = d[items > 0, ]
+  
+  setnames(d, "items", strategy)
+  
+}, data_sc2$image, data_sc2$strategy)
+
+#' ## Remove unoccupied cells
+#' 
 # remove where agents are 0
 agent_data <- lapply(
   agent_data, function(df) {
@@ -59,21 +95,6 @@ agent_data <- lapply(
     setnames(df, "items", "agents")
     # df[, agents := round(agents / 0.02)]
   }
-)
-
-#'
-#' ## get items in all gens
-#'
-## -----------------------------------------------------------------------------
-# copy as data
-data <- copy(params)
-
-# get data
-item_data <- lapply(data$image,
-  kleptomoveMS::read_landscape,
-  layer = c(4), # read items
-  crop_dim = 60,
-  type = "items"
 )
 
 #'
@@ -88,69 +109,41 @@ quality_data <- kleptomoveMS::read_landscape(
 setnames(quality_data, old = "items", new = "quality")
 
 # agent quality data
-quality_data <- lapply(agent_data, function(df) {
+agent_data <- lapply(agent_data, function(df) {
   merge(df, quality_data, by = intersect(names(df), names(quality_data)), all = F)
 })
 
-# unlist
-data$layer_data <- quality_data
+# scenario 2 agent quality matching
+agent_data_sc2 = lapply(agent_data_sc2, function(df) {
+  merge(df, quality_data, by = intersect(names(df), names(quality_data)), all = F)
+})
+
+# unlist and merge with simulation parameters
+data$layer_data <- agent_data
+
+data_sc2$layer_data = agent_data_sc2
 
 # unlist
 data <- data[, unlist(layer_data, recursive = F),
   by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
 ]
 
+# assign strategy
+data$strategy =  "all_agents"
+
+data_sc2 = data_sc2[, unlist(layer_data, recursive = F),
+  by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image",
+         "strategy")
+]
+setnames(data_sc2, "foragers", "agents")
+
+# bind rows together
+data = rbindlist(list(data, data_sc2), use.names = TRUE)
+
 # select data
 data[, gen := as.numeric(gen)]
-data <- data[, list(sim_type, gen, replicate, regrowth, x, y, agents, quality)]
+data <- data[, list(sim_type, gen, replicate, regrowth, 
+                    x, y, agents, quality, strategy)]
 
 # save data
 fwrite(data, file = "data_sim/results/data_quality_counts_1_150.csv")
-
-#'
-#'
-#' ## get full layer data
-#'
-## -----------------------------------------------------------------------------
-# keep item data on occupied cells
-layer_data <- Map(function(adf, idf) {
-  idf <- merge(adf, idf, by = intersect(names(adf), names(idf)), all = FALSE)
-}, agent_data, item_data)
-
-data <- copy(params)
-
-# add layer data to param data
-data$layer_data <- layer_data
-
-# unlist
-data <- data[, unlist(layer_data, recursive = F),
-  by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
-]
-
-# select data
-data[, gen := as.numeric(gen)]
-data <- data[, list(sim_type, gen, replicate, regrowth, x, y, agents, items)]
-
-# save data
-fwrite(data, file = "data_sim/results/data_layer_counts_1_150.csv")
-
-#'
-#' ## get items variance
-#'
-## -----------------------------------------------------------------------------
-# get item variance
-data <- copy(params)
-data[, item_variance := kleptomoveMS::get_layer_variance(
-  landscape_file = image,
-  layer = 4,
-  crop_dim = 120,
-  max_K = 5
-)]
-
-# save data
-data <- data[, list(sim_type, gen, replicate, regrowth, item_variance)]
-
-# save data
-fwrite(data, file = "data_sim/results/data_item_variance_1_150.csv")
-
-#'
