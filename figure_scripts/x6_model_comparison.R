@@ -131,7 +131,7 @@ fig_strategy_fitness <-
   ) +
   labs(
     x = "Regrowth rate",
-    y = "Per capita intake",
+    y = "Mean per capita intake",
     colour = NULL,
     fill = NULL,
     shape = NULL
