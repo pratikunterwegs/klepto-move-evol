@@ -1,0 +1,17 @@
+--- 
+knit: "bookdown::render_book"
+title: "Supplementary Material for _The Joint Evolution of Movement and Competition Strategies_"
+author:
+    - Pratik R. Gupte
+    - Christoph F.G. Netz
+    - Franz J. Weissing
+date: "`r Sys.Date()`"
+output: bookdown::pdf_document2
+documentclass: scrreprt
+toc-depth: 1
+secnumdepth: 2
+geometry: "left=3cm, right=3cm, top=2.5cm, bottom=2.5cm"
+link-citations: yes
+github-repo: pratikunterwegs/kleptomove-ms
+description: "Supplementary Material for _The Joint Evolution of Movement and Competition Strategies_"
+---
