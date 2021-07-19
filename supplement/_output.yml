@@ -1,7 +1,7 @@
 bookdown::pdf_document2:
   keep_tex: true
   fontsize: 10pt
-  toc-depth: 1
+  toc: false
   papersize: a4
   highlight: haddock
   includes:

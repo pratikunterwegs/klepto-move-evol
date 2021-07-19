@@ -7,18 +7,16 @@ editor_options:
 
 # Evolution of Decision Making Weights
 
-```{r}
+```{r libs_sm2}
 # load libraries
 library(data.table)
 library(ggplot2)
 library(patchwork)
 ```
 
-## Load data
-
-```{r}
+```{r data_sm2}
 # split by simulation and regrowth
-data = fread("../data_sim/results/data_weight_evolution.csv")
+data = fread("data_sim/results/data_weight_evolution.csv")
 data = data[regrowth %in% c(0.01),]
 
 data = data[gen < 990, ]
@@ -49,7 +47,7 @@ data = lapply(data, function(df) {
 })
 ```
 
-```{r}
+```{r sm2_figure_fun}
 # labels
 label_weight = c(
   "2" = "Non-handlers",
@@ -159,35 +157,22 @@ get_weight_splots = function(this_list) {
 
 ```
 
-## Plot evolution of major weights
-
-```{r}
+```{r sm2_figs}
 # wrap all plots
 plots = lapply(data, function(l) {
   get_weight_splots(l)
 })
-
-# save plots
-# invisible(
-#   lapply(c("foragers", "obligate", "facultative", "random"), function(p) {
-#     ggsave(
-#       plots[[p]],
-#       filename = sprintf("supplementary_material/figures/fig_wt_evo_%s.png",
-#                          p)
-#     )
-#   })
-# )
 ```
 
-```{r, fig.cap="In scenario 1, populations evolve (**A**) to move away from non-handlers, (**B**) move towards handlers, and (**C**) to move towards cells with more prey items. While the sign of the response (avoidance or preference) is consistent across replicates, the replicates differ in the number and frequency of evolved responses (i.e., decision-making weight values). All panels show an $r_{max}$ = 0.01."}
+```{r fig.cap="In scenario 1, populations evolve (A) to move away from non-handlers, (B) move towards handlers, and (C) to move towards cells with more prey items. While the sign of the response (avoidance or preference) is consistent across replicates, the replicates differ in the number and frequency of evolved responses (i.e., decision-making weight values). All panels show an $r_{max}$ = 0.01."}
 plots[["foragers"]]
 ```
 
-```{r, fig.cap="In scenario 2, populations evolve (**A**) to move away from non-handlers, but (**B**) a mixed response towards handlers due to the correlation between handler-preference and the kleptoparasitic strategy (see Fig. 3, main text). Here too, responses are polymorphic, with little consistency across replicates, despite the overall sign of the response being consistent. (**C**) In contrast with scenario 1, most foragers show only a weak preference for moving towards cells with more prey items. All panels show an $r_{max}$ = 0.01."}
+```{r fig.cap="In scenario 2, populations evolve (A) to move away from non-handlers, but (B) a mixed response towards handlers due to the correlation between handler-preference and the kleptoparasitic strategy (see Fig. 3, main text). Here too, responses are polymorphic, with little consistency across replicates, despite the overall sign of the response being consistent. (C) In contrast with scenario 1, most foragers show only a weak preference for moving towards cells with more prey items. All panels show an $r_{max}$ = 0.01."}
 plots[["obligate"]]
 ```
 
-```{r, fig.cap="In scenario 3, populations evolve (**A**) to move away from non-handlers, and (**B**) towards handlers. (**C**) Most foragers also show a weak preference for moving towards cells with more prey items. (**D**) All individuals show a kleptoparasitic response to handlers. All panels show an $r_{max}$ = 0.01."}
+```{r fig.cap="In scenario 3, populations evolve (A) to move away from non-handlers, and (B) towards handlers. (C) Most foragers also show a weak preference for moving towards cells with more prey items. (D) All individuals show a kleptoparasitic response to handlers. All panels show an $r_{max}$ = 0.01."}
 plots[["facultative"]]
 ```
 
