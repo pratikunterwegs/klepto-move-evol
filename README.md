@@ -3,7 +3,7 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4905475.svg)](https://doi.org/10.5281/zenodo.4905475)
 
-
+>
 This is the source code for the analyses and figures for a manuscript that reports on models the joint evolution of movement and competition strategies using massive, spatial, individual-based models.
 This work was developed in the [Modelling Adaptive Response Mechanisms Group (Weissing Lab)](https://www.marmgroup.eu/) at the Groningen Institute for Evolutionary Life Science, at the University of Groningen.
 
@@ -92,15 +92,17 @@ The main text of the manuscript is written in LaTeX and is stored in the (privat
 
 ## Supplementary Material
 
-The supplementary material provided with this manuscript is generated from the `supplementary_material/` directory. A dated version rendered as PDF can be found in the directory `docs/` -- `docs/supplement_kleptomove_DATE.pdf`, where `DATE` is the date the manuscript was rendered.
+The supplementary material provided with this manuscript is generated from the `supplement/` directory. A dated version rendered as PDF can be found in the directory `docs/` -- `docs/ms_kleptomove_supplementary_material_DATE.pdf`, where `DATE` is the date the manuscript was rendered.
 
-- `supplementary_material/spm_01_landscapes.Rmd` Code for figures 1 -- 3.
+- `supplement/spm_01_landscapes.Rmd` Code for figures 1.1 -- 1.3.
 
-- `supplementary_material/spm_02_weight_evolution.Rmd` Code for figures 4 -- 6.
+- `supplement/spm_02_weight_evolution.Rmd` Code for figures 2.1 -- 2.3.
 
-- `supplementary_material/supplement.tex` The supplementary material source file.
+- `supplement/figures` Figure output for the supplementary material file.
 
-- `supplementary_material/figures` Figure output for the supplementary material file.
+- `supplement/latex` LaTeX options for the supplementary material file.
+
+Other files relate to formatting.
 
 ## Other Directories
 
