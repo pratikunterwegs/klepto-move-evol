@@ -17,7 +17,8 @@ The simulation source code is provided at a different repository, [_Kleptomove_]
 
 ## Simulation Data
 
-The simulation data are originally generated in the `data/` directory of the _Kleptomove_ repository, and manually copied to the `data_sim/` directory in this repository. These simulation data can be found at the University of Groningen Dataverse repository **HERE: ADD REPO HERE**.
+The simulation data are originally generated in the `data/` directory of the _Kleptomove_ repository, and manually copied to the `data_sim/` directory in this repository.
+Simulation data used in this study are available on the DataverseNL repository as a draft: https://dataverse.nl/privateurl.xhtml?token=1467641e-2c30-486b-a059-1e37be815b7c, and will be available at this persistent link after publication: doi.org/10.34894/JFSC41.
 
 ## Analysis Functions
 
