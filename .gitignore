@@ -57,3 +57,4 @@ data_sim/for_landscape
 # any word files
 *.docx
 *.odt
+*letter*
