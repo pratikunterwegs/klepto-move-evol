@@ -13,7 +13,7 @@ Please contact [Pratik Gupte](p.r.gupte@rug.nl) or [Franjo Weissing (PI)](f.j.we
 
 ## Simulation Source Code
 
-The simulation source code is provided at a different repository, [_Kleptomove_](github.com/pratikunterwegs/Kleptomove).
+The simulation source code is provided at a different repository, [_Kleptomove_](https://github.com/pratikunterwegs/Kleptomove).
 
 ## Simulation Data
 
