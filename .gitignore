@@ -58,3 +58,6 @@ data_sim/for_landscape
 *.docx
 *.odt
 *letter*
+
+# title page
+*title*
