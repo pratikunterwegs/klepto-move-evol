@@ -25,9 +25,6 @@ params$folder_path <- stringr::str_replace(
 
 params = params[regrowth <= 0.05,]
 
-# remove params over 0.02
-# params = params[regrowth <= 0.02,]
-
 # select gens
 gens_for_figure <- stringr::str_pad(seq(50), width = 5, pad = "0")
 
