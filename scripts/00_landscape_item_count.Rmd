@@ -1,20 +1,23 @@
-#' ---
-#' output: html_document
-#' editor_options:
-#'   chunk_output_type: console
-#' ---
-#'
-#' # Process landscape snapshots
-#'
-## -----------------------------------------------------------------------------
+---
+output: html_document
+editor_options:
+  chunk_output_type: console
+---
+
+# Process landscape snapshots
+
+
+```{r }
 library(data.table)
 library(glue)
 library(kleptomoveMS)
+```
 
-#'
-#' ## Items per cell
-#'
-## -----------------------------------------------------------------------------
+
+## Items per cell
+
+
+```{r }
 # read paths
 paths <- list.dirs("data_sim/", recursive = F)
 paths <- paths[grep("rep_001", paths)]
@@ -65,11 +68,13 @@ data_landscape <- data_landscape[, unlist(data, recursive = F),
 fwrite(data_landscape,
   file = "data_sim/results/data_landscape_item_count_1_50.csv"
 )
+```
 
-#'
-#' ## Foragers per cell
-#'
-## -----------------------------------------------------------------------------
+
+## Foragers per cell
+
+
+```{r }
 # read paths
 paths <- list.dirs("data_sim/", recursive = F)
 paths <- paths[grep("rep_001", paths)]
@@ -125,3 +130,5 @@ data_landscape$agents = data_landscape$agents /
 
 # save data
 fwrite(data_landscape, file = "data_sim/results/data_agent_count_1_50.csv")
+```
+

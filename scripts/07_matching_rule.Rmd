@@ -1,19 +1,22 @@
-#' ---
-#' output: html_document
-#' editor_options:
-#'   chunk_output_type: console
-#' ---
-#'
-## -----------------------------------------------------------------------------
+---
+output: html_document
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r }
 library(data.table)
 library(kleptomoveMS)
 # plotting
 library(ggplot2)
+```
 
-#'
-#' ## Agents ~ quality
-#'
-## -----------------------------------------------------------------------------
+
+## Agents ~ quality
+
+
+```{r }
 # read data
 data <- fread("data_sim/results/data_quality_counts_1_150.csv")
 
@@ -37,3 +40,5 @@ by = c("sim_type", "gen", "replicate", "regrowth", "strategy")
 
 # write data
 fwrite(data_summary, file = "data_sim/results/data_quality_matching_rule.csv")
+```
+

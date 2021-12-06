@@ -1,18 +1,21 @@
-#' ---
-#' output: html_document
-#' editor_options:
-#'   chunk_output_type: console
-#' ---
-#'
-## -----------------------------------------------------------------------------
+---
+output: html_document
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r }
 library(data.table)
 library(glue)
 library(ggplot2)
+```
 
-#'
-#' ## get agents in all gens
-#'
-## -----------------------------------------------------------------------------
+
+## get agents in all gens
+
+
+```{r }
 params <- fread("data_sim/results/data_param_combinations.csv")
 params$folder_path <- stringr::str_replace(
   params$folder_path,
@@ -58,9 +61,11 @@ sc2_strat = data.table(strategy = c("foragers", "klepts"))
 data_sc2 = setkey(data_sc2[, c(k = 1, .SD)], k)[
   sc2_strat[, c(k = 1, .SD)], allow.cartesian = TRUE]
 data_sc2[, k := NULL]
+```
 
-#'
-## -----------------------------------------------------------------------------
+
+
+```{r }
 # get data for scenarios 1 and 3
 agent_data <- lapply(data$image,
   kleptomoveMS::read_landscape,
@@ -85,9 +90,12 @@ agent_data_sc2 = Map(function(file, strategy) {
   setnames(d, "items", strategy)
   
 }, data_sc2$image, data_sc2$strategy)
+```
 
-#' ## Remove unoccupied cells
-#' 
+## Remove unoccupied cells
+
+
+```{r }
 # remove where agents are 0
 agent_data <- lapply(
   agent_data, function(df) {
@@ -96,11 +104,13 @@ agent_data <- lapply(
     # df[, agents := round(agents / 0.02)]
   }
 )
+```
 
-#'
-#' ## get quality layer
-#'
-## -----------------------------------------------------------------------------
+
+## get quality layer
+
+
+```{r }
 quality_data <- kleptomoveMS::read_landscape(
   "data_sim/data_parameters/kernels32.png",
   layer = 1, crop_dim = 60, type = "items"
@@ -147,3 +157,5 @@ data <- data[, list(sim_type, gen, replicate, regrowth,
 
 # save data
 fwrite(data, file = "data_sim/results/data_quality_counts_1_150.csv")
+```
+

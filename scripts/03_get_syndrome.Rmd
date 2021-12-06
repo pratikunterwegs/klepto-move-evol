@@ -1,22 +1,25 @@
-#' ---
-#' output: html_document
-#' editor_options:
-#'   chunk_output_type: console
-#' ---
-#'
-#' # Prepare node weight evolution data
-#'
-#' ## Load libraries
-#'
-## -----------------------------------------------------------------------------
+---
+output: html_document
+editor_options:
+  chunk_output_type: console
+---
+
+# Prepare node weight evolution data
+
+## Load libraries
+
+
+```{r }
 # load libs
 library(data.table)
 library(kleptomoveMS)
+```
 
-#'
-#' ## Run syndrome function over data
-#'
-## -----------------------------------------------------------------------------
+
+## Run syndrome function over data
+
+
+```{r }
 # read parameter combinations
 param_combinations <- fread("data_sim/results/data_param_combinations.csv")
 param_combinations[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
@@ -48,11 +51,13 @@ data <- data[, unlist(syndrome_data, recursive = FALSE),
 
 # save data
 fwrite(data, file = "data_sim/results/data_syndrome.csv")
+```
 
-#'
-#' ## Get handler preference by strategy
-#'
-## -----------------------------------------------------------------------------
+
+## Get handler preference by strategy
+
+
+```{r }
 # read parameter combinations
 param_combinations <- fread("data_sim/results/data_param_combinations.csv")
 param_combinations[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
@@ -84,3 +89,5 @@ data <- data[, unlist(syndrome_data, recursive = FALSE),
 
 # save data
 fwrite(data, file = "data_sim/results/data_syndrome_by_strategy.csv")
+```
+
