@@ -1,13 +1,12 @@
----
-output: html_document
-editor_options:
-  chunk_output_type: console
----
-
-# Landscape effects
-
-
-```{r }
+#' ---
+#' output: html_document
+#' editor_options:
+#'   chunk_output_type: console
+#' ---
+#'
+#' # Landscape effects
+#'
+## -----------------------------------------------------------------------------
 # to handle data and plot
 library(data.table)
 library(glue)
@@ -15,13 +14,11 @@ library(glue)
 library(ggplot2)
 library(colorspace)
 library(patchwork)
-```
 
-
-## Read node weight evolution
-
-
-```{r }
+#'
+#' ## Read node weight evolution
+#'
+## -----------------------------------------------------------------------------
 # read back in
 data <- fread("data_sim/results/data_early_0_100_weight_evolution.csv")
 # data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
@@ -40,15 +37,13 @@ data[, weight_num := as.numeric(weight_num)]
 
 # remove random sim
 data <- data[sim_type != "random", ]
-```
 
-
-## Prepare summary data
-
-Handler preference
-
-
-```{r }
+#'
+#' ## Prepare summary data
+#'
+#' Handler preference
+#'
+## -----------------------------------------------------------------------------
 # get positive weights for handlers (weight 3)
 # process scenario 2 (obligate) separately as for figure 3
 wt_handler <- data[weight_id == 3 &
@@ -84,23 +79,18 @@ wt_handler_s2 = wt_handler_s2[handler_pref == "prefers handlers",]
 wt_handler_s2[, c("handler_pref", "N") := NULL]
 setnames(wt_handler_s2, old = c("klept_bias", "prop_per_strat"),
          new = c("strategy", "pref_handlers"))
-```
 
-### Merge data
-
-```{r }
+#' ### Merge data
 wt_handler = rbindlist(list(wt_handler, wt_handler_s2), use.names = TRUE)
 wt_handler$gen = as.numeric(wt_handler$gen)
 
 # make factor
 wt_handler$strategy = factor(wt_handler$strategy)
-```
 
-
-## Read p clueless
-
-
-```{r }
+#'
+#' ## Read p clueless
+#'
+## -----------------------------------------------------------------------------
 # focus r
 focus_r <- c(0.01)
 
@@ -132,11 +122,9 @@ data = data[c("foragers", "obligate", "facultative")]
 # split preference data
 wt_handler = split(wt_handler, by = "sim_type")
 wt_handler = wt_handler[c("foragers", "obligate", "facultative")]
-```
 
-
-
-```{r }
+#'
+## -----------------------------------------------------------------------------
 # this green
 this_green <- "forestgreen"
 
@@ -216,17 +204,14 @@ subplots <- Map(function(df_wt, df_land) {
 subplots = subplots[c("foragers", "obligate", "facultative")]
 wrap_plots(subplots, ncol = 1) &
   theme(legend.position = "right")
-```
-
-
-## Show landscape for each sim type
-
-Here we show a landscape with and without clues at 1, 10, and 40th generation for $r_{max}$ = 0.01.
-
-### Items landscape
-
-
-```{r }
+#'
+#' ## Show landscape for each sim type
+#'
+#' Here we show a landscape with and without clues at 1, 10, and 40th generation for $r_{max}$ = 0.01.
+#'
+#' ### Items landscape
+#'
+## -----------------------------------------------------------------------------
 # list folders
 paths <- list.dirs("data_sim/for_landscape/", recursive = F)
 
@@ -260,13 +245,11 @@ landscape_data[, gen := as.numeric(gen)]
 landscape_items <- landscape_data[, unlist(data, recursive = F),
   by = c("sim_type", "gen")
 ]
-```
 
-
-### Gradient landscape
-
-
-```{r }
+#'
+#' ### Gradient landscape
+#'
+## -----------------------------------------------------------------------------
 # get data
 landscape_data$data <- lapply(landscape_data$image,
   kleptomoveMS::read_landscape,
@@ -278,13 +261,11 @@ landscape_data$data <- lapply(landscape_data$image,
 landscape_gradient <- landscape_data[, unlist(data, recursive = F),
   by = c("sim_type", "gen")
 ]
-```
 
-
-### Merge landscapes
-
-
-```{r }
+#'
+#' ### Merge landscapes
+#'
+## -----------------------------------------------------------------------------
 # landscape overall
 landscape <- (landscape_gradient)
 
@@ -295,14 +276,12 @@ landscape <- melt(landscape, id.vars = c("sim_type", "gen", "x", "y"))
 landscape <- split(landscape, by = c("sim_type"))
 
 landscape = landscape[c("foragers", "obligate", "facultative")]
-```
 
-
-
-### Plot landscape
-
-
-```{r }
+#'
+#'
+#' ### Plot landscape
+#'
+## -----------------------------------------------------------------------------
 subplot_land <- Map(function(df, n) {
   ggplot(df) +
     geom_tile(
@@ -341,13 +320,11 @@ subplot_land <- Map(function(df, n) {
     )+
     guides(colour = guide_legend(nrow = 2, ncol = 1))
 }, landscape, seq(3))
-```
 
-
-## Figure 5
-
-
-```{r }
+#'
+#' ## Figure 5
+#'
+## -----------------------------------------------------------------------------
 # make figure 5
 # wrap cues per gen plots
 plots_cues = wrap_plots(subplots, ncol = 1) +
@@ -382,6 +359,5 @@ ggsave(
   units = "mm",
   filename = "figures/fig_05.png"
 )
-```
 
-
+#'

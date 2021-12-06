@@ -1,46 +1,41 @@
----
-output: html_document
-editor_options:
-  chunk_output_type: console
----
-
-figure 4 for the conditional strategy case
-
-load libs
-
-
-```{r }
+#' ---
+#' output: html_document
+#' editor_options:
+#'   chunk_output_type: console
+#' ---
+#'
+#' figure 3 for the fixed strategy case
+#'
+#' load libs
+#'
+## -----------------------------------------------------------------------------
 library(data.table)
 
 library(ggplot2)
 library(colorspace)
 library(patchwork)
-```
 
-
-get data
-
-population activity data
-
-
-```{r }
+#'
+#' get data
+#'
+#' population activity data
+#'
+## -----------------------------------------------------------------------------
 # activity data
 data_activity <- fread("data_sim/results/data_strategy_gen.csv")
 data_activity <- data_activity[
-  sim_type == "facultative" &
+  sim_type == "obligate" &
     regrowth == 0.01
 ]
-```
 
-
-population klept response to handlers
-
-
-```{r }
+#'
+#' population klept proportion
+#'
+## -----------------------------------------------------------------------------
 # get data and filter for weight 5 which is the bias
 data_klept_prop <- fread("data_sim/results/data_early_0_100_weight_evolution.csv")
-data_klept_prop <- data_klept_prop[sim_type == "facultative" &
-  weight_id == 7 &
+data_klept_prop <- data_klept_prop[sim_type == "obligate" &
+  weight_id == 5 &
   regrowth == 0.01]
 
 # get numeric lower
@@ -58,13 +53,12 @@ data_klept_prop <- data_klept_prop[weight_num < 0,
     "gen"
   )
 ]
-```
 
-
-make population activity budget plot with weight evolution
-
-
-```{r }
+#'
+#'
+#' make population activity budget plot with weight evolution
+#'
+## -----------------------------------------------------------------------------
 fig_activity <-
   ggplot(data_activity[gen <= 50, ]) +
   
@@ -74,7 +68,7 @@ fig_activity <-
       colour = "p_klept",
       group = replicate
     )
-  ) +
+  )+
   geom_path(aes(gen, value,
     colour = variable,
     group = interaction(variable, replicate)
@@ -117,13 +111,11 @@ fig_activity <-
     colour = NULL
   ) +
   guides(colour = guide_legend(nrow = 1))
-```
 
-
-figure intake
-
-
-```{r }
+#'
+#' figure intake
+#'
+## -----------------------------------------------------------------------------
 fig_intake <-
   ggplot(
     unique(data_activity[gen <= 50, ],
@@ -149,21 +141,17 @@ fig_intake <-
     x = "Generation",
     y = "Mean per capita intake"
   )
-```
 
-
-## correlation with quality
-
-
-```{r }
+#'
+#' ## correlation with quality
+#'
+## -----------------------------------------------------------------------------
 # raw correlation data
 data_quality <- fread("data_sim/results/data_quality_matching_rule.csv")
-data_quality <- data_quality[sim_type == "facultative" & regrowth == 0.01, ]
-```
+data_quality <- data_quality[sim_type == "obligate" & regrowth == 0.01, ]
 
-
-
-```{r }
+#'
+## -----------------------------------------------------------------------------
 fig_matching_quality <-
   ggplot() +
   geom_hline(
@@ -174,14 +162,33 @@ fig_matching_quality <-
     data = data_quality[gen < 50, ],
     aes(
       x = gen,
-      y = cf
+      y = cf,
+      colour = strategy,
+      shape = strategy
     ),
-    colour = "dodgerblue4",
-    shape = 1,
     stroke = 0.5,
-    show.legend = F
+    show.legend = TRUE
   ) +
-  theme_classic(base_size = 8) +
+  scale_colour_discrete_diverging(
+    palette = "Blue-Red 2",
+    name = NULL,
+    labels = c("Foragers", "Klept.")
+  )+
+  scale_shape_manual(
+    values = c(
+      "klepts" = 2,
+      "foragers" = 0
+    ),
+    name = NULL,
+    breaks = c("foragers", "klepts"),
+    labels = c("Foragers", "Klept.")
+  )+
+  theme_classic(base_size = 6) +
+  theme(
+    legend.position = "bottom",
+    legend.key.height = unit(2, units = "mm"),
+    legend.key.width = unit(5, units = "mm")
+  )+
   coord_cartesian(
     ylim = c(-0.5, 0.5),
     xlim = c(0, 50),
@@ -190,31 +197,28 @@ fig_matching_quality <-
   xlim(0, 50) +
   labs(
     x = "Generation",
-    y = "Corr. # indivs. ~ cell quality"
+    y = "Corr. # indivs. ~ cell quality",
+    colour = NULL,
+    shape = NULL
   )
-```
 
-
-
-prepare landscape at 0 and 25
-
-
-```{r }
+#'
+#' prepare landscape at 0 and 25
+#'
+## -----------------------------------------------------------------------------
 # get landscape data
 data_land <- fread("data_sim/results/data_landscape_item_count_1_50.csv")
-data_land <- data_land[sim_type == "facultative" & regrowth == 0.01, ]
+data_land <- data_land[sim_type == "obligate" & regrowth == 0.01, ]
 
-# get agents
+# get agent counts
 data_agent <- fread("data_sim/results/data_agent_count_1_50.csv")
-data_agent <- data_agent[sim_type == "facultative" & regrowth == 0.01, ]
-```
+data_agent <- data_agent[sim_type == "obligate" & regrowth == 0.01, ]
 
-
-plot landscape facultative model
-
-
-```{r }
-fig_land_conditional <-
+#'
+#' plot landscape fixed model
+#'
+## -----------------------------------------------------------------------------
+fig_land_fixed <-
   ggplot(data_land) +
   geom_tile(aes(x, y, fill = items)) +
   geom_point(
@@ -247,16 +251,14 @@ fig_land_conditional <-
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
   theme(legend.position = "bottom")
-```
 
-
-## Figure 4 Conditional model
-
-wrap figures together
-
-
-```{r }
-figure_4 <-
+#'
+#' ## Figure 2 Fixed model
+#'
+#' wrap figures together
+#'
+## -----------------------------------------------------------------------------
+figure_2_fixed_model <-
   wrap_plots(
     fig_activity, fig_intake,
     fig_matching_quality
@@ -266,10 +268,10 @@ figure_4 <-
     legend.position = "bottom"
   )
 
-figure_4 =
+figure_2_fixed_model =
   wrap_plots(
-    fig_land_conditional,
-    figure_4,
+    fig_land_fixed,
+    figure_2_fixed_model,
     ncol = 1
   ) +
   plot_annotation(
@@ -281,18 +283,14 @@ figure_4 =
       size = 12
     )
   )
-```
 
-
-save figure
-
-
-```{r }
-ggsave(
-  figure_4,
-  filename = "figures/fig_04.png",
+#'
+#' save figure
+#'
+## -----------------------------------------------------------------------------
+ggsave(figure_2_fixed_model,
+  filename = "figures/fig_02.png",
   height = 120, width = 150, units = "mm"
 )
-```
 
-
+#'
