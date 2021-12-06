@@ -30,7 +30,13 @@ param_combinations <- param_combinations[sim_type == "obligate", ]
 syndrome_data <- lapply(param_combinations$folder_path, function(path) {
   kleptomoveMS::get_pref_handler_by_strat(
     data_folder = path,
-    generations = seq(1, 100),
+    generations = unique(
+      c(
+        seq(1, 100, 1), 
+        seq(100, 999, 25), 
+        999
+      )
+    ),
     weight_klept_bias = 5,
     weight_of_interest = c(
       handler_pref = 3,
@@ -69,7 +75,13 @@ param_combinations <- param_combinations[sim_type == "obligate" &
 syndrome_data <- lapply(param_combinations$folder_path, function(path) {
   kleptomoveMS::get_pref_handler_by_strat(
     data_folder = path,
-    generations = seq(1, 100),
+    generations = unique(
+      c(
+        seq(1, 100, 1), 
+        seq(100, 999, 25), 
+        999
+      )
+    ),
     weight_klept_bias = 5,
     weight_of_interest = c(
       handler_pref = 3
