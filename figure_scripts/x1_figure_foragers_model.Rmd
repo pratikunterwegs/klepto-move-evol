@@ -1,91 +1,59 @@
-#' ---
-#' output: html_document
-#' editor_options:
-#'   chunk_output_type: console
-#' ---
-#'
-#' figure 4 for the conditional strategy case
-#'
-#' load libs
-#'
-## -----------------------------------------------------------------------------
+---
+output: html_document
+editor_options:
+  chunk_output_type: console
+---
+
+load libs
+
+
+```{r }
 library(data.table)
 
 library(ggplot2)
-library(colorspace)
 library(patchwork)
+library(colorspace)
+```
 
-#'
-#' get data
-#'
-#' population activity data
-#'
-## -----------------------------------------------------------------------------
+
+## get data
+
+
+```{r }
 # activity data
 data_activity <- fread("data_sim/results/data_strategy_gen.csv")
 data_activity <- data_activity[
-  sim_type == "facultative" &
-    regrowth == 0.01
+  sim_type == "foragers" &
+    regrowth == 0.01 &
+    variable != "stealing"
 ]
+```
 
-#'
-#' population klept response to handlers
-#'
-## -----------------------------------------------------------------------------
-# get data and filter for weight 5 which is the bias
-data_klept_prop <- fread("data_sim/results/data_early_0_100_weight_evolution.csv")
-data_klept_prop <- data_klept_prop[sim_type == "facultative" &
-  weight_id == 7 &
-  regrowth == 0.01]
 
-# get numeric lower
-data_klept_prop[, weight_num :=
-  stringi::stri_extract_last(weight_value,
-    regex = "[-0-9]+\\.\\d{2}"
-  )]
-data_klept_prop[, weight_num := as.numeric(weight_num)]
+## activity budget plot
 
-# count proportion
-data_klept_prop <- data_klept_prop[weight_num < 0,
-  list(klept_strategy = sum(weight_prop)),
-  by = c(
-    "sim_type", "replicate", "regrowth",
-    "gen"
-  )
-]
 
-#'
-#' make population activity budget plot with weight evolution
-#'
-## -----------------------------------------------------------------------------
+```{r }
 fig_activity <-
   ggplot(data_activity[gen <= 50, ]) +
   
   geom_path(
-    data = data_klept_prop[gen <= 50, ],
-    aes(gen, klept_strategy,
-      colour = "p_klept",
-      group = replicate
+    aes(
+      gen, value,
+      colour = variable,
+      group = interaction(variable, replicate)
     )
   ) +
-  geom_path(aes(gen, value,
-    colour = variable,
-    group = interaction(variable, replicate)
-  )) +
   scale_colour_manual(
     values = c(
       foraging = "dodgerblue4",
-      handling = "forestgreen",
-      stealing = "indianred",
-      p_klept = "darkorange"
+      handling = "forestgreen"
     ),
     labels = c(
       foraging = "Searching for prey",
-      handling = "Handling prey",
-      stealing = "Searching for handlers",
-      p_klept = "Prop. klept."
+      handling = "Handling prey"
     ),
-    breaks = c("foraging", "handling", "stealing", "p_klept")
+    breaks = c("foraging", "handling")
   ) +
   scale_y_continuous(
     # labels = scales::percent,
@@ -108,13 +76,15 @@ fig_activity <-
     x = "Generation",
     y = "Proportion of time",
     colour = NULL
-  ) +
+  )+
   guides(colour = guide_legend(nrow = 1))
+```
 
-#'
-#' figure intake
-#'
-## -----------------------------------------------------------------------------
+
+## figure intake
+
+
+```{r }
 fig_intake <-
   ggplot(
     unique(data_activity[gen <= 50, ],
@@ -140,17 +110,21 @@ fig_intake <-
     x = "Generation",
     y = "Mean per capita intake"
   )
+```
 
-#'
-#' ## correlation with quality
-#'
-## -----------------------------------------------------------------------------
+
+## correlation with quality
+
+
+```{r }
 # raw correlation data
 data_quality <- fread("data_sim/results/data_quality_matching_rule.csv")
-data_quality <- data_quality[sim_type == "facultative" & regrowth == 0.01, ]
+data_quality <- data_quality[sim_type == "foragers" & regrowth == 0.01, ]
+```
 
-#'
-## -----------------------------------------------------------------------------
+
+
+```{r }
 fig_matching_quality <-
   ggplot() +
   geom_hline(
@@ -179,25 +153,29 @@ fig_matching_quality <-
     x = "Generation",
     y = "Corr. # indivs. ~ cell quality"
   )
+```
 
-#'
-#'
-#' prepare landscape at 0 and 25
-#'
-## -----------------------------------------------------------------------------
+
+prepare landscape at 0 and 25
+
+
+```{r }
 # get landscape data
 data_land <- fread("data_sim/results/data_landscape_item_count_1_50.csv")
-data_land <- data_land[sim_type == "facultative" & regrowth == 0.01, ]
+data_land <- data_land[sim_type == "foragers" & regrowth == 0.01, ]
 
-# get agents
-data_agent <- fread("data_sim/results/data_agent_count_1_50.csv")
-data_agent <- data_agent[sim_type == "facultative" & regrowth == 0.01, ]
+# read agent data
+data_agent <- fread("data_sim/results/data_agent_count_1_50.csv")[
+  sim_type == "foragers" & regrowth == 0.01,
+]
+```
 
-#'
-#' plot landscape facultative model
-#'
-## -----------------------------------------------------------------------------
-fig_land_conditional <-
+
+plot landscape foragers model
+
+
+```{r }
+fig_land_foragers <-
   ggplot(data_land) +
   geom_tile(aes(x, y, fill = items)) +
   geom_point(
@@ -222,22 +200,24 @@ fig_land_conditional <-
   scale_colour_continuous_sequential(
     palette = "Reds",
     begin = 0.2,
-    limits = c(1, 5),
     na.value = "darkred",
+    limits = c(1, 5),
     name = "# Consumers",
     guide = guide_legend(order = 2)
   )+
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
   theme(legend.position = "bottom")
+```
 
-#'
-#' ## Figure 4 Conditional model
-#'
-#' wrap figures together
-#'
-## -----------------------------------------------------------------------------
-figure_4 <-
+
+## Figure 1 Foragers model
+
+wrap figures together
+
+
+```{r }
+figure_1 <-
   wrap_plots(
     fig_activity, fig_intake,
     fig_matching_quality
@@ -247,10 +227,10 @@ figure_4 <-
     legend.position = "bottom"
   )
 
-figure_4 =
+figure_1 =
   wrap_plots(
-    fig_land_conditional,
-    figure_4,
+    fig_land_foragers,
+    figure_1,
     ncol = 1
   ) +
   plot_annotation(
@@ -262,15 +242,16 @@ figure_4 =
       size = 12
     )
   )
+```
 
-#'
-#' save figure
-#'
-## -----------------------------------------------------------------------------
-ggsave(
-  figure_4,
-  filename = "figures/fig_04.png",
+
+save figure
+
+
+```{r }
+ggsave(figure_1,
+  filename = "figures/fig_01.png",
   height = 120, width = 150, units = "mm"
 )
+```
 
-#'
