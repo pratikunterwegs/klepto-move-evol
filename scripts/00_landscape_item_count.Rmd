@@ -1,46 +1,44 @@
-#' ---
-#' output: html_document
-#' editor_options:
-#'   chunk_output_type: console
-#' ---
-#'
-#' # Process landscape snapshots
-#'
-## -----------------------------------------------------------------------------
+---
+output: html_document
+editor_options:
+  chunk_output_type: console
+---
+
+# Process landscape snapshots
+
+
+```{r }
 library(data.table)
 library(glue)
+library(stringr)
 library(kleptomoveMS)
+```
 
-#'
-#' ## Items per cell
-#'
-## -----------------------------------------------------------------------------
+
+## Items per cell
+
+
+```{r }
 # read paths
 paths <- list.dirs("data_sim/", recursive = F)
 paths <- paths[grep("rep_001", paths)]
 
 # select gens
-gens_for_figure <- stringr::str_pad(c(1, 10, 50), width = 5, pad = "0")
+gens_for_figure <- stringr::str_pad(c(1, 10, 50, 950), width = 5, pad = "0")
 
-# get paths for files
-data_landscape <- CJ(
-  gen = gens_for_figure,
-  path = paths
-)
-
-# add sim_type
-data_landscape[, sim_type := rep(
-  rep(c(
-    "facultative", "foragers",
-    "obligate", "random"
-  ), each = 10), 3
+# get replicate
+data_landscape[, rep := as.numeric(
+  stringr::str_extract_all(path, "rep_(\\d{3})") |> 
+    stringr::str_extract_all("\\d{3}")
 )]
 
-growth_rates <- c(0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.25)
+# get sim type
+data_landscape[, sim_type := stringr::str_extract(
+  path, "obligate|facultative|foragers"
+ ) 
+]
 
-data_landscape[, regrowth := rep(
-  growth_rates, 12
-)]
+data_landscape[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 
 # get paths
 data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
@@ -63,19 +61,21 @@ data_landscape <- data_landscape[, unlist(data, recursive = F),
 
 # save
 fwrite(data_landscape,
-  file = "data_sim/results/data_landscape_item_count_1_50.csv"
+  file = "data_sim/results/data_landscape_progression.csv"
 )
+```
 
-#'
-#' ## Foragers per cell
-#'
-## -----------------------------------------------------------------------------
+
+## Foragers per cell
+
+
+```{r }
 # read paths
 paths <- list.dirs("data_sim/", recursive = F)
 paths <- paths[grep("rep_001", paths)]
 
 # select gens
-gens_for_figure <- stringr::str_pad(c(1, 10, 50), width = 5, pad = "0")
+gens_for_figure <- stringr::str_pad(c(1, 10, 50, 950), width = 5, pad = "0")
 
 # get paths for files
 data_landscape <- CJ(
@@ -83,19 +83,19 @@ data_landscape <- CJ(
   path = paths
 )
 
-# add sim_type
-data_landscape[, sim_type := rep(
-  rep(c(
-    "facultative", "foragers",
-    "obligate", "random"
-  ), each = 10), 3
+# get replicate
+data_landscape[, rep := as.numeric(
+  stringr::str_extract_all(path, "rep_(\\d{3})") |> 
+    stringr::str_extract_all("\\d{3}")
 )]
 
-growth_rates <- c(0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.25)
+# get sim type
+data_landscape[, sim_type := stringr::str_extract(
+  path, "obligate|facultative|foragers"
+ ) 
+]
 
-data_landscape[, regrowth := rep(
-  growth_rates, 12
-)]
+data_landscape[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 
 # get paths
 data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
@@ -124,4 +124,6 @@ data_landscape$agents = data_landscape$agents /
   (min(data_landscape$agents[data_landscape$agents > 0]))
 
 # save data
-fwrite(data_landscape, file = "data_sim/results/data_agent_count_1_50.csv")
+fwrite(data_landscape, file = "data_sim/results/data_agent_locations.csv")
+```
+

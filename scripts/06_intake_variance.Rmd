@@ -1,16 +1,19 @@
-#'
-## -----------------------------------------------------------------------------
+
+
+```{r }
 library(kleptomoveMS)
 
 library(data.table)
 library(glue)
 
 library(ggplot2)
+```
 
-#'
-#' ## get parameters
-#'
-## -----------------------------------------------------------------------------
+
+## get parameters
+
+
+```{r }
 params <- fread("data_sim/results/data_param_combinations.csv")
 params$folder_path <- stringr::str_replace(
   params$folder_path,
@@ -20,11 +23,13 @@ params$folder_path <- stringr::str_replace(
 
 # remove params over 0.02
 # params = params[regrowth <= 0.02,]
+```
 
-#'
-#' ## get intake variance in last gens
-#'
-## -----------------------------------------------------------------------------
+
+## get intake variance in last gens
+
+
+```{r }
 # get intake variance
 intake_variance <- lapply(params$folder_path, function(path) {
   kleptomoveMS::get_intake_variance(
@@ -47,3 +52,5 @@ data <- data[, unlist(intake_variance, recursive = FALSE),
 
 # save
 fwrite(data, file = "data_sim/data_intake_variance.csv")
+```
+
