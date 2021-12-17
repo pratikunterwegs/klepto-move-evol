@@ -61,3 +61,6 @@ data_sim/for_landscape
 
 # title page
 *title*
+
+# ignore Rds
+*.Rds
