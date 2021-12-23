@@ -14,9 +14,9 @@ library(stringr)
 library(kleptomoveMS)
 ```
 
-
 ## Items per cell
 
+Prepare the data paths.
 
 ```{r }
 # read paths
@@ -48,7 +48,11 @@ data_landscape[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 
 # get paths
 data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
+```
 
+Get data from prepared paths.
+
+```{r}
 # get data
 data_landscape$data <- lapply(data_landscape$image,
   kleptomoveMS::read_landscape,
@@ -71,9 +75,7 @@ fwrite(data_landscape,
 )
 ```
 
-
 ## Foragers per cell
-
 
 ```{r }
 # read paths
@@ -132,4 +134,3 @@ data_landscape$agents = data_landscape$agents /
 # save data
 fwrite(data_landscape, file = "data_sim/results/data_agent_locations.csv")
 ```
-
