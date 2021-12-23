@@ -26,6 +26,9 @@ data_activity <- data_activity[
     regrowth == 0.01
     # variable != "stealing"
 ]
+
+# remove stealing from foragers
+data_activity = data_activity[!(sim_type == "foragers" & variable == "stealing")]
 ```
 
 Split by simulation type.
@@ -41,6 +44,23 @@ data_activity = split(
 ```{r }
 # fig_activity <-
 plot_activity = lapply(data_activity, function(df) {
+  
+  # colours and labels
+  col_vals = c(
+    foraging = "dodgerblue4",
+    handling = "forestgreen",
+    stealing = "indianred"
+  )
+  label_vals = c(
+    foraging = "Searching for prey",
+    handling = "Handling prey",
+    stealing = "Attempting to steal"
+  )
+  if(unique(df$sim_type) == "foragers") {
+    col_vals = col_vals[names(col_vals) != "stealing"]
+    label_vals = label_vals[names(label_vals) != "stealing"]
+  }
+  
   ggplot(df) +
   
   geom_line(
@@ -51,17 +71,9 @@ plot_activity = lapply(data_activity, function(df) {
     )
   ) +
   scale_colour_manual(
-    values = c(
-      foraging = "dodgerblue4",
-      handling = "forestgreen",
-      stealing = "indianred"
-    ),
-    labels = c(
-      foraging = "Searching for prey",
-      handling = "Handling prey",
-      stealing = "Attempting to steal"
-    ),
-    breaks = c("foraging", "handling", "stealing")
+    values = col_vals,
+    labels = label_vals
+    # breaks = c("foraging", "handling", "stealing")
   ) +
   scale_y_continuous(
     labels = scales::percent,
@@ -73,19 +85,22 @@ plot_activity = lapply(data_activity, function(df) {
   coord_cartesian(
     # xlim = c(1, 50),
     ylim = c(0, 1),
-    # expand = F
+    expand = F
   ) +
   theme_test(base_size = 12) +
   theme(
     legend.position = "top",
-    legend.key.height = unit(2, units = "mm")
+    legend.key.height = unit(2, units = "mm"),
+    axis.text.y = element_text(
+      angle = 90, hjust = 0.5
+    )
   ) +
   labs(
     x = "Generation",
     y = "% Time",
     colour = NULL
   )+
-  guides(colour = guide_legend(nrow = 2, ncol = 2))
+  guides(colour = guide_legend(nrow = 2, ncol = 2, byrow = T))
 })
 
 # wrap figures to check
@@ -117,7 +132,7 @@ plot_intake <- lapply(data_activity, function(df) {
   coord_cartesian(
     # xlim = c(1, 50),
     ylim = c(0, 50),
-    expand = T
+    expand = F
   ) +
   theme_test(base_size = 12) +
   labs(
@@ -138,30 +153,49 @@ save(plot_intake, file = "figures/plot_intake.Rds")
 ```{r }
 # raw correlation data
 data_quality <- fread("data_sim/results/data_quality_matching_rule.csv")
-data_quality <- data_quality[sim_type == "foragers" & regrowth == 0.01, ]
+data_quality <- data_quality[regrowth == 0.01, ]
 ```
 
+```{r}
+data_quality = split(data_quality, by = "sim_type")
+```
 
-
-```{r }
-fig_matching_quality <-
-  ggplot() +
+```{r}
+plots_quality = lapply(data_quality, function(df) {
+  ggplot(df) +
   geom_hline(
     yintercept = 0,
-    col = "red"
+    lty = 2,
+    size = 0.2
   ) +
   geom_point(
-    data = data_quality[gen < 50, ],
+    data = df,
     aes(
       x = gen,
-      y = cf
+      y = cf,
+      colour = strategy,
+      shape = strategy
     ),
-    colour = "dodgerblue4",
-    shape = 1,
     stroke = 0.5,
     show.legend = F
   ) +
-  theme_classic(base_size = 8) +
+  scale_colour_manual(
+    values = c(
+      "all_agents" = "navy",
+      "foragers" = "royalblue",
+      "klepts" = "indianred"
+    )
+  )+
+  scale_shape_manual(
+    values = c(
+      "all_agents" = 1,
+      "foragers" = 0,
+      "klepts" = 2
+    )
+  )+
+  theme_test(
+    base_size = 12
+  ) +
   coord_cartesian(
     ylim = c(-0.5, 0.5),
     xlim = c(0, 50),
@@ -172,6 +206,13 @@ fig_matching_quality <-
     x = "Generation",
     y = "Corr. # indivs. ~ cell quality"
   )
+})
+
+# check plots
+wrap_plots(plots_quality)
+
+# save
+save(plots_quality, file = "figures/plot_quality.Rds")
 ```
 
 
@@ -179,56 +220,59 @@ prepare landscape at 0 and 25
 
 
 ```{r }
-# get landscape data
-data_land <- fread("data_sim/results/data_landscape_item_count_1_50.csv")
-data_land <- data_land[sim_type == "foragers" & regrowth == 0.01, ]
-
-# read agent data
-data_agent <- fread("data_sim/results/data_agent_count_1_50.csv")[
-  sim_type == "foragers" & regrowth == 0.01,
-]
+# get landscape and agent data
+data_land <- fread("data_sim/results/data_layer_counts_1_150.csv")
+data_land <- data_land[gen %in% c(1, 10, 50) &regrowth == 0.01, ]
 ```
 
+```{r}
+data_land = split(data_land, by = "sim_type")
+```
 
-plot landscape foragers model
-
-
-```{r }
-fig_land_foragers <-
-  ggplot(data_land) +
-  geom_tile(aes(x, y, fill = items)) +
-  geom_point(
-    data = data_agent[agents > 0, ],
-    aes(x, y, colour = agents),
-    shape = 4,
-    size = 0.5,
-    stroke = 1,
-    alpha = 0.8
+```{r}
+lapply(data_land, function(df) {
+  ggplot(df) +
+  geom_tile(
+    aes(x, y, fill = items)
   ) +
-  facet_grid(~gen,
+  # geom_point(
+  #   data = df[agents > 0, ],
+  #   aes(x, y, colour = agents),
+  #   shape = 4,
+  #   size = 0.5,
+  #   stroke = 1,
+  #   alpha = 0.8
+  # ) +
+  facet_grid(
+    ~gen,
     labeller = label_both
   ) +
-  scale_fill_continuous_sequential(
-    palette = "Blues",
-    begin = 0.1,
-    limits = c(1, NA),
-    na.value = "white",
-    name = "# Prey",
-    guide = guide_legend(order = 1)
-  )+
+  # scale_fill_continuous_sequential(
+  #   palette = "Blues",
+  #   begin = 0.1,
+  #   limits = c(1, NA),
+  #   na.value = "white",
+  #   name = "# Prey",
+  #   guide = guide_legend(order = 1)
+  # )+
   scale_colour_continuous_sequential(
     palette = "Reds",
     begin = 0.2,
-    na.value = "darkred",
-    limits = c(1, 5),
+    # na.value = "darkred",
+    # limits = c(1, 5),
     name = "# Consumers",
     guide = guide_legend(order = 2)
   )+
   coord_equal(expand = F) +
-  kleptomoveMS::theme_custom(landscape = T, base_size = 6) +
+  kleptomoveMS::theme_custom(
+    landscape = T, base_size = 12
+  ) +
   theme(legend.position = "bottom")
+}) |> 
+  wrap_plots()
 ```
 
+## WIP
 
 ## Figure 1 Foragers model
 
