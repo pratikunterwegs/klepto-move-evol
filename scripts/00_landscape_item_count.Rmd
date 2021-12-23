@@ -34,7 +34,7 @@ data_landscape[, rep := as.numeric(
 
 # get sim type
 data_landscape[, sim_type := stringr::str_extract(
-  path, "obligate|facultative|foragers"
+  path, "obligate|facultative|foragers|random"
  ) 
 ]
 
@@ -91,7 +91,7 @@ data_landscape[, rep := as.numeric(
 
 # get sim type
 data_landscape[, sim_type := stringr::str_extract(
-  path, "obligate|facultative|foragers"
+  path, "obligate|facultative|foragers|random"
  ) 
 ]
 

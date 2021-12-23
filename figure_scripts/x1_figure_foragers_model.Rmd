@@ -216,7 +216,7 @@ save(plots_quality, file = "figures/plot_quality.Rds")
 ```
 
 
-prepare landscape at 0 and 25
+## Plot landscape and agent distributions
 
 
 ```{r }
