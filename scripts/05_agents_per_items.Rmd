@@ -19,13 +19,16 @@ Prepare paths.
 ```{r}
 # read paths
 paths <- list.dirs("data_sim/", recursive = F)
-paths <- paths[grep("rep_001", paths)]
+paths <- paths[grep("rep_", paths)]
 
 # select gens
 gens_for_figure <- stringr::str_pad(
-  c(
-    seq(49),
-    seq(50, 950, by = 25),
+  unique(
+    c(
+      seq(1, 10),
+      seq(10, 50, 10),
+      seq(50, 950, by = 50)
+    )
   ), 
   width = 5, pad = "0"
 )
