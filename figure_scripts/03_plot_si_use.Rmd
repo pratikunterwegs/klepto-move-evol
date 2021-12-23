@@ -1,11 +1,9 @@
 ---
-output: html_document
 editor_options:
   chunk_output_type: console
 ---
 
-# Landscape effects
-
+# Landscape depletion and the evolution of social information use
 
 ```{r }
 # to handle data and plot
@@ -17,13 +15,11 @@ library(colorspace)
 library(patchwork)
 ```
 
-
 ## Read node weight evolution
-
 
 ```{r }
 # read back in
-data <- fread("data_sim/results/data_early_0_100_weight_evolution.csv")
+data <- fread("data_sim/results/data_sparse_weight_evolution.csv")
 # data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
 
 # select growth rates of 0.001, 0.01, 0.1, 0.25
@@ -42,11 +38,7 @@ data[, weight_num := as.numeric(weight_num)]
 data <- data[sim_type != "random", ]
 ```
 
-
-## Prepare summary data
-
-Handler preference
-
+## Prepare handler preference
 
 ```{r }
 # get positive weights for handlers (weight 3)
@@ -58,7 +50,7 @@ wt_handler <- data[weight_id == 3 &
 
 # sum proportions
 wt_handler <- wt_handler[, list(pref_handlers = sum(weight_prop)),
-  by = c("sim_type", "replicate", "regrowth", "gen")
+  by = c("sim_type", "rep", "regrowth", "gen")
 ]
 
 # set strategy descriptor
@@ -67,7 +59,7 @@ wt_handler[, strategy := "consumer"]
 # HANDLE SCENARIO 2
 wt_handler_s2 = fread("data_sim/results/data_syndrome.csv")
 wt_handler_s2 = wt_handler_s2[regrowth == 0.01, list(N = sum(N)),
-                              by = c("sim_type", "replicate", "regrowth", 
+                              by = c("sim_type", "rep", "regrowth", 
                                      "klept_bias", "handler_pref", "gen")
                               ]
 wt_handler_s2[, c("klept_bias", "handler_pref") := list(
