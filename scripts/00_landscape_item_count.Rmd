@@ -26,6 +26,12 @@ paths <- paths[grep("rep_001", paths)]
 # select gens
 gens_for_figure <- stringr::str_pad(c(1, 10, 50, 950), width = 5, pad = "0")
 
+# make df
+data_landscape = CJ(
+  path = paths,
+  gen = gens_for_figure
+)
+
 # get replicate
 data_landscape[, rep := as.numeric(
   stringr::str_extract_all(path, "rep_(\\d{3})") |> 
