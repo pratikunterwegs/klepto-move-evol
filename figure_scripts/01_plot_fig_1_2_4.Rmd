@@ -109,10 +109,6 @@ plot_activity = lapply(data_activity, function(df) {
 plot_activity = plot_activity[c(
   "foragers", "obligate", "facultative", "random"
 )]
-
-
-# save as R object
-save(plot_activity, file = "figures/plot_activity.Rds")
 ```
 
 
@@ -153,16 +149,13 @@ plot_intake <- lapply(data_activity, function(df) {
 plot_intake = plot_intake[c(
   "foragers", "obligate", "facultative", "random"
 )]
-
-# save
-save(plot_intake, file = "figures/plot_intake.Rds")
 ```
 
 ## Correlation with quality
 
 ```{r }
 # raw correlation data
-data_quality <- fread("data_sim/results/data_quality_matching_rule.csv")
+data_quality <- fread("data_sim/results/data_corr_input_matching.csv")
 data_quality <- data_quality[regrowth == 0.01, ]
 ```
 
@@ -218,6 +211,9 @@ plots_quality = lapply(data_quality, function(df) {
     values = shape_vals,
     labels = label_vals
   )+
+  scale_x_log10(
+    breaks = c(1, 3, 10, 30, 100, 300, 1000)
+  ) +
   theme_test(
     base_size = 8,
     base_family = "Arial"
@@ -227,7 +223,6 @@ plots_quality = lapply(data_quality, function(df) {
     xlim = c(1, 1000),
     expand = T
   ) +
-  xlim(0, 50) +
   labs(
     x = "Generation",
     y = "Corr. # indivs. ~ cell quality",
@@ -239,14 +234,9 @@ plots_quality = lapply(data_quality, function(df) {
 plots_quality = plots_quality[c(
   "foragers", "obligate", "facultative", "random"
 )]
-
-# save
-save(plots_quality, file = "figures/plot_quality.Rds")
 ```
 
-
 ## Plot landscape and agent distributions
-
 
 ```{r }
 # get landscape and agent data
@@ -293,7 +283,7 @@ Map(data_land, data_agent, f = function(df_land, df_agent) {
     guide = guide_legend(order = 1)
   )+
   scale_colour_continuous_sequential(
-    palette = "Grays",
+    palette = "Purples",
     begin = 0.5,
     na.value = "black",
     limits = c(1, 5),
@@ -312,11 +302,6 @@ Map(data_land, data_agent, f = function(df_land, df_agent) {
 plots_landscape = plots_landscape[c(
   "foragers", "obligate", "facultative", "random"
 )]
-
-save(
-  plots_landscape,
-  file = "figures/plots_landscape.Rds"
-)
 ```
 
 ## Make scenario specific figures
