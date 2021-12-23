@@ -142,22 +142,30 @@ agent_data_sc2 = lapply(agent_data_sc2, function(df) {
     all = F
   )
 })
+```
 
+## Prepare data for export
+
+```{r}
 # unlist and merge with simulation parameters
 data$layer_data <- agent_data
 
 data_sc2$layer_data = agent_data_sc2
 
+# remove cols
+data = data[, !c("path", "image")]
+
 # unlist
 data <- data[, unlist(layer_data, recursive = F),
-  by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
+  by = c("sim_type", "gen", "rep", "regrowth")
 ]
 
 # assign strategy
 data$strategy =  "all_agents"
 
+data_sc2 = data_sc2[, !c("path", "image")]
 data_sc2 = data_sc2[, unlist(layer_data, recursive = F),
-  by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image",
+  by = c("sim_type", "gen", "rep", "regrowth",
          "strategy")
 ]
 setnames(data_sc2, "foragers", "agents")
@@ -167,7 +175,7 @@ data = rbindlist(list(data, data_sc2), use.names = TRUE)
 
 # select data
 data[, gen := as.numeric(gen)]
-data <- data[, list(sim_type, gen, replicate, regrowth, 
+data <- data[, list(sim_type, gen, rep, regrowth, 
                     x, y, agents, quality, strategy)]
 
 # save data
