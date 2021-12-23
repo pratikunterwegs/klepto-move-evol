@@ -8,18 +8,15 @@ editor_options:
 
 ## Load libraries
 
-```{r }
+```{r}
 # load libs
 library(data.table)
 library(kleptomoveMS)
 ```
 
-## Run function over data
+## Get transformed cue preferences
 
 Prepare data paths.
-
-```{r}
-Prepare the data paths.
 
 ```{r }
 # read paths
@@ -48,7 +45,7 @@ data[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 
 Read data from paths.
 
-```{r }
+```{r}
 # from each simulation
 temp_gen_data <- lapply(
   data$path,
@@ -68,11 +65,7 @@ temp_gen_data <- lapply(
 )
 ```
 
-
-## Write sparse and final generation range sequence to file
-
-
-```{r }
+```{r}
 # bind with parameters
 data[, wt_data := temp_gen_data]
 
@@ -82,4 +75,3 @@ data <- data[, unlist(wt_data, recursive = F),
 ]
 fwrite(data, file = "data_sim/results/data_sparse_weight_evolution.csv")
 ```
-
