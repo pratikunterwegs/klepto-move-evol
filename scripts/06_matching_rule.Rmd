@@ -18,7 +18,7 @@ library(ggplot2)
 
 ```{r }
 # read data
-data <- fread("data_sim/results/data_quality_counts_1_150.csv")
+data <- fread("data_sim/results/data_input_matching.csv")
 
 # get correlation
 data_summary <- data[, list(
@@ -39,6 +39,6 @@ by = c("sim_type", "gen", "replicate", "regrowth", "strategy")
 ]
 
 # write data
-fwrite(data_summary, file = "data_sim/results/data_quality_matching_rule.csv")
+fwrite(data_summary, file = "data_sim/results/data_corr_input_matching.csv")
 ```
 
