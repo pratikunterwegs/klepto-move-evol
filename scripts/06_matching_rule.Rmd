@@ -4,17 +4,14 @@ editor_options:
   chunk_output_type: console
 ---
 
+# Correlation between consumers and productivity
 
 ```{r }
 library(data.table)
 library(kleptomoveMS)
-# plotting
-library(ggplot2)
 ```
 
-
 ## Agents ~ quality
-
 
 ```{r }
 # read data
@@ -35,7 +32,7 @@ data_summary <- data[, list(
     }
   )
 ),
-by = c("sim_type", "gen", "replicate", "regrowth", "strategy")
+by = c("sim_type", "gen", "rep", "regrowth", "strategy")
 ]
 
 # write data
