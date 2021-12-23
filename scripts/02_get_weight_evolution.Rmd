@@ -11,7 +11,8 @@ editor_options:
 ```{r}
 # load libs
 library(data.table)
-library(kleptomoveMS)
+library(stringr)
+devtools::load_all()
 ```
 
 ## Get transformed cue preferences
@@ -41,6 +42,9 @@ data[, sim_type := stringr::str_extract(
 ]
 
 data[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
+
+# select regrowth
+data = data[regrowth == 0.01,]
 ```
 
 Read data from paths.
@@ -73,5 +77,6 @@ data[, wt_data := temp_gen_data]
 data <- data[, unlist(wt_data, recursive = F),
   by = list(sim_type, rep, regrowth)
 ]
+
 fwrite(data, file = "data_sim/results/data_sparse_weight_evolution.csv")
 ```
