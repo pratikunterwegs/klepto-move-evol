@@ -18,13 +18,16 @@ library(patchwork)
 ```
 
 ```{r }
-data = fread("data_sim/results/data_rel_pref_sc_2.csv")
-data = data[regrowth == 0.01,]
+data = fread("data_sim/results/data_rel_pref.csv")
+data = data[regrowth == 0.01 & sim_type == "obligate"]
+
+# assign strategy
+data[, strategy := fifelse(wt_5 > 0, "forager", "klept")]
 ```
 
 ```{r}
 fig_pref = 
-ggplot(data[rep == 3 & gen %in% c(10, 100, 950)])+
+ggplot(data[rep == 3 & gen %in% c(10, 100, 300, 950)])+
   geom_abline(
     intercept = c(0, 1, -1),
     slope = c(0, -1, 1),
@@ -40,7 +43,7 @@ ggplot(data[rep == 3 & gen %in% c(10, 100, 950)])+
     shape = 21,
     # stroke = 0.2,
     alpha = 0.5,
-    size = 3
+    size = 2
   )+
   geom_text(
     data = data.table(
@@ -87,7 +90,7 @@ ggplot(data[rep == 3 & gen %in% c(10, 100, 950)])+
     # ratio = 0.5
   )+
   theme_test(
-    base_size = 12,
+    base_size = 10,
     base_family = "Arial"
   )+
   theme(
@@ -124,7 +127,7 @@ ggplot(data[rep == 3 & gen %in% c(10, 100, 950)])+
 ggsave(
   fig_pref,
   filename = "figures/fig_03.png",
-  height = 120,
+  height = 100,
   width = 150, units = "mm"
 )
 ```
