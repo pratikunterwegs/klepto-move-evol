@@ -4,7 +4,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Prepare relative preference evolution data
+# Get transformed weight frequency data
+
+These are the tanh scaled weights, and not the relative preferences.
 
 ## Load libraries
 
