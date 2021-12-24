@@ -49,16 +49,18 @@ plot_activity = lapply(data_activity, function(df) {
   col_vals = c(
     foraging = "dodgerblue4",
     handling = "forestgreen",
-    stealing = "indianred"
+    stealing = "indianred",
+    klept = "darkorange"
   )
   label_vals = c(
     foraging = "Searching for prey",
     handling = "Handling prey",
-    stealing = "Attempting to steal"
+    stealing = "Attempting to steal",
+    klept = "% Kleptoparasites"
   )
   if(unique(df$sim_type) == "foragers") {
-    col_vals = col_vals[names(col_vals) != "stealing"]
-    label_vals = label_vals[names(label_vals) != "stealing"]
+    col_vals = col_vals[!names(col_vals) %in% c("stealing", "klept")]
+    label_vals = label_vals[!names(label_vals) %in% c("stealing", "klept")]
   }
   
   ggplot(df) +
@@ -111,6 +113,34 @@ plot_activity = plot_activity[c(
 )]
 ```
 
+## Proportion of fixed kleptoparasites
+
+```{r}
+data_strat = fread("data_sim/results/data_sparse_weight_evolution.csv")
+data_strat = data_strat[weight_id == 5 & sim_type == "obligate",]
+
+# get numeric weight value
+data_strat[, wt_num := stringi::stri_extract_last(weight_value, regex = "[-0-9]+\\.\\d{2}")]
+
+# assign strategy and sum proportions
+data_strat[, strategy := fifelse(wt_num < 0, "klept", "forager")]
+
+data_strat = data_strat[, list(
+  prop = sum(weight_prop)
+), by = c("gen", "rep", "strategy")]
+```
+
+```{r}
+plot_activity[["obligate"]] = plot_activity[["obligate"]] +
+  geom_path(
+    data = data_strat[strategy == "klept"],
+    aes(
+      gen, prop, col = strategy, 
+        group = interaction(strategy, rep)
+    ),
+    position = "identity"
+  )
+```
 
 ## Mean per capita intake plot
 
@@ -218,6 +248,9 @@ plots_quality = lapply(data_quality, function(df) {
     base_size = 8,
     base_family = "Arial"
   ) +
+  theme(
+    legend.key.height = unit(2, units = "mm")
+  )+
   coord_cartesian(
     ylim = c(-0.5, 0.5),
     xlim = c(1, 1000),
@@ -275,6 +308,7 @@ Map(data_land, data_agent, f = function(df_land, df_agent) {
   scale_fill_continuous_sequential(
     palette = "Batlow",
     l1 = 20, l2 = 100,
+    c1 = 10,
     begin = 0.2,
     limits = c(1, NA),
     na.value = "white",
@@ -283,7 +317,7 @@ Map(data_land, data_agent, f = function(df_land, df_agent) {
     guide = guide_legend(order = 1)
   )+
   scale_colour_continuous_sequential(
-    palette = "Purples",
+    palette = "Reds 2",
     begin = 0.5,
     na.value = "black",
     limits = c(1, 5),
@@ -304,13 +338,129 @@ plots_landscape = plots_landscape[c(
 )]
 ```
 
+## Relative strategy preferences
+
+```{r}
+# load relative preferences
+data_pref = fread("data_sim/results/data_rel_pref.csv")
+data_pref = data_pref[rep == 3,]
+
+# assign strategy
+data_pref[sim_type == "obligate", strategy := fifelse(
+  wt_5 > 0, "forager", "klept"
+)]
+
+# split by sim type
+data_pref = split(data_pref, by = "sim_type")
+```
+
+```{r}
+plot_pref = Map(
+  data_pref, names(data_pref),
+  f = function(df, n) {
+    p = ggplot(df[gen %in% c(10, 30, 300, 950)])+
+      geom_abline(
+        intercept = c(0, 1, -1),
+        slope = c(0, -1, 1),
+        lty = 2,
+        size = 0.2,
+        col = "grey"
+      )+
+      geom_jitter(
+        aes(sP, sH, fill = sN),
+        colour = "grey50",
+        shape = 21,
+        # stroke = 0.2,
+        alpha = 0.5,
+        size = 2
+      )+
+      scale_fill_continuous_diverging(
+        palette = "Blue-Red 2",
+        rev = T,
+        limits = c(-1, 1),
+        breaks = c(-1, 1),
+        labels = c("Avoid", "Prefer")
+      )+
+      scale_x_continuous(
+        breaks = c(0, 1),
+        labels = c("Neutral", "Prefer")
+      )+
+      scale_y_continuous(
+        breaks = c(-1, 1),
+        labels = c("Avoid", "Prefer")
+      )+
+      coord_cartesian(
+        xlim = c(0, 1),
+        ylim = c(-1, 1)
+      )+
+      theme_test(
+        base_size = 8,
+        base_family = "Arial"
+      )+
+      theme(
+        axis.text.y = 
+        element_text(
+          hjust = c(0, 1),
+          angle = 90
+        ),
+        axis.text.x = 
+        element_text(
+          hjust = c(0, 1)
+        ),
+        strip.text = element_text(
+          face = "italic"
+        ),
+        strip.background = element_blank(),
+        legend.position = "top",
+        legend.title = element_text(vjust = 1.5),
+        legend.key.height = unit(1, "mm"),
+        legend.key.width = unit(5, "mm")
+      )+
+      labs(
+        x = "sP: Prey-item preference",
+        y = "sH: Handler preference",
+        fill = "sN: Non-handler preference"
+      )
+
+      if (n == "obligate") {
+        p = p +
+          facet_grid(
+            rows = vars(strategy),
+            cols = vars(gen),
+            labeller = labeller(
+              strategy = c(
+                "forager" = "Foragers",
+                "klept" = "Klept."
+              ),
+              gen = function(x) sprintf("Gen = %s", x)
+            )
+          )
+      } else {
+        p = p +
+          facet_grid(
+            cols = vars(gen),
+            labeller = labeller(
+              gen = function(x) sprintf("Gen = %s", x)
+            )
+          )
+      }
+      p
+  }
+)
+
+plot_pref = plot_pref[c(
+  "foragers", "obligate", "facultative", "random"
+)]
+```
+
 ## Make scenario specific figures
 
 ```{r}
 figs_1_2_4 = Map(
   plots_landscape, plot_activity, plot_intake, plots_quality,
-  f = function(p1, p2, p3, p4) {
-    p5 = wrap_plots(
+  plot_pref, names(plot_pref),
+  f = function(p1, p2, p3, p4, p5, n) {
+    p = wrap_plots(
       p2, p3, p4,
       design = "ABC"
     ) +
@@ -319,20 +469,39 @@ figs_1_2_4 = Map(
       legend.position = "bottom"
     )
 
-    wrap_plots(
-      p1,
-      p5,
-      ncol = 1
-    ) +
-    plot_annotation(
-      tag_levels = "A"
-    ) &
-    theme(
-      plot.tag = element_text(
-        face = "bold",
-        size = 10
+    if(n != "obligate") {
+      p = wrap_plots(
+        p1,
+        p,
+        p5,
+        ncol = 1
+      ) +
+      plot_annotation(
+        tag_levels = "A"
+      ) &
+      theme(
+        plot.tag = element_text(
+          face = "bold",
+          size = 10
+        )
       )
-    )
+    } else {
+      p = wrap_plots(
+        p1,
+        p,
+        ncol = 1
+      ) +
+      plot_annotation(
+        tag_levels = "A"
+      ) &
+      theme(
+        plot.tag = element_text(
+          face = "bold",
+          size = 10
+        )
+      )
+    }
+    p
   }
 )
 
@@ -342,11 +511,20 @@ names(figs_1_2_4)
 # save figures
 invisible(
   Map(figs_1_2_4, c(as.character(c(1,2,4)), "random"), f = function(p, n) {
-    ggsave(
-      p,
-      filename = sprintf("figures/fig_0%s.png", n),
-      height = 110, width = 150, units = "mm"
-    )
+    if(n == "2") {
+      ggsave(
+        p,
+        filename = sprintf("figures/fig_0%s.png", n),
+        height = 110, width = 150, units = "mm"
+      )
+    } else {
+      ggsave(
+        p,
+        filename = sprintf("figures/fig_0%s.png", n),
+        height = 150, width = 150, units = "mm"
+      )
+    }
+    
   })
 )
 ```
