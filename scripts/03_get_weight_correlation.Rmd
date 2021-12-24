@@ -57,5 +57,5 @@ data = data[, unlist(rel_pref, recursive = F),
 # assign strategy
 data[, strategy := fifelse(wt_5 > 0, "forager", "klept")]
 
-fwrite(data, file = "data/results/data_rel_pref_sc_2.csv")
+fwrite(data, file = "data_sim/results/data_rel_pref_sc_2.csv")
 ```
