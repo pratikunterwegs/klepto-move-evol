@@ -68,7 +68,7 @@ data_rel_pref[, strategy := fcase(
   )
 ]
 
-fwrite(data_rel_pref, file = "data/results/data_rel_pref.csv")
+fwrite(data_rel_pref, file = "data_sim/results/data_rel_pref.csv")
 ```
 
 ## Evolution of handler tracking
