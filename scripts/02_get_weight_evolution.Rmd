@@ -60,9 +60,7 @@ temp_gen_data <- lapply(
       data_folder = x,
       generations = unique(
         c(
-          seq(1, 100, 1), 
-          seq(100, 999, 25), 
-          999
+          seq(1, 999, 2)
         )
       ),
       which_weight = NA
