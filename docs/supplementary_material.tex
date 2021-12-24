@@ -1,58 +1,44 @@
-% Options for packages loaded elsewhere
-\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
 \PassOptionsToPackage{hyphens}{url}
 %
-\documentclass[
-]{scrreprt}
-\usepackage{amsmath,amssymb}
+\documentclass[]{scrreprt}
 \usepackage{lmodern}
+\usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
   \usepackage{unicode-math}
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
 \fi
-% Use upquote if available, for straight quotes in verbatim environments
+% use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
 \hypersetup{
-  pdftitle={Supplementary Material for The Joint Evolution of Movement and Competition Strategies},
-  pdfauthor={Pratik R. Gupte; Christoph F.G. Netz; Franz J. Weissing},
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
+            pdftitle={Supplementary Material for The Joint Evolution of Movement and Competition Strategies},
+            pdfauthor={Pratik R. Gupte; Christoph F.G. Netz; Franz J. Weissing},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
 \usepackage[left=3cm, right=3cm, top=2.5cm, bottom=2.5cm]{geometry}
-\usepackage{longtable,booktabs,array}
-\usepackage{calc} % for calculating minipage widths
-% Correct order of tables after \paragraph or \subparagraph
-\usepackage{etoolbox}
-\makeatletter
-\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
-\makeatother
-% Allow footnotes in longtable head/foot
-\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
-\makesavenoteenv{longtable}
-\usepackage{graphicx}
+\usepackage{longtable,booktabs}
+% Fix footnotes in tables (requires footnote package)
+\IfFileExists{footnote.sty}{\usepackage{footnote}\makesavenoteenv{longtable}}{}
+\usepackage{graphicx,grffile}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -61,14 +47,25 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
-\makeatletter
-\def\fps@figure{htbp}
-\makeatother
-\setlength{\emergencystretch}{3em} % prevent overfull lines
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{2}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
 
 % \usepackage{fontspec}
 % use nice fonts if available else use boring defaults
@@ -78,19 +75,16 @@
 
 % \IfFontExistsTF{Palatino}{\setmainfont[]{Palatino}}{} 
 \usepackage{mathpazo}
-\usepackage{helvet}
+% \usepackage{helvet}
 \usepackage{inconsolata}
 % \IfFontExistsTF{Arial}{\setsansfont[]{Arial}}{}
 % \IfFontExistsTF{Fira Code}{\setmonofont{Fira Code}}
 
 \linenumbers
-\ifluatex
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
 
 \title{Supplementary Material for \emph{The Joint Evolution of Movement and Competition Strategies}}
 \author{Pratik R. Gupte \and Christoph F.G. Netz \and Franz J. Weissing}
-\date{2021-07-19}
+\date{2021-12-24}
 
 \begin{document}
 \maketitle
@@ -101,26 +95,46 @@ In Section 1, \textbf{Landscape Depletion across \(r_{max}\)}, we show the devel
 
 In Section 2, \textbf{Evolution of Decision Making Weights}, we show the frequency of the movement decision making weights across generations, for an \(r_{max}\) of 0.01 (the default value, with results presented in the main text). In addition, for scenario 3, we show the evolution of the strategy weight with respect to handlers, i.e., the foraging strategy response of individuals to the presence of handlers.
 
+\hypertarget{evolutionary-ecology-of-random-movement}{%
+\chapter{Evolutionary Ecology of Random Movement}\label{evolutionary-ecology-of-random-movement}}
+
+We ran our model on a fourth scenario: random movement.
+In this scenario, the landscape is set up as in our first three scenarios (see Figure panel A).
+The prey-item handling dynamics are the same as well, and if individuals, which can choose their competition strategy depending on environmental conditions (as in scenario 3), ever encounter a handler and choose to steal from it, they can do so.
+Individuals have heritable, evolving preferences for environmental cues, as in all our previous scenarios.
+The major change in this scenario is that individuals cannot actually perceive any environmental cues, and are essentially then, moving to random locations in their neighbourhood.
+This scenario serves as a useful null model for what one should expect when directed movement is not possible, or has no bearing on fitness.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  In contrast to scenario 1, the resource landscape regenerates much more strongly, suggesting that despite the paucity of movement cues in scenario 1, foragers are still capable of finding their way to isolated prey-items, and consuming them (panel \textbf{A}).
+\item
+  This scenario reveals that directed movement is, understandably, absolutely key to kleptoparasitism.
+  When individuals cannot move towards handlers, the low density of foragers on the landscape, only some of which will be handling an item at any one time, means that encountering a handler is essentially impossible.
+  As expected then, the number of stealing attempts drops to zero within only three generations, and all individuals thereon are foragers (panel \textbf{B}).
+\item
+  Despite being unable to move towards resources, the population's mean intake is comparable to scenarios 1 and 3, and actually higher than in scenario 2.
+  This highlights the cost that fixed-strategy kleptoparasitism imposes at a population wide level (panel \textbf{C}).
+\item
+  The near-zero correlation between consumer abundance and resource productivity is unsurprising (panel \textbf{D}).
+  Nonetheless, it shows that regardless of whether individuals are moving with (relatively) sophisticated movement strategies, or at random, they are very far from following the ideal free distribution's input matching rule.
+  This also confirms the true cost of resource landscape depletion in scenario 1: the loss of prey-item gradients with which to orient movement leave individuals navigating a clueless landscape, on which they simply cannot find the way to areas of high productivity.
+\item
+  Finally, the evolution of movement strategies, when they are not actually under selection, supports our findings of strong selection on movement in the first three scenarios (panel \textbf{E}).
+\end{enumerate}
+
+\begin{figure}
+
+{\centering \includegraphics[width=\textwidth]{figures/fig_0random} 
+
+}
+
+\caption{\textbf{The evolutionary ecology of random movement serves as a useful baseline against which to compare other scenarios}. \textbf{(A)} Individuals deplete the landscape ($r_{max}$ = 0.01) at random, allowing it to regenerate more than scenario 1, yet less than scenario 2. \textbf{(B)} Kleptoparasitism as a strategy very rapidly goes extinct, as individuals cannot move towards handlers, and encountering a handler at random is very unlikely. \textbf{(C)} Surprisingly, moving at random yields a similar mean per-capita intake as in scenarios 1 and 3, and actually better than scenario 2. \textbf{(D)} Random movement leads, unsurprisingly, to no correlation with landscape productivity. \textbf{(E)} When movement strategies are not under selection, individuals occupy a large area of the potential strategy space.}\label{fig:unnamed-chunk-3}
+\end{figure}
+
 \hypertarget{landscape-depletion-across-r_max}{%
 \chapter{\texorpdfstring{Landscape Depletion across \(r_{max}\)}{Landscape Depletion across r\_\{max\}}}\label{landscape-depletion-across-r_max}}
-
-\begin{figure}
-
-{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-3-1} 
-
-}
-
-\caption{In scenario 1, foragers completely deplete the resource landscape within 10 generations at low $r_{max}$ (A, B). However, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated until most cells carry 5 items, the maximum allowed in our model.}\label{fig:unnamed-chunk-3}
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-4-1} 
-
-}
-
-\caption{In scenario 2, foragers can only deplete the resource landscape at very low $r_{max}$ (A): 1 prey item generated per 1,000 timesteps, or 2.5 generations. At all $r_{max} \geq$ 0.05 (B, C, D), prey item regeneration matches or exceeds depletion and the resource landscape either shows strong spatial structure, or is entirely saturated with prey items.}\label{fig:unnamed-chunk-4}
-\end{figure}
 
 \begin{figure}
 
@@ -128,11 +142,17 @@ In Section 2, \textbf{Evolution of Decision Making Weights}, we show the frequen
 
 }
 
-\caption{Scenario 3 is similar to scenario 1 at low $r_{max}$ (A, B), where foragers completely deplete the resource landscape). Similarly, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated to a carrying capacity of 5 prey items per cell.}\label{fig:unnamed-chunk-5}
+\caption{In scenario 1, foragers completely deplete the resource landscape within 10 generations at low $r_{max}$ (A, B). However, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated until most cells carry 5 items, the maximum allowed in our model.}\label{fig:unnamed-chunk-5}
 \end{figure}
 
-\hypertarget{evolution-of-decision-making-weights}{%
-\chapter{Evolution of Decision Making Weights}\label{evolution-of-decision-making-weights}}
+\begin{figure}
+
+{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-6-1} 
+
+}
+
+\caption{In scenario 2, foragers can only deplete the resource landscape at very low $r_{max}$ (A): 1 prey item generated per 1,000 timesteps, or 2.5 generations. At all $r_{max} \geq$ 0.05 (B, C, D), prey item regeneration matches or exceeds depletion and the resource landscape either shows strong spatial structure, or is entirely saturated with prey items.}\label{fig:unnamed-chunk-6}
+\end{figure}
 
 \begin{figure}
 
@@ -140,25 +160,7 @@ In Section 2, \textbf{Evolution of Decision Making Weights}, we show the frequen
 
 }
 
-\caption{In scenario 1, populations evolve (A) to move away from non-handlers, (B) move towards handlers, and (C) to move towards cells with more prey items. While the sign of the response (avoidance or preference) is consistent across replicates, the replicates differ in the number and frequency of evolved responses (i.e., decision-making weight values). All panels show an $r_{max}$ = 0.01.}\label{fig:unnamed-chunk-7}
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-8-1} 
-
-}
-
-\caption{In scenario 2, populations evolve (A) to move away from non-handlers, but (B) a mixed response towards handlers due to the correlation between handler-preference and the kleptoparasitic strategy (see Fig. 3, main text). Here too, responses are polymorphic, with little consistency across replicates, despite the overall sign of the response being consistent. (C) In contrast with scenario 1, most foragers show only a weak preference for moving towards cells with more prey items. All panels show an $r_{max}$ = 0.01.}\label{fig:unnamed-chunk-8}
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-9-1} 
-
-}
-
-\caption{In scenario 3, populations evolve (A) to move away from non-handlers, and (B) towards handlers. (C) Most foragers also show a weak preference for moving towards cells with more prey items. (D) All individuals show a kleptoparasitic response to handlers. All panels show an $r_{max}$ = 0.01.}\label{fig:unnamed-chunk-9}
+\caption{Scenario 3 is similar to scenario 1 at low $r_{max}$ (A, B), where foragers completely deplete the resource landscape). Similarly, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated to a carrying capacity of 5 prey items per cell.}\label{fig:unnamed-chunk-7}
 \end{figure}
 
 \end{document}

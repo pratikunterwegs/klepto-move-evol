@@ -57,8 +57,7 @@ plot_subplots = function(df) {
   coord_equal(expand = F) +
   kleptomoveMS::theme_custom(
     landscape = T, 
-    base_size = 10,
-    base_family = "Arial"
+    base_size = 10
   ) +
   theme(legend.position = "right",
         legend.key.width = unit(2, units = "mm"),
