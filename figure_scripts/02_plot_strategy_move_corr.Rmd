@@ -4,7 +4,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Plot relative preference in Scenario 2
+# Correlation of movement and competition strategies
 
 ```{r }
 # to handle data and plot
@@ -16,74 +16,6 @@ library(ggplot2)
 library(colorspace)
 library(patchwork)
 ```
-
-## Kleptoparasitism over evolutionary time
-
-```{r}
-data_strat = fread("data_sim/results/data_sparse_weight_evolution.csv")
-data_strat = data_strat[weight_id == 5 & sim_type == "obligate",]
-
-# get numeric weight value
-data_strat[, wt_num := stringi::stri_extract_last(weight_value, regex = "[-0-9]+\\.\\d{2}")]
-
-# assign strategy and sum proportions
-data_strat[, strategy := fifelse(wt_num < 0, "klept", "forager")]
-
-data_strat = data_strat[, list(
-  prop = sum(weight_prop)
-), by = c("gen", "rep", "strategy")]
-```
-
-```{r}
-fig_strat = ggplot(data_strat[strategy == "klept"])+
-  geom_path(
-    aes(
-      gen, prop, col = strategy, 
-        group = interaction(strategy, rep)
-    ),
-    position = "identity"
-  )+
-  geom_vline(
-    xintercept = c(10, 100, 950),
-    lty = 2,
-    size = 0.2
-  )+
-  scale_colour_manual(
-    values = c(
-      "klept" = "darkorange"
-    ),
-    labels = c(
-      "Obligate kleptoparasites"
-    )
-  )+
-  scale_x_log10(
-    breaks = c(1, 10, 30, 100, 300, 1000)
-  )+
-  scale_y_continuous(
-    labels = scales::percent
-  )+
-  theme_test(
-    base_size = 10,
-    base_family = "Arial" 
-  )+
-  theme(
-    legend.position = "top",
-    axis.text.y = element_text(
-      angle = 90,
-      hjust = 0.5
-    )
-  )+
-  coord_cartesian(
-    ylim = c(0, 1)
-  )+
-  labs(
-    x = "Generation",
-    y = "% Individuals",
-    colour = NULL
-  )
-```
-
-## Evolution of movement strategies
 
 ```{r }
 data = fread("data_sim/results/data_rel_pref_sc_2.csv")
