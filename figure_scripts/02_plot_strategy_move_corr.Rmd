@@ -1,0 +1,283 @@
+---
+output: html_document
+editor_options:
+  chunk_output_type: console
+---
+
+# Plot relative preference in Scenario 2
+
+```{r }
+# to handle data and plot
+library(data.table)
+library(glue)
+
+# libraries for figures
+library(ggplot2)
+library(colorspace)
+library(patchwork)
+```
+
+## Kleptoparasitism over evolutionary time
+
+```{r}
+data_strat = fread("data_sim/results/data_sparse_weight_evolution.csv")
+data_strat = data_strat[weight_id == 5 & sim_type == "obligate",]
+
+# get numeric weight value
+data_strat[, wt_num := stringi::stri_extract_last(weight_value, regex = "[-0-9]+\\.\\d{2}")]
+
+# assign strategy and sum proportions
+data_strat[, strategy := fifelse(wt_num < 0, "klept", "forager")]
+
+data_strat = data_strat[, list(
+  prop = sum(weight_prop)
+), by = c("gen", "rep", "strategy")]
+```
+
+```{r}
+fig_strat = ggplot(data_strat[strategy == "klept"])+
+  geom_path(
+    aes(
+      gen, prop, col = strategy, 
+        group = interaction(strategy, rep)
+    ),
+    position = "identity"
+  )+
+  geom_vline(
+    xintercept = c(10, 100, 950),
+    lty = 2,
+    size = 0.2
+  )+
+  scale_colour_manual(
+    values = c(
+      "klept" = "darkorange"
+    ),
+    labels = c(
+      "Obligate kleptoparasites"
+    )
+  )+
+  scale_x_log10(
+    breaks = c(1, 10, 30, 100, 300, 1000)
+  )+
+  scale_y_continuous(
+    labels = scales::percent
+  )+
+  theme_test(
+    base_size = 10,
+    base_family = "Arial" 
+  )+
+  theme(
+    legend.position = "top",
+    axis.text.y = element_text(
+      angle = 90,
+      hjust = 0.5
+    )
+  )+
+  coord_cartesian(
+    ylim = c(0, 1)
+  )+
+  labs(
+    x = "Generation",
+    y = "% Individuals",
+    colour = NULL
+  )
+```
+
+## Movement weights over time
+
+```{r}
+data_wt = fread("data_sim/results/data_sparse_weight_evolution.csv")
+data_wt = data_wt[sim_type == "obligate" & regrowth == 0.01,]
+data_wt[, wt_num := as.numeric(stringi::stri_extract_last(
+  weight_value, regex = "[-0-9]+\\.\\d{2}"
+))]
+
+# order of weights
+data_wt = data_wt[weight_id %in% c(2,3,4),]
+data_wt[, weight_id := factor(
+  weight_id, levels = c(4,3,2)
+)]
+```
+
+```{r}
+fig_wt_evo = 
+ggplot(data_wt[weight_prop > 0.01 & rep == 1])+
+  geom_tile(
+    aes(
+      gen, wt_num, 
+      fill = as.factor(weight_id),
+      alpha = weight_prop
+    ),
+    show.legend = F
+  )+
+  geom_vline(
+    xintercept = c(10, 100, 950),
+    lty = 2,
+    size = 0.2
+  )+
+  scale_fill_discrete_qualitative(
+    palette = "Set 2",
+    l1 = 50,
+    c1 = 100,
+    order = c(2,3,1)
+  )+
+  scale_y_continuous(
+    breaks = c(-0.75, 0.75),
+    labels = c(
+      "Avoid",
+      # "Neutral",
+      "Prefer"
+    )
+  )+
+  scale_alpha(
+    range = c(0.2, 1)
+  )+
+  facet_grid(
+    # cols = vars(rep),
+    rows = vars(weight_id),
+    labeller = labeller(
+      weight_id = c(
+        "4" = "sP: Prey items", 
+        "3" = "sH: Handlers", 
+        "2" = "sN: Non-handlers"
+      )
+    ),
+    switch = "y"
+  )+
+  coord_cartesian(
+    ylim = c(-1, 1),
+    xlim = c(0, 1000),
+    expand = T
+  )+
+  theme_test(
+    base_size = 10,
+    base_family = "Arial"
+  )+
+  theme(
+    axis.text.y = element_text(
+      angle = 90,
+      hjust = 0.5
+    ),
+    strip.background = element_blank(),
+    strip.text = element_text(
+      face = "italic"
+    ),
+    strip.placement = "outside"
+  )+
+  labs(
+    x = "Generation",
+    y = NULL
+  )
+```
+
+```{r }
+data = fread("data_sim/results/data_rel_pref_sc_2.csv")
+data = data[regrowth == 0.01,]
+```
+
+```{r}
+fig_pref = 
+ggplot(data[rep == 3 & gen %in% c(10, 100, 950)])+
+  geom_abline(
+    intercept = c(0, 1, -1),
+    slope = c(0, -1, 1),
+    lty = 2,
+    size = 0.2,
+    col = "grey"
+  )+
+  geom_jitter(
+    aes(
+      sP, sH, fill = sN
+    ),
+    colour = "grey50",
+    shape = 21,
+    # stroke = 0.2,
+    alpha = 0.5,
+    size = 3
+  )+
+  geom_text(
+    data = data.table(
+      x = c(1, 0.1, 0.1),
+      y = c(0, 1, -1),
+      strat = c("Prey tracking", "Handler tracking",  "Handler avoiding"),
+      angle = c(90, 0, 0)
+    ),
+    aes(x, y, label = strat, angle = angle),      
+    size = 3,
+    col = "grey30",
+    hjust = "inward",
+    fontface = "italic"
+  )+
+  scale_fill_continuous_diverging(
+    palette = "Blue-Red 2",
+    rev = T,
+    limits = c(-1, 1),
+    breaks = c(-1, 1),
+    labels = c("Avoid", "Prefer")
+  )+
+  scale_x_continuous(
+    breaks = c(0, 1),
+    labels = c("Neutral", "Prefer")
+  )+
+  scale_y_continuous(
+    breaks = c(-1, 1),
+    labels = c("Avoid", "Prefer")
+  )+
+  facet_grid(
+    cols = vars(gen),
+    rows = vars(strategy),
+    labeller = labeller(
+      strategy = c(
+        "forager" = "Foragers",
+        "klept" = "Klept."
+      ),
+      gen = function(x) sprintf("Gen = %s", x)
+    )
+  )+
+  coord_cartesian(
+    xlim = c(0, 1),
+    ylim = c(-1, 1),
+    # ratio = 0.5
+  )+
+  theme_test(
+    base_size = 12,
+    base_family = "Arial"
+  )+
+  theme(
+    axis.text.y = 
+    element_text(
+      hjust = c(0, 1),
+      angle = 90
+    ),
+    axis.text.x = 
+    element_text(
+      hjust = c(0, 1)
+    ),
+    strip.text = element_text(
+      face = "italic"
+    ),
+    strip.background = element_blank(),
+    legend.position = "top",
+    legend.title = element_text(vjust = 1.5),
+    legend.key.height = unit(1, "mm"),
+    legend.key.width = unit(5, "mm"),
+    # legend.text = element_text(
+    #   angle = 90,
+    #   hjust = 0.5
+    # )
+  )+
+  labs(
+    x = "sP: Prey-item preference",
+    y = "sH: Handler preference",
+    fill = "sN: Non-handler preference"
+  )
+```
+
+```{r}
+ggsave(
+  fig_pref,
+  filename = "figures/fig_03.png",
+  height = 120,
+  width = 150, units = "mm"
+)
+```
