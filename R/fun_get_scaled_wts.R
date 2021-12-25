@@ -9,6 +9,7 @@
 #'
 get_scaled_move_prefs <- function(filepath,
                         gens,
+                        weights = c(2,3,4),
                         n_agents = 100) {
 
   # get filepath of the function sourceME.r
@@ -44,12 +45,15 @@ get_scaled_move_prefs <- function(filepath,
     # add id
     dt_[, id := seq(nrow(dt_)) - 1]
 
-    # select movement weights
-    dt_ = dt_[, !(sprintf("wt_%i", c(1, seq(6, 8))))]
+    # select required weights
+    weights_to_exclude = sprintf("wt_%i", as.integer(setdiff(weights, seq(8))))
+    weights_to_scale = sprintf("wt_%i", as.integer(weights))
+
+    dt_ = dt_[, !(weights_to_exclude)]
 
     # get sum of absolute values
     dt_[, wt_abs_sum := apply(
-        dt_[, c("wt_2", "wt_3", "wt_4")], 
+        dt_[, c(weights_to_scale)], 
         1, 
         FUN = function(x) {
             sum(abs(x))
@@ -57,16 +61,19 @@ get_scaled_move_prefs <- function(filepath,
     ]
 
     # scale by sum of values
-    dt_[, c("wt_2", "wt_3", "wt_4") := lapply(
+    dt_[, c(weights_to_scale) := lapply(
         .SD, `/`, wt_abs_sum
-    ), .SDcols = c("wt_2", "wt_3", "wt_4")]
+    ), .SDcols = c(weights_to_scale)]
     
-    # set names
-    data.table::setnames(
-        dt_,
-        c("wt_2", "wt_3", "wt_4"),
-        c("sN", "sH", "sP")
-    )
+    if (weights == c(2, 3, 4)) {
+      # set names
+      data.table::setnames(
+          dt_,
+          c("wt_2", "wt_3", "wt_4"),
+          c("sN", "sH", "sP")
+      )
+    }
+    
     dt_
     
   })
