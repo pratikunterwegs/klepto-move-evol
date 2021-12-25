@@ -46,14 +46,14 @@ get_scaled_move_prefs <- function(filepath,
     dt_[, id := seq(nrow(dt_)) - 1]
 
     # select required weights
-    weights_to_exclude = sprintf("wt_%i", as.integer(setdiff(weights, seq(8))))
+    weights_to_exclude = sprintf("wt_%i", as.integer(setdiff(seq(8), weights)))
     weights_to_scale = sprintf("wt_%i", as.integer(weights))
 
-    dt_ = dt_[, !(weights_to_exclude)]
+    dt_ = dt_[, !..weights_to_exclude]
 
     # get sum of absolute values
     dt_[, wt_abs_sum := apply(
-        dt_[, c(weights_to_scale)], 
+        dt_[, ..weights_to_scale], 
         1, 
         FUN = function(x) {
             sum(abs(x))
@@ -65,7 +65,7 @@ get_scaled_move_prefs <- function(filepath,
         .SD, `/`, wt_abs_sum
     ), .SDcols = c(weights_to_scale)]
     
-    if (weights == c(2, 3, 4)) {
+    if (all(weights %in% c(2, 3, 4))) {
       # set names
       data.table::setnames(
           dt_,
