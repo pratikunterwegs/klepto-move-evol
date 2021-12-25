@@ -102,25 +102,18 @@ fwrite(data_si_strategy, file = "data_sim/results/data_syndrome_by_strategy.csv"
 
 ## Relative preferences for competitive strategies
 
-
 ```{r}
 data_comp_pref = copy(data)
 data_comp_pref = data_comp_pref[sim_type == "facultative",]
+
 data_comp_pref[, comp_pref := lapply(
   path, get_scaled_move_prefs, 
+  weights = c(5,6,7,8),
   gens = c(1, 10, 30, 100, 300, 950), n_agents = 2500
 )]
 
 data_comp_pref = data_comp_pref[, unlist(comp_pref, recursive = F),
   by = list(sim_type, rep, regrowth)
-]
-
-# assign strategy
-data_comp_pref[, strategy := fcase(
-  sim_type == "obliagte" & wt_5 > 0, "forager", 
-  sim_type == "obliagte" & wt_5 > 0, "klept",
-  sim_type != "obligate", "consumer"
-  )
 ]
 
 fwrite(data_comp_pref, file = "data_sim/results/data_comp_pref.csv")
