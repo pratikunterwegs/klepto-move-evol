@@ -58,7 +58,11 @@ plot_activity = lapply(data_activity, function(df) {
     stealing = "Attempting to steal",
     klept = "% Kleptoparasites"
   )
-  if(unique(df$sim_type) == "foragers") {
+  if(unique(df$sim_type) %in% c("facultative", "random")) {
+    col_vals = col_vals[!names(col_vals) %in% c("klept")]
+    label_vals = label_vals[!names(label_vals) %in% c("klept")]
+  }
+  if(unique(df$sim_type) == c("foragers")) {
     col_vals = col_vals[!names(col_vals) %in% c("stealing", "klept")]
     label_vals = label_vals[!names(label_vals) %in% c("stealing", "klept")]
   }
@@ -143,7 +147,6 @@ plot_activity[["obligate"]] = plot_activity[["obligate"]] +
 ```
 
 ## Mean per capita intake plot
-
 
 ```{r }
 plot_intake <- lapply(data_activity, function(df) {
@@ -358,7 +361,9 @@ data_pref = split(data_pref, by = "sim_type")
 plot_pref = Map(
   data_pref, names(data_pref),
   f = function(df, n) {
-    p = ggplot(df[gen %in% c(10, 30, 300, 950)])+
+    g = c(10, 30, 300, 950)
+    if(n == "facultative") g = c(10, 30, 950)
+    p = ggplot(df[gen %in% g])+
       geom_abline(
         intercept = c(0, 1, -1),
         slope = c(0, -1, 1),
@@ -453,6 +458,69 @@ plot_pref = plot_pref[c(
 )]
 ```
 
+## Conditional strategies: Competition choices under ecological scenarios
+
+```{r}
+data_comp = fread("data_sim/results/data_sc3_comp_choice.csv")
+
+data_comp = data_comp[gen == 950,]
+data_comp = data_comp[, list(
+  prop_steal = sum(steal) / (2500*3)
+), by = c("food", "handlers", "gen")]
+
+fig_comp = ggplot(data_comp)+
+  geom_tile(
+    aes(
+      food, handlers, 
+      fill = prop_steal
+    )
+  )+
+  scale_fill_continuous_sequential(
+    palette = "Purple-Yellow",
+    # limits = c(0, 1),
+    breaks = c(0.4, 0.7, 1),
+    labels = scales::percent_format(accuracy = 1)
+    # trans = "sqrt",
+  )+
+  scale_x_continuous(
+    breaks = seq(0, 5)
+  )+
+  scale_y_continuous(
+    breaks = seq(0, 5)
+  )+
+  facet_grid(
+    cols = vars(gen),
+    labeller = labeller(
+      gen = function(x) sprintf("Gen = %s", x)
+    )
+  )+
+  coord_cartesian(
+    expand = F
+  )+
+  theme_test(
+    base_size = 8,
+    base_family = "Arial"
+  )+
+  theme(
+    legend.position = "top",
+    legend.key.height = unit(1, "mm"),
+    legend.key.width = unit(4, "mm"),
+    legend.title = element_text(
+      vjust = 1.2
+    ),
+    strip.text = element_text(
+      face = "italic"
+    ),
+    strip.background = element_blank(),
+  )+
+  labs(
+    x = "# Prey-items",
+    y = "# Handlers",
+    fill = "% Consumers\nstealing"
+  )
+fig_comp
+```
+
 ## Make scenario specific figures
 
 ```{r}
@@ -460,6 +528,8 @@ figs_1_2_4 = Map(
   plots_landscape, plot_activity, plot_intake, plots_quality,
   plot_pref, names(plot_pref),
   f = function(p1, p2, p3, p4, p5, n) {
+
+    # handle common elements of all plots
     p = wrap_plots(
       p2, p3, p4,
       design = "ABC"
@@ -469,13 +539,31 @@ figs_1_2_4 = Map(
       legend.position = "bottom"
     )
 
-    if(n != "obligate") {
+    # handle scenario 2 plot
+    if(n %in% c("foragers", "random")) {
       p = wrap_plots(
         p1,
         p,
         p5,
         ncol = 1
       ) +
+      plot_annotation(
+        tag_levels = "A"
+      ) &
+      theme(
+        plot.tag = element_text(
+          face = "bold",
+          size = 10
+        )
+      )
+    } else if (n == "facultative") {
+       p = wrap_plots(
+         p1,
+         p,
+         p5,
+         fig_comp,
+         design = "AAA\nBBB\nCCD"
+       )+
       plot_annotation(
         tag_levels = "A"
       ) &
