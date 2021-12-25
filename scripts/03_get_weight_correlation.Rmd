@@ -118,3 +118,34 @@ data_comp_pref = data_comp_pref[, unlist(comp_pref, recursive = F),
 
 fwrite(data_comp_pref, file = "data_sim/results/data_comp_pref.csv")
 ```
+
+```{r}
+data_comp_pref = fread("data_sim/results/data_comp_pref.csv")
+# data_comp_pref = data_comp_pref[gen == 950,]
+
+# choice under different number of prey and handlers
+data_comp_expand = tidyr::crossing(
+  data_comp_pref,
+  food = seq(0, 5, 1),
+  handlers = seq(0, 5, 1)
+)
+setDT(data_comp_expand)
+
+# calculate decision
+data_comp_expand[, choice := (wt_7 * handlers) + (wt_8 * food) >= wt_5]
+data_comp_expand[, choice := fifelse(choice, "forage", "steal")]
+
+# summarise decision
+data_comp_prop = data_comp_expand[, .N, 
+  by = c("gen", "food", "handlers", "choice", "rep")
+]
+
+data_comp_prop = dcast(
+  data_comp_prop,
+  gen + food + handlers + rep ~ choice,
+  value.var = "N"
+)
+
+# save data
+fwrite(data_comp_prop, "data_sim/results/data_sc3_comp_choice.csv")
+```
