@@ -59,7 +59,7 @@ wt_handler[, strategy := "consumer"]
 # HANDLE SCENARIO 2
 wt_handler_s2 = fread("data_sim/results/data_syndrome.csv")
 wt_handler_s2 = wt_handler_s2[regrowth == 0.01, list(N = sum(N)),
-                              by = c("sim_type", "rep", "regrowth", 
+                              by = c("sim_type", "replicate", "regrowth", 
                                      "klept_bias", "handler_pref", "gen")
                               ]
 wt_handler_s2[, c("klept_bias", "handler_pref") := list(
@@ -76,6 +76,9 @@ wt_handler_s2 = wt_handler_s2[handler_pref == "prefers handlers",]
 wt_handler_s2[, c("handler_pref", "N") := NULL]
 setnames(wt_handler_s2, old = c("klept_bias", "prop_per_strat"),
          new = c("strategy", "pref_handlers"))
+
+# rename replicate
+setnames(wt_handler_s2, "replicate", "rep")
 ```
 
 ### Merge data
@@ -88,9 +91,7 @@ wt_handler$gen = as.numeric(wt_handler$gen)
 wt_handler$strategy = factor(wt_handler$strategy)
 ```
 
-
 ## Read p clueless
-
 
 ```{r }
 # focus r
@@ -126,32 +127,50 @@ wt_handler = split(wt_handler, by = "sim_type")
 wt_handler = wt_handler[c("foragers", "obligate", "facultative")]
 ```
 
-
-
 ```{r }
 # this green
 this_green <- "forestgreen"
 
 # make subplots
-subplots <- Map(function(df_wt, df_land) {
-  if (unique(df_wt$sim_type) == "foragers") {
-    x_lim <- c(1, 100)
-    df_wt <- df_wt[gen <= 100, ]
-    # df[variable == "klept_strategy", "value"] <- NA
-  } else {
-    x_lim <- c(1, 50)
-    df_wt <- df_wt[gen <= 50, ]
-  }
+subplots <- 
+Map(
+  wt_handler, data, names(data),
+  f = function(df_wt, df_land, n) {
+  
+  # colour values
+  col_vals = c(
+    land = this_green,
+    consumer = "steelblue",
+    klept = "indianred",
+    forager = "navy"
+  )
+  # label values
+  label_vals = c(
+    land = "Different prey density\nin neighbourhood",
+    consumer = "Tendency to move\ntowards handlers",
+    klept = "Klept. tendency\nto move\ntowards handlers",
+    forager = "Forager tendency\nto move\ntowards handlers"
+  )
+  # # remove as req
+  # if(n != "obligate") {
+  #   col_vals = col_vals[!names(col_vals) %in% c("forager", "klept")]
+  #   label_vals = label_vals[!names(label_vals) %in% c("forager", "klept")]
+  #   break_vals = c("land", "consumer")
+  # } else {
+  #   col_vals = col_vals[!names(col_vals) %in% c("consumer")]
+  #   label_vals = label_vals[!names(label_vals) %in% c("consumer", "land")]
+  #   break_vals = c("klept", "forager")
+  # }
 
   ggplot() +
     geom_vline(
-      xintercept = c(1, 10, 50),
+      xintercept = c(1, 10, 950),
       colour = "grey",
       lty = 2,
       size = 0.3
     )+
     geom_path(
-      data = df_land,
+      data = df_land[gen > 0,],
       aes(
         gen, p_clueless,
         colour = "land",
@@ -162,54 +181,56 @@ subplots <- Map(function(df_wt, df_land) {
       data = df_wt,
       aes(gen, pref_handlers,
         col = strategy,
-        group = interaction(replicate, strategy)
+        group = interaction(rep, strategy)
       )
-    ) +
+    )+
     scale_colour_manual(
-      values = c(
-        land = this_green,
-        consumer = "dodgerblue4",
-        klept = "indianred",
-        forager = "dodgerblue4"
-      ),
-      labels = c(
-        land = "Different prey density\nin neighbourhood",
-        consumer = "Tendency to move\ntowards handlers",
-        klept = "Klept. tendency\nto move\ntowards handlers",
-        forager = "Forager tendency\nto move\ntowards handlers"
-      ),
-      breaks = c(
-        "land", "consumer", "forager", "klept"
-      )
+      values = col_vals,
+      labels = label_vals,
+      breaks = break_vals
     ) +
+    scale_x_continuous(
+      trans = "log10",
+      limits = c(1, 1000),
+      breaks = c(1, 10, 100, 1000)
+    )+
     scale_y_continuous(
-      limits = c(0, 1.05),
-      breaks = seq(0, 1, 0.25)
+      limits = c(0, 1.0),
+      labels = scales::percent
     ) +
     coord_cartesian(
-      xlim = x_lim,
-      ylim = c(0.2, 1.05),
-      expand = F
+      ylim = c(0., 1.05),
+      expand = T
     ) +
-    kleptomoveMS::theme_custom(grid = F, base_size = 8) +
+    theme_test(
+      base_size = 8,
+      base_family = "Arial"
+    )+
     theme(
-      legend.position = "right"
-      ) +
+      legend.position = "bottom",
+      axis.text.y = element_text(
+        angle = 90,
+        hjust = 0.5
+      ),
+      legend.margin = margin(rep(0, 4)),
+      legend.box.margin = margin(rep(0, 4))
+    ) +
     labs(
       x = "Generation",
-      y = "Proportion",
+      y = "% Individuals or land.",
       colour = NULL,
       shape = NULL
     ) +
-    guides(colour = guide_legend(nrow = 3, ncol = 1))
-}, wt_handler, data)
+    guides(
+      colour = guide_legend(nrow = 1, ncol = 4)
+    )
+})
 
 # arrange order
 subplots = subplots[c("foragers", "obligate", "facultative")]
-wrap_plots(subplots, ncol = 1) &
-  theme(legend.position = "right")
+wrap_plots(subplots, ncol = 1, guides = "collect") &
+  theme(legend.position = "bottom")
 ```
-
 
 ## Show landscape for each sim type
 
@@ -217,13 +238,12 @@ Here we show a landscape with and without clues at 1, 10, and 40th generation fo
 
 ### Items landscape
 
-
 ```{r }
 # list folders
 paths <- list.dirs("data_sim/for_landscape/", recursive = F)
 
 # select gens
-gens_for_figure <- stringr::str_pad(c(1, 10, 50), width = 5, pad = "0")
+gens_for_figure <- stringr::str_pad(c(1, 10, 950), width = 5, pad = "0")
 
 # get paths for files
 landscape_data <- CJ(
@@ -254,9 +274,7 @@ landscape_items <- landscape_data[, unlist(data, recursive = F),
 ]
 ```
 
-
 ### Gradient landscape
-
 
 ```{r }
 # get data
@@ -266,15 +284,14 @@ landscape_data$data <- lapply(landscape_data$image,
   crop_dim = 60,
   type = "gradient"
 )
+
 # unlst
 landscape_gradient <- landscape_data[, unlist(data, recursive = F),
   by = c("sim_type", "gen")
 ]
 ```
 
-
 ### Merge landscapes
-
 
 ```{r }
 # landscape overall
@@ -289,10 +306,7 @@ landscape <- split(landscape, by = c("sim_type"))
 landscape = landscape[c("foragers", "obligate", "facultative")]
 ```
 
-
-
 ### Plot landscape
-
 
 ```{r }
 subplot_land <- Map(function(df, n) {
@@ -302,7 +316,12 @@ subplot_land <- Map(function(df, n) {
           fill = value >= 0.7),
       show.legend = T
     ) +
-    facet_grid(~gen, labeller = label_both) +
+    facet_grid(
+      ~gen, 
+      labeller = labeller(
+        gen = function(x) glue::glue("Gen = {as.numeric(x)}")
+      )
+    ) +
     scale_fill_manual(
       values = c(
         "TRUE" = this_green,
@@ -315,8 +334,13 @@ subplot_land <- Map(function(df, n) {
       breaks = c("TRUE", "FALSE"),
       name = NULL
     ) +
-    coord_equal(expand = F) +
-    kleptomoveMS::theme_custom(landscape = T, base_size = 8) +
+    # coord_equal(expand = F) +
+    coord_cartesian(expand = F)+
+    kleptomoveMS::theme_custom(
+      landscape = T, 
+      base_size = 8,
+      base_family = "Arial"
+    ) +
     theme(
       legend.position = "top",
       legend.key = element_rect(
@@ -335,32 +359,44 @@ subplot_land <- Map(function(df, n) {
 }, landscape, seq(3))
 ```
 
-
 ## Figure 5
-
 
 ```{r }
 # make figure 5
 # wrap cues per gen plots
-plots_cues = wrap_plots(subplots, ncol = 1) +
+plots_cues = wrap_plots(subplots, ncol = 1, guides = "collect") +
   plot_layout(tag_level = "new") &
-  theme(legend.position = "right")
+  theme(
+    legend.justification = "left",
+    legend.position = "bottom",
+    legend.key.width = unit(1, units = "mm"),
+    # legend.direction = "vertical",
+    legend.box.margin = margin(rep(0, 4))
+  )
 
 # wrap landscape plots
 plots_land =
   wrap_plots(subplot_land, ncol = 1) +
-  plot_layout(guides= "collect", tag_level = "new") &
+  plot_layout(
+    guides = "collect", 
+    tag_level = "new"
+  ) &
   theme(
     legend.key.width = unit(3, units = "mm"),
-    legend.position = "top"
+    legend.position = "bottom",
+    legend.box.margin = margin(rep(0, 4))
   )
 
 # make figure 5
-figure_5 =
-  wrap_plots(plots_land, plots_cues, 
-             design = "AAAABB") &
+# figure_5 =
+  wrap_plots(
+    plots_land, plots_cues, 
+    design = "AAAABB"
+    # guides = "collect"
+  ) &
   plot_annotation(tag_levels = c("A", "1")) &
   theme(
+    legend.justification = "left",
     plot.tag = element_text(
       face = "bold",
       size = 8
@@ -370,7 +406,7 @@ figure_5 =
 ggsave(
   figure_5,
   height = 150,
-  width = 180,
+  width = 160,
   units = "mm",
   filename = "figures/fig_05.png"
 )
