@@ -1,7 +1,7 @@
 \PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
 \PassOptionsToPackage{hyphens}{url}
 %
-\documentclass[]{scrartcl}
+\documentclass[]{article}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
@@ -29,7 +29,7 @@
 }
 \usepackage{hyperref}
 \hypersetup{
-            pdftitle={Supplementary Material for The Joint Evolution of Movement and Competition Strategies},
+            pdftitle={Supplementary Material for The Joint Evolution of Animal Movement and Competition Strategies},
             pdfauthor={Pratik R. Gupte; Christoph F.G. Netz; Franz J. Weissing},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -75,14 +75,17 @@
 
 % \IfFontExistsTF{Palatino}{\setmainfont[]{Palatino}}{} 
 \usepackage{mathpazo}
-\usepackage{helvet}
+% \usepackage{helvet}
 \usepackage{inconsolata}
 % \IfFontExistsTF{Arial}{\setsansfont[]{Arial}}{}
 % \IfFontExistsTF{Fira Code}{\setmonofont{Fira Code}}
+\usepackage[labelfont=bf,format=plain]{caption}
+\usepackage{setspace} 
+\onehalfspacing
 
 \linenumbers
 
-\title{Supplementary Material for \emph{The Joint Evolution of Movement and Competition Strategies}}
+\title{Supplementary Material for \emph{The Joint Evolution of Animal Movement and Competition Strategies}}
 \author{Pratik R. Gupte \and Christoph F.G. Netz \and Franz J. Weissing}
 \date{2021-12-26}
 
@@ -137,19 +140,19 @@ This scenario serves as a useful null model for what one should expect when dire
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth,height=\textheight]{"figures/fig_wt_evo_sc_obligate.png"}
+\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_wt_evo_sc_obligate.png"}
 \caption{\textbf{Evolution of movement strategies in scenario 2}. Across simulation replicates (\(r_{max}\) = 0.01), in populations with fixed forager or kleptoparasite strategies, the two competition strategies consistently undergo rapid evolutionary divergence in movement strategies. Kleptoparasites evolve within 10 generations to primarily track handlers, and maintain this preference across hundreds of generations. Foragers are slower to converge upon a single movement strategy, but eventually (G = 300) mostly avoid handlers and non-handlers alike. A small fraction of both kleptoparasites and foragers have the strategy correlated with the opposite competition strategy, likely due to mutation in the competition strategy.}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth,height=\textheight]{"figures/fig_wt_evo_sc_foragers.png"}
+\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_wt_evo_sc_foragers.png"}
 \caption{\textbf{Evolution of movement strategies in scenario 1}. Across simulation replicates (\(r_{max}\) = 0.01), populations of foragers consistently evolve a wide range of movement strategies to move towards prey items, largely move towards successful foragers (handlers), and avoid unsuccessful foragers (non-handlers).}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth,height=\textheight]{"figures/fig_wt_evo_sc_facultative.png"}
+\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_wt_evo_sc_facultative.png"}
 \caption{\textbf{Evolution of movement strategies in scenario 3}. Across simulation replicates (\(r_{max}\) = 0.01), populations of consumers that choose their competition strategy using inherited preferences, consistently evolve to move primarily towards handlers, a strategy that facilitates kleptoparasitism.}
 \end{figure}
 
