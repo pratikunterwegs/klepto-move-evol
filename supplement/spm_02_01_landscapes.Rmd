@@ -5,7 +5,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Landscape Depletion across $r_{max}$
+# Effect of Landscape Productivity ($r_{max}$) on Resource Landscape Depletion
 
 ```{r libs_sm1}
 # load libraries
