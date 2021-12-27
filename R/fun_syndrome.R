@@ -50,27 +50,16 @@ get_pref_handler_by_strat <- function(
         msg = "get syndrome: can only take one weight, the handler preference"
       )
       # assign whether klept or forager (forager if TRUE, > 0)
-      weights[, "klept_bias"] <- weights[, "klept_bias"] > 0
+      weights <- weights > 0
 
-      
-      weights[, names(weight_of_interest)] <-
-        tanh(weights[, names(weight_of_interest)])
-      # this next is hardcoded
-      weights[, names(weight_of_interest)] <- as.numeric(
-        stringi::stri_extract_first(
-          str = cut(
-            x = weights[, names(weight_of_interest)],
-            breaks = seq(-1.01, 1.01, 0.05)
-          ),
-          regex = "[-0-9]+\\.\\d{2}"
-        )
-      )
       weights <- data.table::as.data.table(weights)
       weights <- weights[, list(.N),
         by = c("klept_bias", names(weight_of_interest))
       ]
       weights[, prop_handler_pref := N / sum(N), by = "klept_bias"]
       weights$gen <- g
+      
+      weights[, klept_bias := fifelse(klept_bias, "forager", "klept")]
     }
     weights
   })

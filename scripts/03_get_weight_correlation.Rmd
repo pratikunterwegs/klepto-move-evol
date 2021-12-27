@@ -90,7 +90,6 @@ syndrome_data <- lapply(data$path, function(path) {
 })
 
 # add to data
-data_si_strategy <- copy(data)
 data_si_strategy$syndrome_data <- syndrome_data
 # unlist
 data_si_strategy <- data_si_strategy[, unlist(syndrome_data, recursive = FALSE),
