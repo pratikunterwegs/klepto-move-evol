@@ -57,28 +57,34 @@ wt_handler <- wt_handler[, list(pref_handlers = sum(weight_prop)),
 wt_handler[, strategy := "consumer"]
 
 # HANDLE SCENARIO 2
-wt_handler_s2 = fread("data_sim/results/data_syndrome.csv")
+wt_handler_s2 = fread("data_sim/results/data_syndrome_by_strategy.csv")
+wt_handler_s2 = wt_handler_s2[sim_type == "obligate",]
 wt_handler_s2 = wt_handler_s2[regrowth == 0.01, list(N = sum(N)),
-                              by = c("sim_type", "replicate", "regrowth", 
+                              by = c("sim_type", "rep", "regrowth", 
                                      "klept_bias", "handler_pref", "gen")
                               ]
+
+# binarise handler preference to positive or negative
 wt_handler_s2[, c("klept_bias", "handler_pref") := list(
   factor(ifelse(klept_bias, "forager", "klept")),
-  factor(ifelse(handler_pref, "prefers handlers", "avoids handlers"),
+  factor(ifelse(handler_pref > 0, "prefers handlers", "avoids handlers"),
          levels = c("prefers handlers", "avoids handlers")
   )
 )]
-wt_handler_s2[, prop_per_strat := N / sum(N),
-              by = c("gen", "klept_bias", "regrowth", "replicate")
-              ]
+
+# count by comp and si strategy
+wt_handler_s2 = wt_handler_s2[, list(N = sum(N)),
+  by = c("gen", "klept_bias", "handler_pref", "regrowth", "rep", "sim_type")
+]
+wt_handler_s2[, prop_per_strat := N / sum(N), 
+  by = c("gen", "klept_bias", "regrowth", "rep")
+]
+
 # subset data
 wt_handler_s2 = wt_handler_s2[handler_pref == "prefers handlers",]
 wt_handler_s2[, c("handler_pref", "N") := NULL]
 setnames(wt_handler_s2, old = c("klept_bias", "prop_per_strat"),
          new = c("strategy", "pref_handlers"))
-
-# rename replicate
-setnames(wt_handler_s2, "replicate", "rep")
 ```
 
 ### Merge data
@@ -151,16 +157,16 @@ Map(
     klept = "Klept. tendency\nto move\ntowards handlers",
     forager = "Forager tendency\nto move\ntowards handlers"
   )
-  # # remove as req
-  # if(n != "obligate") {
-  #   col_vals = col_vals[!names(col_vals) %in% c("forager", "klept")]
-  #   label_vals = label_vals[!names(label_vals) %in% c("forager", "klept")]
-  #   break_vals = c("land", "consumer")
-  # } else {
-  #   col_vals = col_vals[!names(col_vals) %in% c("consumer")]
-  #   label_vals = label_vals[!names(label_vals) %in% c("consumer", "land")]
-  #   break_vals = c("klept", "forager")
-  # }
+  # remove as req
+  if(n != "obligate") {
+    col_vals = col_vals[!names(col_vals) %in% c("forager", "klept")]
+    label_vals = label_vals[!names(label_vals) %in% c("forager", "klept")]
+    break_vals = c("land", "consumer")
+  } else {
+    col_vals = col_vals[!names(col_vals) %in% c("consumer")]
+    label_vals = label_vals[!names(label_vals) %in% c("consumer", "land")]
+    break_vals = c("klept", "forager")
+  }
 
   ggplot() +
     geom_vline(
