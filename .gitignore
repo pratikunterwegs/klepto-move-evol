@@ -64,3 +64,6 @@ data_sim/for_landscape
 
 # ignore Rds
 *.Rds
+
+# responses
+docs/response*
