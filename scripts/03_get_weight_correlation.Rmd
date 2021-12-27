@@ -88,7 +88,7 @@ syndrome_data <- lapply(data$path, function(path) {
     handler_pref_by_strategy = TRUE
   )
 })
-
+data_si_strategy = copy(data)
 # add to data
 data_si_strategy$syndrome_data <- syndrome_data
 # unlist
