@@ -87,7 +87,7 @@
 
 \title{Supplementary Material for \emph{The Joint Evolution of Animal Movement and Competition Strategies}}
 \author{Pratik R. Gupte \and Christoph F.G. Netz \and Franz J. Weissing}
-\date{2021-12-27}
+\date{2021-12-28}
 
 \begin{document}
 \maketitle
@@ -138,21 +138,47 @@ This scenario serves as a useful null model for what one should expect when dire
 \hypertarget{evolution-of-movement-strategies-across-replicates}{%
 \section{Evolution of Movement Strategies Across Replicates}\label{evolution-of-movement-strategies-across-replicates}}
 
+\hypertarget{frequencies-of-relative-preferences}{%
+\subsection{Frequencies of Relative Preferences}\label{frequencies-of-relative-preferences}}
+
 \begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_wt_evo_sc_obligate.png"}
+\includegraphics[width=0.99\textwidth,height=\textheight]{"figures/fig_rel_pref_evo_sc_foragers.png"}
+\caption{\textbf{Evolution of relative cue preferences in scenario 1}. Across simulation replicates (\(r_{max}\) = 0.01), populations of foragers consistently evolve a wide range of relative preferences, largely to move towards prey items (\(s_P\)), to largely move towards successful foragers (handlers; \(s_H\)), and to mostly avoid unsuccessful foragers (non-handlers; \(s_N\)).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.99\textwidth,height=\textheight]{"figures/fig_rel_pref_evo_sc_obligate.png"}
+\caption{\textbf{Evolution of relative cue preferences in scenario 2}. Across simulation replicates (\(r_{max}\) = 0.01), in populations with fixed forager or kleptoparasite strategies, populations of foragers consistently evolve a very small relative preference to move towards prey items (\(s_P\)), and a range of preferences to move away from unsuccessful foragers (non-handlers; \(s_N\)). However, individuals show a strongly bimodal response to successful foragers, with both strong preferences and avoidances evolved. These preferences are correlated with individuals' competition strategies (see below; handlers; \(s_H\)).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.99\textwidth,height=\textheight]{"figures/fig_rel_pref_evo_sc_facultative.png"}
+\caption{\textbf{Evolution of movement strategies in scenario 3}. Across simulation replicates (\(r_{max}\) = 0.01), populations of consumers that choose their competition strategy using inherited preferences, individual movement strategies are mostly driven by a preference for handlers (\(s_H\)), a moderate avoidance for non-handlers(\(s_N\)), and are mostly neutral to prey items (\(s_P\)).}
+\end{figure}
+
+\newpage
+
+\hypertarget{correlation-of-relative-preferences-forms-movement-strategies}{%
+\subsection{Correlation of Relative Preferences forms Movement Strategies}\label{correlation-of-relative-preferences-forms-movement-strategies}}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_rel_pref_corr_obligate.png"}
 \caption{\textbf{Evolution of movement strategies in scenario 2}. Across simulation replicates (\(r_{max}\) = 0.01), in populations with fixed forager or kleptoparasite strategies, the two competition strategies consistently undergo rapid evolutionary divergence in movement strategies. Kleptoparasites evolve within 10 generations to primarily track handlers, and maintain this preference across hundreds of generations. Foragers are slower to converge upon a single movement strategy, but eventually (G = 300) mostly avoid handlers and non-handlers alike. A small fraction of both kleptoparasites and foragers have the strategy correlated with the opposite competition strategy, likely due to mutation in the competition strategy.}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_wt_evo_sc_foragers.png"}
+\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_rel_pref_corr_foragers.png"}
 \caption{\textbf{Evolution of movement strategies in scenario 1}. Across simulation replicates (\(r_{max}\) = 0.01), populations of foragers consistently evolve a wide range of movement strategies to move towards prey items, largely move towards successful foragers (handlers), and avoid unsuccessful foragers (non-handlers).}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_wt_evo_sc_facultative.png"}
+\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_rel_pref_corr_facultative.png"}
 \caption{\textbf{Evolution of movement strategies in scenario 3}. Across simulation replicates (\(r_{max}\) = 0.01), populations of consumers that choose their competition strategy using inherited preferences, consistently evolve to move primarily towards handlers, a strategy that facilitates kleptoparasitism.}
 \end{figure}
 
@@ -185,29 +211,29 @@ This scenario serves as a useful null model for what one should expect when dire
 
 \begin{figure}
 
-{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-15-1} 
+{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-18-1} 
 
 }
 
-\caption{In scenario 1, foragers completely deplete the resource landscape within 10 generations at low $r_{max}$ (A, B). However, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated until most cells carry 5 items, the maximum allowed in our model.}\label{fig:unnamed-chunk-15}
+\caption{In scenario 1, foragers completely deplete the resource landscape within 10 generations at low $r_{max}$ (A, B). However, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated until most cells carry 5 items, the maximum allowed in our model.}\label{fig:unnamed-chunk-18}
 \end{figure}
 
 \begin{figure}
 
-{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-16-1} 
+{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-19-1} 
 
 }
 
-\caption{In scenario 2, foragers can only deplete the resource landscape at very low $r_{max}$ (A): 1 prey item generated per 1,000 timesteps, or 2.5 generations. At all $r_{max} \geq$ 0.05 (B, C, D), prey item regeneration matches or exceeds depletion and the resource landscape either shows strong spatial structure, or is entirely saturated with prey items.}\label{fig:unnamed-chunk-16}
+\caption{In scenario 2, foragers can only deplete the resource landscape at very low $r_{max}$ (A): 1 prey item generated per 1,000 timesteps, or 2.5 generations. At all $r_{max} \geq$ 0.05 (B, C, D), prey item regeneration matches or exceeds depletion and the resource landscape either shows strong spatial structure, or is entirely saturated with prey items.}\label{fig:unnamed-chunk-19}
 \end{figure}
 
 \begin{figure}
 
-{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-17-1} 
+{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-20-1} 
 
 }
 
-\caption{Scenario 3 is similar to scenario 1 at low $r_{max}$ (A, B), where foragers completely deplete the resource landscape). Similarly, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated to a carrying capacity of 5 prey items per cell.}\label{fig:unnamed-chunk-17}
+\caption{Scenario 3 is similar to scenario 1 at low $r_{max}$ (A, B), where foragers completely deplete the resource landscape). Similarly, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated to a carrying capacity of 5 prey items per cell.}\label{fig:unnamed-chunk-20}
 \end{figure}
 
 \end{document}

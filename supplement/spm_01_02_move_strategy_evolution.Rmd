@@ -40,9 +40,9 @@ plot_wt_evo <- function(df) {
      l, names(l),
      f = function(le, wt) {
        this_pal = fcase(
-        wt == "wt_4", "Greens",
-        wt == "wt_3", "Blues",
-        wt == "wt_2", "Reds"
+        wt == "wt_4", "Mako",
+        wt == "wt_3", "Viridis",
+        wt == "wt_2", "Rocket"
       )
       ggplot(le)+
         geom_hline(
@@ -71,8 +71,10 @@ plot_wt_evo <- function(df) {
         )+
         facet_grid(
           rows = vars(rep),
+          cols = vars(wt),
           labeller = labeller(
-            rep = function(x) glue::glue("Rep: {x}")
+            rep = function(x) glue::glue("Rep: {x}"),
+            wt = labels
           )
         )+
         theme_test(
@@ -85,7 +87,8 @@ plot_wt_evo <- function(df) {
           legend.key.width = unit(3, "mm"),
           legend.title = element_text(
             vjust = 1.5
-          )
+          ),
+          strip.background = element_blank()
         )+
         coord_cartesian(
           ylim = c(-1, 1)
@@ -97,7 +100,7 @@ plot_wt_evo <- function(df) {
         )
      }
    )
-   wrap_plots(subplots)
+   wrap_plots(subplots[c("wt_4", "wt_3", "wt_2")])
 }
 ```
 
@@ -120,6 +123,18 @@ invisible(
   )
 )
 ```
+
+## Frequencies of Relative Preferences
+
+![**Evolution of relative cue preferences in scenario 1**. Across simulation replicates ($r_{max}$ = 0.01), populations of foragers consistently evolve a wide range of relative preferences, largely to move towards prey items ($s_P$), to largely move towards successful foragers (handlers; $s_H$), and to mostly avoid unsuccessful foragers (non-handlers; $s_N$).]("figures/fig_rel_pref_evo_sc_foragers.png"){width=99%}
+
+![**Evolution of relative cue preferences in scenario 2**. Across simulation replicates ($r_{max}$ = 0.01), in populations with fixed forager or kleptoparasite strategies, populations of foragers consistently evolve a very small relative preference to move towards prey items ($s_P$), and a range of preferences to move away from unsuccessful foragers (non-handlers; $s_N$). However, individuals show a strongly bimodal response to successful foragers, with both strong preferences and avoidances evolved. These preferences are correlated with individuals' competition strategies (see below; handlers; $s_H$).]("figures/fig_rel_pref_evo_sc_obligate.png"){width=99%}
+
+![**Evolution of movement strategies in scenario 3**. Across simulation replicates ($r_{max}$ = 0.01), populations of consumers that choose their competition strategy using inherited preferences, individual movement strategies are mostly driven by a preference for handlers ($s_H$), a moderate avoidance for non-handlers($s_N$), and are mostly neutral to prey items ($s_P$).]("figures/fig_rel_pref_evo_sc_facultative.png"){width=99%}
+
+\newpage
+
+## Correlation of Relative Preferences forms Movement Strategies
 
 ```{r}
 # load relative preferences
@@ -253,10 +268,10 @@ invisible(
 )
 ```
 
-![**Evolution of movement strategies in scenario 2**. Across simulation replicates ($r_{max}$ = 0.01), in populations with fixed forager or kleptoparasite strategies, the two competition strategies consistently undergo rapid evolutionary divergence in movement strategies. Kleptoparasites evolve within 10 generations to primarily track handlers, and maintain this preference across hundreds of generations. Foragers are slower to converge upon a single movement strategy, but eventually (G = 300) mostly avoid handlers and non-handlers alike. A small fraction of both kleptoparasites and foragers have the strategy correlated with the opposite competition strategy, likely due to mutation in the competition strategy.]("figures/fig_wt_evo_sc_obligate.png"){width=70%}
+![**Evolution of movement strategies in scenario 2**. Across simulation replicates ($r_{max}$ = 0.01), in populations with fixed forager or kleptoparasite strategies, the two competition strategies consistently undergo rapid evolutionary divergence in movement strategies. Kleptoparasites evolve within 10 generations to primarily track handlers, and maintain this preference across hundreds of generations. Foragers are slower to converge upon a single movement strategy, but eventually (G = 300) mostly avoid handlers and non-handlers alike. A small fraction of both kleptoparasites and foragers have the strategy correlated with the opposite competition strategy, likely due to mutation in the competition strategy.]("figures/fig_rel_pref_corr_obligate.png"){width=70%}
 
-![**Evolution of movement strategies in scenario 1**. Across simulation replicates ($r_{max}$ = 0.01), populations of foragers consistently evolve a wide range of movement strategies to move towards prey items, largely move towards successful foragers (handlers), and avoid unsuccessful foragers (non-handlers).]("figures/fig_wt_evo_sc_foragers.png"){width=70%}
+![**Evolution of movement strategies in scenario 1**. Across simulation replicates ($r_{max}$ = 0.01), populations of foragers consistently evolve a wide range of movement strategies to move towards prey items, largely move towards successful foragers (handlers), and avoid unsuccessful foragers (non-handlers).]("figures/fig_rel_pref_corr_foragers.png"){width=70%}
 
-![**Evolution of movement strategies in scenario 3**. Across simulation replicates ($r_{max}$ = 0.01), populations of consumers that choose their competition strategy using inherited preferences, consistently evolve to move primarily towards handlers, a strategy that facilitates kleptoparasitism.]("figures/fig_wt_evo_sc_facultative.png"){width=70%}
+![**Evolution of movement strategies in scenario 3**. Across simulation replicates ($r_{max}$ = 0.01), populations of consumers that choose their competition strategy using inherited preferences, consistently evolve to move primarily towards handlers, a strategy that facilitates kleptoparasitism.]("figures/fig_rel_pref_corr_facultative.png"){width=70%}
 
 \newpage
