@@ -16,6 +16,112 @@ library(colorspace)
 ```
 
 ```{r}
+data_pref_evol = fread("data_sim/results/data_relative_preference_evolution.csv")
+data_pref_evol = data_pref_evol[wt %in% glue::glue("wt_{seq(2,4)}")]
+data_pref_evol = data_pref_evol[sim_type != "random"]
+
+# set weight levels
+data_pref_evol$wt = factor(
+  data_pref_evol$wt,
+  levels = c("wt_4", "wt_3", "wt_2")
+)
+
+labels = c(
+  "wt_4" = "sP",
+  "wt_3" = "sH",
+  "wt_2" = "sN"
+)
+```
+
+```{r}
+plot_wt_evo <- function(df) {
+   l = split(df, by = "wt")
+   subplots = Map(
+     l, names(l),
+     f = function(le, wt) {
+       this_pal = fcase(
+        wt == "wt_4", "Greens",
+        wt == "wt_3", "Blues",
+        wt == "wt_2", "Reds"
+      )
+      ggplot(le)+
+        geom_hline(
+          yintercept = 0,
+          size = 0.05,
+          col = "grey"
+        )+
+        geom_vline(
+          xintercept = c(10, 30, 300, 950),
+          size = 0.05,
+          lty = 2,
+          col = "grey"
+        )+
+        geom_tile(
+          aes(
+            gen, wt_value,
+            fill = prop
+          )
+        )+
+        scale_fill_continuous_sequential(
+          palette = this_pal,
+          limits = c(NA, 0.2),
+          breaks = c(0.01, 0.1, 0.2),
+          labels = scales::percent,
+          na.value = "black"
+        )+
+        facet_grid(
+          rows = vars(rep),
+          labeller = labeller(
+            rep = function(x) glue::glue("Rep: {x}")
+          )
+        )+
+        theme_test(
+          base_size = 6,
+          base_family = "Arial"
+        )+
+        theme(
+          legend.position = "bottom",
+          legend.key.height = unit(1, "mm"),
+          legend.key.width = unit(3, "mm"),
+          legend.title = element_text(
+            vjust = 1.5
+          )
+        )+
+        coord_cartesian(
+          ylim = c(-1, 1)
+        )+
+        labs(
+          x = "Generation",
+          y = "Relative preference",
+          fill = "% Ind."
+        )
+     }
+   )
+   wrap_plots(subplots)
+}
+```
+
+```{r}
+data_pref_evo = split(data_pref_evol, by = "sim_type")
+invisible(
+  Map(
+    data_pref_evo, names(data_pref_evo),
+    f = function(df, n) {
+      p = plot_wt_evo(df)
+      ggsave(
+        p,
+        height = 3,
+        width = 4,
+        filename = glue::glue(
+          "supplement/figures/fig_rel_pref_evo_sc_{n}.png"
+        )
+      )
+    }
+  )
+)
+```
+
+```{r}
 # load relative preferences
 data_pref = fread("data_sim/results/data_rel_pref.csv")
 # data_pref = data_pref[rep == 3,]
@@ -138,7 +244,7 @@ invisible(
       ggsave(
         p,
         filename = glue::glue(
-          "supplement/figures/fig_wt_evo_sc_{n}.png"
+          "supplement/figures/fig_rel_pref_corr_{n}.png"
         ),
         height = h
       )
