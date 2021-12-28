@@ -15,86 +15,26 @@ library(colorspace)
 library(patchwork)
 ```
 
-## Read node weight evolution
-
-```{r }
-# read back in
-data <- fread("data_sim/results/data_sparse_weight_evolution.csv")
-# data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
-
-# select growth rates of 0.001, 0.01, 0.1, 0.25
-focus_r <- c(0.01)
-data <- data[regrowth %in% focus_r, ]
-
-# handle weight value ranges and use UPPER bound
-data[, weight_num :=
-  stringi::stri_extract_last(weight_value,
-    regex = "[-0-9]+\\.\\d{2}"
-  )]
-# assign numeric
-data[, weight_num := as.numeric(weight_num)]
-
-# remove random sim
-data <- data[sim_type != "random", ]
-```
-
 ## Prepare handler preference
 
 ```{r }
-# get positive weights for handlers (weight 3)
-# process scenario 2 (obligate) separately as for figure 3
-wt_handler <- data[weight_id == 3 &
-  weight_num > 0 &
-  regrowth == 0.01 &
-  !sim_type %in% c("random", "obligate"), ]
+data_pref = fread("data_sim/results/data_syndrome_by_strategy.csv")
 
-# sum proportions
-wt_handler <- wt_handler[, list(pref_handlers = sum(weight_prop)),
-  by = c("sim_type", "rep", "regrowth", "gen")
-]
+data_pref[, strategy := fifelse(sim_type == "obligate", klept_bias, "consumer")]
 
-# set strategy descriptor
-wt_handler[, strategy := "consumer"]
-
-# HANDLE SCENARIO 2
-wt_handler_s2 = fread("data_sim/results/data_syndrome_by_strategy.csv")
-wt_handler_s2 = wt_handler_s2[sim_type == "obligate",]
-wt_handler_s2 = wt_handler_s2[regrowth == 0.01, list(N = sum(N)),
-                              by = c("sim_type", "rep", "regrowth", 
-                                     "klept_bias", "handler_pref", "gen")
-                              ]
-
-# binarise handler preference to positive or negative
-wt_handler_s2[, c("klept_bias", "handler_pref") := list(
-  factor(ifelse(klept_bias, "forager", "klept")),
-  factor(ifelse(handler_pref > 0, "prefers handlers", "avoids handlers"),
-         levels = c("prefers handlers", "avoids handlers")
-  )
-)]
-
-# count by comp and si strategy
-wt_handler_s2 = wt_handler_s2[, list(N = sum(N)),
-  by = c("gen", "klept_bias", "handler_pref", "regrowth", "rep", "sim_type")
-]
-wt_handler_s2[, prop_per_strat := N / sum(N), 
-  by = c("gen", "klept_bias", "regrowth", "rep")
-]
-
-# subset data
-wt_handler_s2 = wt_handler_s2[handler_pref == "prefers handlers",]
-wt_handler_s2[, c("handler_pref", "N") := NULL]
-setnames(wt_handler_s2, old = c("klept_bias", "prop_per_strat"),
-         new = c("strategy", "pref_handlers"))
+data_pref = data_pref[handler_pref == T, list(
+  handler_pref = mean(prop_handler_pref)
+), by = c("sim_type", "rep", "strategy", "gen")]
 ```
 
-### Merge data
-
-```{r }
-wt_handler = rbindlist(list(wt_handler, wt_handler_s2), use.names = TRUE)
-wt_handler$gen = as.numeric(wt_handler$gen)
-
-# make factor
-wt_handler$strategy = factor(wt_handler$strategy)
+```{r}
+ggplot(data_pref)+
+  geom_point(
+    aes(
+      gen, handler_pref,
+      col = strategy
+    )
+  )
 ```
 
 ## Read p clueless
@@ -129,8 +69,8 @@ data <- split(data, by = "sim_type")
 data = data[c("foragers", "obligate", "facultative")]
 
 # split preference data
-wt_handler = split(wt_handler, by = "sim_type")
-wt_handler = wt_handler[c("foragers", "obligate", "facultative")]
+data_pref = split(data_pref, by = "sim_type")
+data_pref = data_pref[c("foragers", "obligate", "facultative")]
 ```
 
 ```{r }
@@ -140,7 +80,7 @@ this_green <- "forestgreen"
 # make subplots
 subplots <- 
 Map(
-  wt_handler, data, names(data),
+  data_pref, data, names(data),
   f = function(df_wt, df_land, n) {
   
   # colour values
@@ -153,9 +93,9 @@ Map(
   # label values
   label_vals = c(
     land = "Different prey density\nin neighbourhood",
-    consumer = "Tendency to move\ntowards handlers",
-    klept = "Klept. tendency\nto move\ntowards handlers",
-    forager = "Forager tendency\nto move\ntowards handlers"
+    consumer = "% Handler preffering",
+    klept = "% Klepts.\npreffering handlers",
+    forager = "% Foragers.\npreffering handlers"
   )
   # remove as req
   if(n != "obligate") {
@@ -185,7 +125,7 @@ Map(
     )+
     geom_path(
       data = df_wt,
-      aes(gen, pref_handlers,
+      aes(gen, handler_pref,
         col = strategy,
         group = interaction(rep, strategy)
       )
@@ -228,7 +168,7 @@ Map(
       shape = NULL
     ) +
     guides(
-      colour = guide_legend(nrow = 1, ncol = 4)
+      colour = guide_legend(nrow = 2, ncol = 2)
     )
 })
 
@@ -334,7 +274,7 @@ subplot_land <- Map(function(df, n) {
         "FALSE" = "white"
       ),
       labels = c(
-        "TRUE" = "Different prey density\nin neighbourhood",
+        "TRUE" = "Prey gradient",
         "FALSE" = "Neighbourhood has\nsame prey density"
       ),
       breaks = c("TRUE", "FALSE"),
@@ -373,7 +313,7 @@ subplot_land <- Map(function(df, n) {
 plots_cues = wrap_plots(subplots, ncol = 1, guides = "collect") +
   plot_layout(tag_level = "new") &
   theme(
-    legend.justification = "left",
+    legend.justification = "right",
     legend.position = "bottom",
     legend.key.width = unit(1, units = "mm"),
     # legend.direction = "vertical",
@@ -394,11 +334,11 @@ plots_land =
   )
 
 # make figure 5
-# figure_5 =
+figure_5 =
   wrap_plots(
     plots_land, plots_cues, 
-    design = "AAAABB"
-    # guides = "collect"
+    design = "AAAABB",
+    guides = "collect"
   ) &
   plot_annotation(tag_levels = c("A", "1")) &
   theme(
