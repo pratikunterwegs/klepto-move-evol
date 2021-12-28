@@ -92,7 +92,7 @@ get_weights_prop <- function(gen_data, digits = 2) {
   )
 
   # summarise proportions
-  weights = weights[, .N / (n_agents), by = c("wt", "wt_value")]
+  weights = weights[, list(prop = .N / (n_agents)), by = c("wt", "wt_value")]
 
   weights
 }
@@ -124,7 +124,7 @@ get_weights_timeline <- function(generations,
     weight_prop = get_weights_prop(G, digits = 2)
     weight_prop$gen = g
 
-    weight_prop = weight_prop[wt %in% glue::glue("wt_{which_weight}"), ]
+    weight_prop = weight_prop[wt %in% glue::glue("wt_{seq_weights}"), ]
   })
 
   # bind all generations
