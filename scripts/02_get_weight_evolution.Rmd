@@ -67,9 +67,7 @@ temp_gen_data <- lapply(
     )
   }
 )
-```
 
-```{r}
 # bind with parameters
 data[, wt_data := temp_gen_data]
 
@@ -78,5 +76,5 @@ data <- data[, unlist(wt_data, recursive = F),
   by = list(sim_type, rep, regrowth)
 ]
 
-fwrite(data, file = "data_sim/results/data_sparse_weight_evolution.csv")
+fwrite(data, file = "data_sim/results/data_relative_preference_evolution.csv")
 ```
