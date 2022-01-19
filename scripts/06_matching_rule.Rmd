@@ -4,21 +4,18 @@ editor_options:
   chunk_output_type: console
 ---
 
+# Correlation between consumers and productivity
 
 ```{r }
 library(data.table)
 library(kleptomoveMS)
-# plotting
-library(ggplot2)
 ```
-
 
 ## Agents ~ quality
 
-
 ```{r }
 # read data
-data <- fread("data_sim/results/data_quality_counts_1_150.csv")
+data <- fread("data_sim/results/data_input_matching.csv")
 
 # get correlation
 data_summary <- data[, list(
@@ -35,10 +32,10 @@ data_summary <- data[, list(
     }
   )
 ),
-by = c("sim_type", "gen", "replicate", "regrowth", "strategy")
+by = c("sim_type", "gen", "rep", "regrowth", "strategy")
 ]
 
 # write data
-fwrite(data_summary, file = "data_sim/results/data_quality_matching_rule.csv")
+fwrite(data_summary, file = "data_sim/results/data_corr_input_matching.csv")
 ```
 

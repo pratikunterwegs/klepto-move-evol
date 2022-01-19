@@ -14,9 +14,9 @@ library(stringr)
 library(kleptomoveMS)
 ```
 
-
 ## Items per cell
 
+Prepare the data paths.
 
 ```{r }
 # read paths
@@ -26,6 +26,12 @@ paths <- paths[grep("rep_001", paths)]
 # select gens
 gens_for_figure <- stringr::str_pad(c(1, 10, 50, 950), width = 5, pad = "0")
 
+# make df
+data_landscape = CJ(
+  path = paths,
+  gen = gens_for_figure
+)
+
 # get replicate
 data_landscape[, rep := as.numeric(
   stringr::str_extract_all(path, "rep_(\\d{3})") |> 
@@ -34,7 +40,7 @@ data_landscape[, rep := as.numeric(
 
 # get sim type
 data_landscape[, sim_type := stringr::str_extract(
-  path, "obligate|facultative|foragers"
+  path, "obligate|facultative|foragers|random"
  ) 
 ]
 
@@ -42,7 +48,11 @@ data_landscape[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 
 # get paths
 data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
+```
 
+Get data from prepared paths.
+
+```{r}
 # get data
 data_landscape$data <- lapply(data_landscape$image,
   kleptomoveMS::read_landscape,
@@ -65,9 +75,7 @@ fwrite(data_landscape,
 )
 ```
 
-
 ## Foragers per cell
-
 
 ```{r }
 # read paths
@@ -91,7 +99,7 @@ data_landscape[, rep := as.numeric(
 
 # get sim type
 data_landscape[, sim_type := stringr::str_extract(
-  path, "obligate|facultative|foragers"
+  path, "obligate|facultative|foragers|random"
  ) 
 ]
 
@@ -126,4 +134,3 @@ data_landscape$agents = data_landscape$agents /
 # save data
 fwrite(data_landscape, file = "data_sim/results/data_agent_locations.csv")
 ```
-

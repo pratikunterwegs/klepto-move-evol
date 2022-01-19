@@ -1,0 +1,277 @@
+---
+output:
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Evolution of Movement Strategies Across Replicates
+
+```{r }
+library(data.table)
+
+library(ggplot2)
+library(patchwork)
+library(colorspace)
+```
+
+```{r}
+data_pref_evol = fread("data_sim/results/data_relative_preference_evolution.csv")
+data_pref_evol = data_pref_evol[wt %in% glue::glue("wt_{seq(2,4)}")]
+data_pref_evol = data_pref_evol[sim_type != "random"]
+
+# set weight levels
+data_pref_evol$wt = factor(
+  data_pref_evol$wt,
+  levels = c("wt_4", "wt_3", "wt_2")
+)
+
+labels = c(
+  "wt_4" = "sP",
+  "wt_3" = "sH",
+  "wt_2" = "sN"
+)
+```
+
+```{r}
+plot_wt_evo <- function(df) {
+   l = split(df, by = "wt")
+   subplots = Map(
+     l, names(l),
+     f = function(le, wt) {
+       this_pal = fcase(
+        wt == "wt_4", "Mako",
+        wt == "wt_3", "Viridis",
+        wt == "wt_2", "Rocket"
+      )
+      ggplot(le)+
+        geom_hline(
+          yintercept = 0,
+          size = 0.05,
+          col = "grey"
+        )+
+        geom_vline(
+          xintercept = c(10, 30, 300, 950),
+          size = 0.05,
+          lty = 2,
+          col = "grey"
+        )+
+        geom_tile(
+          aes(
+            gen, wt_value,
+            fill = prop
+          )
+        )+
+        scale_fill_continuous_sequential(
+          palette = this_pal,
+          limits = c(NA, 0.2),
+          breaks = c(0.01, 0.1, 0.2),
+          labels = scales::percent,
+          na.value = "black"
+        )+
+        facet_grid(
+          rows = vars(rep),
+          cols = vars(wt),
+          labeller = labeller(
+            rep = function(x) glue::glue("Rep: {x}"),
+            wt = labels
+          )
+        )+
+        theme_test(
+          base_size = 6,
+          base_family = "Arial"
+        )+
+        theme(
+          legend.position = "bottom",
+          legend.key.height = unit(1, "mm"),
+          legend.key.width = unit(3, "mm"),
+          legend.title = element_text(
+            vjust = 1.5
+          ),
+          strip.background = element_blank()
+        )+
+        coord_cartesian(
+          ylim = c(-1, 1)
+        )+
+        labs(
+          x = "Generation",
+          y = "Relative preference",
+          fill = "% Ind."
+        )
+     }
+   )
+   wrap_plots(subplots[c("wt_4", "wt_3", "wt_2")])
+}
+```
+
+```{r}
+data_pref_evo = split(data_pref_evol, by = "sim_type")
+invisible(
+  Map(
+    data_pref_evo, names(data_pref_evo),
+    f = function(df, n) {
+      p = plot_wt_evo(df)
+      ggsave(
+        p,
+        height = 3,
+        width = 4,
+        filename = glue::glue(
+          "supplement/figures/fig_rel_pref_evo_sc_{n}.png"
+        )
+      )
+    }
+  )
+)
+```
+
+## Frequencies of Relative Cue Preferences
+
+![**Evolution of relative cue preferences in scenario 1**. Across simulation replicates ($r_{max}$ = 0.01), populations of foragers consistently evolve a wide range of relative preferences, largely to move towards prey items ($s_P$), to largely move towards successful foragers (handlers; $s_H$), and to mostly avoid unsuccessful foragers (non-handlers; $s_N$).]("figures/fig_rel_pref_evo_sc_foragers.png"){width=99%}
+
+![**Evolution of relative cue preferences in scenario 2**. Across simulation replicates ($r_{max}$ = 0.01), in populations with fixed forager or kleptoparasite strategies, populations of foragers consistently evolve a very small relative preference to move towards prey items ($s_P$), and a range of preferences to move away from unsuccessful foragers (non-handlers; $s_N$). However, individuals show a strongly bimodal response to successful foragers, with both strong preferences and avoidances evolved. These preferences are correlated with individuals' competition strategies (see below; handlers; $s_H$).]("figures/fig_rel_pref_evo_sc_obligate.png"){width=99%}
+
+![**Evolution of movement strategies in scenario 3**. Across simulation replicates ($r_{max}$ = 0.01), populations of consumers that choose their competition strategy using inherited preferences, individual movement strategies are mostly driven by a preference for handlers ($s_H$), a moderate avoidance for non-handlers($s_N$), and are mostly neutral to prey items ($s_P$).]("figures/fig_rel_pref_evo_sc_facultative.png"){width=99%}
+
+\newpage
+
+## Correlation of Relative Preferences forms Movement Strategies
+
+```{r}
+# load relative preferences
+data_pref = fread("data_sim/results/data_rel_pref.csv")
+# data_pref = data_pref[rep == 3,]
+
+# assign strategy
+data_pref[sim_type == "obligate", strategy := fifelse(
+  wt_5 > 0, "forager", "klept"
+)]
+
+# split by sim type
+data_pref = split(data_pref, by = "sim_type")
+```
+
+```{r}
+plot_pref = Map(
+  data_pref, names(data_pref),
+  f = function(df, n) {
+    g = c(10, 30, 300, 950)
+    if(n == "facultative") g = c(10, 30, 950)
+    p = ggplot(df[gen %in% g])+
+      geom_abline(
+        intercept = c(0, 1, -1),
+        slope = c(0, -1, 1),
+        lty = 2,
+        size = 0.2,
+        col = "grey"
+      )+
+      geom_jitter(
+        aes(sP, sH, fill = sN),
+        colour = "grey50",
+        shape = 21,
+        # stroke = 0.2,
+        alpha = 0.5,
+        size = 2
+      )+
+      scale_fill_continuous_diverging(
+        palette = "Blue-Red 2",
+        rev = T,
+        limits = c(-1, 1),
+        breaks = c(-1, 1),
+        labels = c("Avoid", "Prefer")
+      )+
+      scale_x_continuous(
+        breaks = c(0, 1),
+        labels = c("Neutral", "Prefer")
+      )+
+      scale_y_continuous(
+        breaks = c(-1, 1),
+        labels = c("Avoid", "Prefer")
+      )+
+      coord_cartesian(
+        xlim = c(0, 1),
+        ylim = c(-1, 1)
+      )+
+      theme_test(
+        base_size = 9
+      )+
+      theme(
+        axis.text.y = 
+        element_text(
+          hjust = c(0, 1),
+          angle = 90
+        ),
+        axis.text.x = 
+        element_text(
+          hjust = c(0, 1)
+        ),
+        strip.text = element_text(
+          face = "italic"
+        ),
+        strip.background = element_blank(),
+        legend.position = "top",
+        legend.title = element_text(vjust = 1.5),
+        legend.key.height = unit(1, "mm"),
+        legend.key.width = unit(5, "mm")
+      )+
+      labs(
+        x = "sP: Prey-item preference",
+        y = "sH: Handler preference",
+        fill = "sN: Non-handler preference"
+      )
+
+      if (n == "obligate") {
+        p = p +
+          facet_grid(
+            rows = vars(rep, strategy),
+            cols = vars(gen),
+            labeller = labeller(
+              strategy = c(
+                "forager" = "Foragers",
+                "klept" = "Klept."
+              ),
+              rep = function(x) glue::glue("Rep: {x}"),
+              gen = function(x) sprintf("Gen = %s", x),
+              .multi_line = FALSE
+            )
+          )
+      } else {
+        p = p +
+          facet_grid(
+            rows = vars(rep),
+            cols = vars(gen),
+            labeller = labeller(
+              gen = function(x) sprintf("Gen = %s", x),
+              rep = function(x) glue::glue("Rep: {x}")
+            )
+          )
+      }
+      p
+  }
+)
+
+invisible(
+  Map(
+    plot_pref, names(plot_pref),
+    f = function(p, n) {
+      h = 5
+      w = 7
+      if(n == "obligate") h = 8.5
+      ggsave(
+        p,
+        filename = glue::glue(
+          "supplement/figures/fig_rel_pref_corr_{n}.png"
+        ),
+        height = h
+      )
+    }
+  )
+)
+```
+
+![**Evolution of movement strategies in scenario 2**. Across simulation replicates ($r_{max}$ = 0.01), in populations with fixed forager or kleptoparasite strategies, the two competition strategies consistently undergo rapid evolutionary divergence in movement strategies. Kleptoparasites evolve within 10 generations to primarily track handlers, and maintain this preference across hundreds of generations. Foragers are slower to converge upon a single movement strategy, but eventually (G = 300) mostly avoid handlers and non-handlers alike. A small fraction of both kleptoparasites and foragers have the strategy correlated with the opposite competition strategy, likely due to mutation in the competition strategy.]("figures/fig_rel_pref_corr_obligate.png"){width=70%}
+
+![**Evolution of movement strategies in scenario 1**. Across simulation replicates ($r_{max}$ = 0.01), populations of foragers consistently evolve a wide range of movement strategies to move towards prey items, largely move towards successful foragers (handlers), and avoid unsuccessful foragers (non-handlers).]("figures/fig_rel_pref_corr_foragers.png"){width=70%}
+
+![**Evolution of movement strategies in scenario 3**. Across simulation replicates ($r_{max}$ = 0.01), populations of consumers that choose their competition strategy using inherited preferences, consistently evolve to move primarily towards handlers, a strategy that facilitates kleptoparasitism.]("figures/fig_rel_pref_corr_facultative.png"){width=70%}
+
+\newpage

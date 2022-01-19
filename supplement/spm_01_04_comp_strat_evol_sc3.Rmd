@@ -1,0 +1,90 @@
+---
+output:
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Evolution of, and Variation in Competition Strategies in Scenario 3
+
+```{r }
+library(data.table)
+
+library(ggplot2)
+library(patchwork)
+library(colorspace)
+```
+
+```{r}
+data_comp = fread("data_sim/results/data_sc3_comp_choice.csv")
+
+# data_comp = data_comp[gen == 950,]
+data_comp = data_comp[, list(
+  prop_steal = sum(steal) / (2500)
+), by = c("food", "handlers", "gen", "rep")]
+
+fig_comp = 
+ggplot(data_comp)+
+  geom_tile(
+    aes(
+      food, handlers, 
+      fill = prop_steal
+    )
+  )+
+  scale_fill_continuous_sequential(
+    palette = "Purple-Yellow",
+    limits = c(0, 1),
+    breaks = c(0, 0.5, 1),
+    labels = scales::percent_format(accuracy = 1),
+    na.value = "white"
+  )+
+  scale_x_continuous(
+    breaks = seq(0, 5)
+  )+
+  scale_y_continuous(
+    breaks = seq(0, 5)
+  )+
+  facet_grid(
+    cols = vars(gen),
+    rows = vars(rep),
+    # ncol = 3,
+    labeller = labeller(
+      gen = function(x) sprintf("Gen = %s", x),
+      rep = function(x) sprintf("Rep: %s", x)
+    )
+  )+
+  coord_cartesian(
+    expand = F
+  )+
+  theme_test(
+    base_size = 10,
+    base_family = "Arial"
+  )+
+  theme(
+    legend.position = "top",
+    legend.key.height = unit(1, "mm"),
+    legend.key.width = unit(4, "mm"),
+    legend.title = element_text(
+      vjust = 1.2
+    ),
+    strip.text = element_text(
+      face = "italic"
+    ),
+    strip.background = element_blank(),
+  )+
+  labs(
+    x = "# Prey-items",
+    y = "# Handlers",
+    fill = "% Consumers\nstealing"
+  )
+
+ggsave(
+  fig_comp,
+  filename = "supplement/figures/fig_sc3_comp_evol.png",
+  height = 4, width = 6
+)
+```
+
+![**Evolution of conditional kleptoparasitic behaviour in scenario 3.** Across replicates in scenario 3, individuals rapidly evolve conditional competition strategies that lead them to attempt to steal across a wide range of ecological conditions. Mainly, within 100 generations (and in some cases, only 30 generations), all individuals choose a kleptoparasitic strategy when handlers are available, even if there are multiple food items also available. Only when there are no handlers, do most individuals choose to forage for prey, with more individuals choosing to forage as prey density increases. Surprisingly, when there is no information, most individuals in later generations adopt a kleptoparasitic strategy by default. Replicate 2 shows why this is an incomplete assessment of individuals' competitive choices: all individuals appear to choose to steal regardless of ecological cues, with this strategy apparently persisting across many generations. This would lead to no intake at all, and no such drop is seen in mean per-capita intake. This points to the likely role of unsuccessful consumers, non-handlers, in determining competition strategy in this scenario.]("figures/fig_sc3_comp_evol.png")
+
+\newpage

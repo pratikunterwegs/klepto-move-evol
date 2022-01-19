@@ -1,0 +1,34 @@
+---
+output:
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Evolutionary Ecology of Random Movement
+
+We ran our model on a fourth scenario: random movement.
+In this scenario, the landscape is set up as in our first three scenarios (see Figure panel A).
+The prey-item handling dynamics are the same as well, and if individuals, which can choose their competition strategy depending on environmental conditions (as in scenario 3), ever encounter a handler and choose to steal from it, they can do so.
+Individuals have heritable, evolving preferences for environmental cues, as in all our previous scenarios.
+The major change in this scenario is that individuals cannot actually perceive any environmental cues, and are essentially then, moving to random locations in their neighbourhood.
+This scenario serves as a useful null model for what one should expect when directed movement is not possible, or has no bearing on fitness.
+
+1. In contrast to scenario 1, the resource landscape regenerates much more strongly, suggesting that despite the paucity of movement cues in scenario 1, foragers are still capable of finding their way to isolated prey-items, and consuming them (panel **A**).
+
+2. This scenario reveals that directed movement is, understandably, absolutely key to kleptoparasitism.
+When individuals cannot move towards handlers, the low density of foragers on the landscape, only some of which will be handling an item at any one time, means that encountering a handler is essentially impossible.
+As expected then, the number of stealing attempts drops to zero within only three generations, and all individuals thereon are foragers (panel **B**).
+
+2. Despite being unable to move towards resources, the population's mean intake is comparable to scenarios 1 and 3, and actually higher than in scenario 2.
+This highlights the cost that fixed-strategy kleptoparasitism imposes at a population wide level (panel **C**).
+
+3. The near-zero correlation between consumer abundance and resource productivity is unsurprising (panel **D**).
+Nonetheless, it shows that regardless of whether individuals are moving with (relatively) sophisticated movement strategies, or at random, they are very far from following the ideal free distribution's input matching rule.
+This also confirms the true cost of resource landscape depletion in scenario 1: the loss of prey-item gradients with which to orient movement leaves individuals navigating a clueless landscape, on which they simply cannot find the way to areas of high productivity.
+
+5. Finally, the evolution of movement strategies, when they are not actually under selection, supports our findings of strong selection on movement in the first three scenarios (panel **E**).
+
+![**The evolutionary ecology of random movement serves as a useful baseline against which to compare other scenarios**. \\textbf{(A)} Individuals deplete the landscape ($r_{max}$ = 0.01) at random, allowing it to regenerate more than scenario 1, yet less than scenario 2. \\textbf{(B)} Kleptoparasitism as a strategy very rapidly goes extinct, as individuals cannot move towards handlers, and encountering a handler at random is very unlikely. \\textbf{(C)} Surprisingly, moving at random yields a similar mean per-capita intake as in scenarios 1 and 3, and actually better than scenario 2. \\textbf{(D)} Random movement leads, unsurprisingly, to no correlation with landscape productivity. \\textbf{(E)} When movement strategies are not under selection, individuals occupy a large area of the potential strategy space, including negative values of $s_P$ (which is not shown here).]("figures/fig_0random.png")
+
+\newpage

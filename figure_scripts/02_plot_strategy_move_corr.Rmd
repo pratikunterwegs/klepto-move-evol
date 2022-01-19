@@ -1,0 +1,133 @@
+---
+output: html_document
+editor_options:
+  chunk_output_type: console
+---
+
+# Correlation of movement and competition strategies
+
+```{r }
+# to handle data and plot
+library(data.table)
+library(glue)
+
+# libraries for figures
+library(ggplot2)
+library(colorspace)
+library(patchwork)
+```
+
+```{r }
+data = fread("data_sim/results/data_rel_pref.csv")
+data = data[regrowth == 0.01 & sim_type == "obligate"]
+
+# assign strategy
+data[, strategy := fifelse(wt_5 > 0, "forager", "klept")]
+```
+
+```{r}
+fig_pref = 
+ggplot(data[rep == 3 & gen %in% c(10, 100, 300, 950)])+
+  geom_abline(
+    intercept = c(0, 1, -1),
+    slope = c(0, -1, 1),
+    lty = 2,
+    size = 0.2,
+    col = "grey"
+  )+
+  geom_jitter(
+    aes(
+      sP, sH, fill = sN
+    ),
+    colour = "grey50",
+    shape = 21,
+    # stroke = 0.2,
+    alpha = 0.5,
+    size = 2
+  )+
+  geom_text(
+    data = data.table(
+      x = c(1, 0.1, 0.1),
+      y = c(0, 1, -1),
+      strat = c("Prey tracking", "Handler tracking",  "Handler avoiding"),
+      angle = c(90, 0, 0)
+    ),
+    aes(x, y, label = strat, angle = angle),      
+    size = 3,
+    col = "grey30",
+    hjust = "inward",
+    fontface = "italic"
+  )+
+  scale_fill_continuous_diverging(
+    palette = "Blue-Red 2",
+    rev = T,
+    limits = c(-1, 1),
+    breaks = c(-1, 1),
+    labels = c("Avoid", "Prefer")
+  )+
+  scale_x_continuous(
+    breaks = c(0, 1),
+    labels = c("Neutral", "Prefer")
+  )+
+  scale_y_continuous(
+    breaks = c(-1, 1),
+    labels = c("Avoid", "Prefer")
+  )+
+  facet_grid(
+    cols = vars(gen),
+    rows = vars(strategy),
+    labeller = labeller(
+      strategy = c(
+        "forager" = "Foragers",
+        "klept" = "Klept."
+      ),
+      gen = function(x) sprintf("Gen = %s", x)
+    )
+  )+
+  coord_cartesian(
+    xlim = c(0, 1),
+    ylim = c(-1, 1),
+    # ratio = 0.5
+  )+
+  theme_test(
+    base_size = 10,
+    base_family = "Arial"
+  )+
+  theme(
+    axis.text.y = 
+    element_text(
+      hjust = c(0, 1),
+      angle = 90
+    ),
+    axis.text.x = 
+    element_text(
+      hjust = c(0, 1)
+    ),
+    strip.text = element_text(
+      face = "italic"
+    ),
+    strip.background = element_blank(),
+    legend.position = "top",
+    legend.title = element_text(vjust = 1.5),
+    legend.key.height = unit(1, "mm"),
+    legend.key.width = unit(5, "mm"),
+    # legend.text = element_text(
+    #   angle = 90,
+    #   hjust = 0.5
+    # )
+  )+
+  labs(
+    x = "sP: Prey-item preference",
+    y = "sH: Handler preference",
+    fill = "sN: Non-handler preference"
+  )
+```
+
+```{r}
+ggsave(
+  fig_pref,
+  filename = "figures/fig_03.png",
+  height = 100,
+  width = 150, units = "mm"
+)
+```

@@ -5,24 +5,25 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Landscape Depletion across $r_{max}$
+# Effect of Landscape Productivity ($r_{max}$) on Resource Landscape Depletion
 
 ```{r libs_sm1}
 # load libraries
 library(data.table)
 library(ggplot2)
 library(patchwork)
+library(colorspace)
 ```
 
 ```{r load_sm1_data}
-# load data
-# split by simulation and regrowth
-data = fread("data_sim/results/data_landscape_item_count_1_50.csv")
-data = data[regrowth %in% c(0.001, 0.005, 0.02, 0.05),]
+# load data, split by simulation and regrowth
+data_land <- fread("data_sim/results/data_landscape_progression.csv")
+data_land <- data_land[gen %in% c(1, 10, 50, 950) & 
+  regrowth %in% c(0.001, 0.005, 0.02, 0.05), ]
 
-data = split(data, by = c("sim_type"))
+data_land = split(data_land, by = c("sim_type"))
 
-data = lapply(data, function(df) {
+data_land = lapply(data_land, function(df) {
   split(df, by = "regrowth")
 })
 ```
@@ -35,37 +36,55 @@ plot_subplots = function(df) {
     aes(x, y,
         fill = items)
   )+
-  scale_fill_distiller(
-    palette = "Blues", 
-    direction = 1,
-    limits = c(1, 5),
-    na.value = "white"
+  scale_fill_continuous_sequential(
+    palette = "Batlow",
+    l1 = 20, l2 = 100,
+    c1 = 10,
+    begin = 0.2,
+    limits = c(1, NA),
+    labels = function(x) as.integer(x),
+    na.value = "white",
+    name = "# Prey",
+    rev = T,
+    guide = guide_legend(order = 1)
   )+
-  facet_grid(~ gen,
-             labeller = label_both)+
+  facet_grid(
+    ~ gen,
+    labeller = labeller(
+      gen = function(x) sprintf("G = %s", x)
+    )
+  )+
   coord_equal(expand = F) +
-  kleptomoveMS::theme_custom(landscape = T) +
+  kleptomoveMS::theme_custom(
+    landscape = T, 
+    base_size = 10
+  ) +
   theme(legend.position = "right",
-        legend.key.width = unit(1, units = "mm"),
-        legend.key.height = unit(5, units = "mm"),
+        legend.key.width = unit(2, units = "mm"),
+        legend.key.height = unit(1, units = "mm"),
+        plot.title = ggtext::element_markdown(),
         # legend.text = element_text(size = 6),
         # legend.title = element_text(size = 6)
   ) +
-  labs(fill = "# Prey", size = "# Indiv.",
-       title = sprintf("regrowth: %s", unique(df$regrowth)))
+  labs(
+    fill = "# Prey", 
+    size = "# Indiv.",
+    title = sprintf("r<sub>max</max>: %s", unique(df$regrowth))
+  )
 }
 ```
 
 
 ```{r make_plots_sm1}
 # wrap all plots
-plots = lapply(data, function(l) {
+plots = lapply(data_land, function(l) {
   subplots = lapply(l, plot_subplots)
   wrap_plots(subplots, ncol = 2) &
   plot_annotation(
     tag_levels = "A"
   ) &
   theme(
+    legend.position = "bottom",
     plot.tag = element_text(face = "bold")
   ) 
 })

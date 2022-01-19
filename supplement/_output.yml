@@ -1,12 +1,12 @@
 bookdown::pdf_document2:
   keep_tex: true
   fontsize: 10pt
-  toc: false
+  toc: true
   papersize: a4
   highlight: haddock
   includes:
     in_header: latex/preamble.tex
-toc-depth: 1
+toc-depth: 2
 secnumdepth: 1
 lof: True
 lot: True

@@ -1,0 +1,110 @@
+---
+output:
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Individual Differences in Movement Strategies in Scenarios 2 and 3
+
+```{r }
+library(data.table)
+
+library(ggplot2)
+library(patchwork)
+library(colorspace)
+```
+
+```{r}
+# load relative preferences
+data_pref = fread("data_sim/results/data_rel_pref.csv")
+data_pref = data_pref[gen == 950,]
+
+# no foragers
+data_pref = data_pref[sim_type %in% c("obligate", "facultative")]
+
+# assign strategy
+data_pref[sim_type == "obligate", strategy := fifelse(
+  wt_5 > 0, "forager", "klept"
+)]
+
+data_pref$sim_type = factor(data_pref$sim_type, 
+  levels = c("obligate", "facultative"))
+```
+
+```{r}
+fig_variation = ggplot(data_pref)+
+  geom_abline(
+    intercept = c(0, 1, -1),
+    slope = c(0, -1, 1),
+    lty = 2,
+    size = 0.4,
+    col = "grey"
+  )+
+  geom_jitter(
+    aes(
+      sP, sH, 
+      fill = strategy
+    ),
+    shape = 21,
+    size = 3,
+    alpha = 0.5
+  ) +
+  scale_fill_discrete_qualitative(
+    palette = "Set 2",
+    order = c(2, 3, 1),
+    labels = c(
+      "Sc. 3: All consumers",
+      "Sc. 2: Foragers",
+      "Sc. 2: Kleptoparasites"
+    )
+  )+
+  coord_cartesian(
+    xlim = c(0, 0.03)
+  ) +
+  theme_test(
+    base_size = 10
+  )+
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_text(
+      face = "italic"
+    ),
+    legend.position = "top"
+  )+
+  facet_grid(
+    cols = vars(rep),
+    rows = vars(sim_type),
+    labeller = labeller(
+      rep = function(x) glue::glue("Rep: {x}"),
+      sim_type = c(
+        "obligate" = "Scenario 2",
+        "facultative" = "Scenario 3"
+      )
+    )
+  )+
+  labs(
+    x = "sP: Prey-item preference",
+    y = "sH: Handler preference",
+    fill = NULL
+  )+
+  guides(
+    fill = guide_legend(
+      override.aes = list(
+        alpha = 1
+      )
+    )
+  )
+
+# save figure
+ggsave(
+  fig_variation,
+  filename = "supplement/figures/fig_small_scale_variation.png",
+  height = 4,
+  width = 6
+)
+```
+
+![**Small-scale individual variation may be hidden by primary drivers of behaviour**. Across simulation replicates ($r_{max}$ = 0.01), populations in scenarios 2 and 3 do show small-scale individual variation in preference for prey density cues ($s_P$). This variation is unlikely, in our model, to lead to functional differences in movement paths, but may cause very small emergent differences in model implementations of movement over a continuous space. It is key therefore to measure variation, and the relative contribution of such variation, along multiple axes of behaviour when studying the functional consequences of individual differences.]("figures/fig_small_scale_variation.png")
+
+\newpage

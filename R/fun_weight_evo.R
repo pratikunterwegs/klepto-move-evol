@@ -55,44 +55,46 @@ get_generation_data <- function(filepath,
 #' \code{weight_prop}.
 #'
 #' @param gen_data A list object produced by \code{generation()}.
-#' @param weight_w The weight identity to be retrieved.
-#' @param min_w_val The lower bound of the scaled weight values.
-#' @param max_w_val The upper bound.
-#' @param steps The number of steps between bounds.
-#'
+#' @param digits Rounding digits when scaling preferences.
 #' @return Returns a \code{data.table}
 #' with columns \code{weight_id}, \code{weight_value} (-1 -- +1), and
 #' \code{weight_prop}.
 #' @export
 #'
-get_weights_prop <- function(gen_data, weight_w,
-                             min_w_val = -1.01,
-                             max_w_val = 1.01,
-                             steps = 50) {
-
-  # calculate stepsize
-  step_size <- (max_w_val - min_w_val) / steps
+get_weights_prop <- function(gen_data, digits = 2) {
 
   # get generation data times 20 (why 20?)
-  weights <- gen_data[["agents"]][["ann"]][, weight_w] * 20
-  weight_tanh <- tanh(weights)
-  weight_class <- cut(weight_tanh,
-    seq(min_w_val, max_w_val, step_size),
-    right = TRUE
-  )
-  # get proportions
-  weight_prop <- table(weight_class) / length(weights)
+  weights <- gen_data[["agents"]][["ann"]]
+  n_agents = nrow(weights)
 
-  # get the weight names
-  weight_value_names <- names(weight_prop)
+  # these are hardcoded, unfortunately
+  weight_move_scaled = weights[, c(2,3,4)]
+  weight_strategy_scaled = weights[, c(5,6,7,8)]
 
-  # make a data.table
-  weight_data <- data.table::data.table(
-    weight_id = weight_w,
-    weight_value = weight_value_names,
-    weight_prop = as.vector(weight_prop)
+  # scale the weights by the sum of absolute values
+  weights = cbind(
+    weight_move_scaled / rowSums(abs(weight_move_scaled)),
+    weight_strategy_scaled / rowSums(abs(weight_strategy_scaled))
   )
-  weight_data
+  # round the weights to the second decimal place
+  weights = round(weights, digits = digits)
+
+  # make data table and melt
+  weights = data.table::as.data.table(weights)
+  data.table::setnames(weights, glue::glue("wt_{seq(2, 8, 1)}"))
+
+  # melt data
+  weights = data.table::melt(
+    weights,
+    measure.vars = glue::glue("wt_{seq(2, 8, 1)}"),
+    value.name = "wt_value",
+    variable.name = "wt"
+  )
+
+  # summarise proportions
+  weights = weights[, list(prop = .N / (n_agents)), by = c("wt", "wt_value")]
+
+  weights
 }
 
 #' Get weight proportions across generations.
@@ -100,19 +102,13 @@ get_weights_prop <- function(gen_data, weight_w,
 #' @param generations A sequence of generations.
 #' @param config_list The config list object which must have at least
 #' @param which_weight Which weights, a numeric vector or \code{NA} for all.
-#' @param min_w_val The minimum scaled weight value.
-#' @param max_w_val The maximum scaled weight value.
-#' @param steps The bins between min and max scaled weight values.
-#' the number of weights per agent.
 #' @return A data.table of the weight proportions over the generations provided.
 #' @export
 #'
 get_weights_timeline <- function(generations,
                                  config_list = config,
-                                 which_weight = seq(2, 8),
-                                 min_w_val = -1.01,
-                                 max_w_val = 1.01,
-                                 steps = 50) {
+                                 which_weight = seq(2, 8)
+                                ) {
   if (all(is.na(which_weight))) {
     seq_weights <- seq(config_list[["agents.ann.weights"]])[-1]
   } else {
@@ -125,25 +121,10 @@ get_weights_timeline <- function(generations,
     G <- generation(g - 1)
 
     # get weight data as a list
-    weight_data <- lapply(seq_weights, function(w) {
-      weight_dt <- get_weights_prop(
-        gen_data = G,
-        weight_w = w,
-        min_w_val = min_w_val,
-        max_w_val = max_w_val,
-        steps = steps
-      )
-    })
+    weight_prop = get_weights_prop(G, digits = 2)
+    weight_prop$gen = g
 
-    # bind the list
-    weight_data <- data.table::rbindlist(weight_data)
-
-    # set datatable
-    data.table::setDT(weight_data)
-    # add generation
-    weight_data$gen <- g
-
-    return(weight_data)
+    weight_prop = weight_prop[wt %in% glue::glue("wt_{seq_weights}"), ]
   })
 
   # bind all generations
@@ -156,9 +137,6 @@ get_weights_timeline <- function(generations,
 #'
 #' @param generations Which generations, a numeric vector.
 #' @param which_weight Which weights, a numeric vector or \code{NA} for all.
-#' @param min_w_val The minimum scaled weight value.
-#' @param max_w_val The maximum scaled weight value.
-#' @param steps The bins between min and max scaled weight values.
 #' @param data_folder Where the \code{sourceMe.R} file should be sourced from.
 #'
 #' @return A data.table of weight evolution
@@ -166,10 +144,8 @@ get_weights_timeline <- function(generations,
 #'
 get_sim_weight_evol <- function(data_folder,
                                 generations,
-                                which_weight,
-                                min_w_val = -1.01,
-                                max_w_val = 1.01,
-                                steps = 50) {
+                                which_weight
+                              ) {
 
   # source 'source_me.R' in the data folder
   # this isn't how I'd do it but oh well
@@ -178,10 +154,7 @@ get_sim_weight_evol <- function(data_folder,
   # get generation weights
   weight_data_gen <- get_weights_timeline(generations,
     config_list = config,
-    which_weight = which_weight,
-    min_w_val = -1.01,
-    max_w_val = 1.01,
-    steps = 50
+    which_weight = which_weight
   )
   # return the ggplot
   return(weight_data_gen)

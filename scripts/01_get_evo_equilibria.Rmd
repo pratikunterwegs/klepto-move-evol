@@ -9,24 +9,45 @@ editor_options:
 ```{r }
 # load libraries
 library(data.table)
+library(stringr)
 # some helper functions
 library(kleptomoveMS)
 ```
 
+Prepare data paths.
+
+```{r}
+Prepare the data paths.
+
 ```{r }
-# read parameter combinations
-data <- fread("data_sim/results/data_param_combinations.csv")
+# read paths
+paths <- list.dirs("data_sim/", recursive = F)
+paths <- paths[grep("rep_", paths)]
 
-data[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
+# make df
+data = CJ(
+  path = paths
+)
 
-# no random
-data = data[sim_type != "random", ]
+# get replicate
+data[, rep := as.numeric(
+  stringr::str_extract_all(path, "rep_(\\d{3})") |> 
+    stringr::str_extract_all("\\d{3}")
+)]
+
+# get sim type
+data[, sim_type := stringr::str_extract(
+  path, "obligate|facultative|foragers|random"
+ ) 
+]
+
+data[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 ```
 
 ```{r }
 # get strategy, fitness and conflicts over gens
 data[, summary_data := lapply(
-  folder_path,
+  path,
   get_strategy_gen
 )]
 ```
@@ -34,7 +55,7 @@ data[, summary_data := lapply(
 ```{r }
 # unlist
 data <- data[, unlist(summary_data, recursive = F),
-  by = c("sim_type", "replicate", "regrowth")
+  by = c("sim_type", "rep", "regrowth")
 ]
 ```
 

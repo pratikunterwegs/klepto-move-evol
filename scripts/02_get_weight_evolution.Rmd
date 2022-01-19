@@ -4,103 +4,77 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Prepare node weight evolution data
+# Get transformed weight frequency data
+
+These are the tanh scaled weights, and not the relative preferences.
 
 ## Load libraries
 
-
-```{r }
+```{r}
 # load libs
 library(data.table)
-library(kleptomoveMS)
+library(stringr)
+devtools::load_all()
 ```
 
+## Get transformed cue preferences
 
-## Run function over data
-
+Prepare data paths.
 
 ```{r }
-# read parameter combinations
-param_combinations <- fread("data_sim/results/data_param_combinations.csv")
-param_combinations[, folder_path := stringr::str_replace(
-  folder_path, "data", "data_sim"
+# read paths
+paths <- list.dirs("data_sim/", recursive = F)
+paths <- paths[grep("rep_", paths)]
+
+# make df
+data = CJ(
+  path = paths
+)
+
+# get replicate
+data[, rep := as.numeric(
+  stringr::str_extract_all(path, "rep_(\\d{3})") |> 
+    stringr::str_extract_all("\\d{3}")
 )]
 
-# get weight evolution every N generations
-# from each simulation
-temp_gen_data <- lapply(
-  param_combinations$folder_path,
-  function(x) {
-    get_sim_weight_evol(
-      data_folder = x,
-      generations = c(
-        seq(1, 990, 25),
-        990:998
-      ),
-      which_weight = NA
-    )
-  }
-)
-```
-
-
-## Write sparse and final generation range sequence to file
-
-
-```{r }
-# bind with parameters
-data <- param_combinations
-data[, wt_data := temp_gen_data]
-
-# unnest
-data <- data[, unlist(wt_data, recursive = F),
-  by = list(sim_type, replicate, regrowth)
+# get sim type
+data[, sim_type := stringr::str_extract(
+  path, "obligate|facultative|foragers|random"
+ ) 
 ]
-fwrite(data, file = "data_sim/results/data_weight_evolution.csv")
+
+data[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
+
+# select regrowth
+data = data[regrowth == 0.01,]
 ```
 
+Read data from paths.
 
-## Prepare data for intial generations
-
-
-```{r }
-# read parameter combinations
-param_combinations <- fread("data_sim/results/data_param_combinations.csv")
-param_combinations[, folder_path := stringr::str_replace(folder_path, "data", "data_sim")]
-
-# get weight evolution every 10 generation
+```{r}
 # from each simulation
 temp_gen_data <- lapply(
-  param_combinations$folder_path,
+  data$path,
   function(x) {
     get_sim_weight_evol(
       data_folder = x,
       generations = unique(
         c(
-          seq(1, 100, 1), 
-          seq(100, 999, 25), 
-          999
+          seq(1, 999, 2)
         )
       ),
-      which_weight = c(3, 5, 7)
+      which_weight = NA
     )
   }
 )
-```
 
-
-## Write sparse and final generation range sequence to file
-
-
-```{r }
 # bind with parameters
-data <- copy(param_combinations)
 data[, wt_data := temp_gen_data]
 
 # unnest
 data <- data[, unlist(wt_data, recursive = F),
-  by = list(sim_type, replicate, regrowth)
+  by = list(sim_type, rep, regrowth)
 ]
-fwrite(data, file = "data_sim/results/data_sparse_weight_evolution.csv")
-```
 
+fwrite(data, file = "data_sim/results/data_relative_preference_evolution.csv")
+```

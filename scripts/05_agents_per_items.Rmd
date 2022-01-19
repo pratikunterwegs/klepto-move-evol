@@ -4,6 +4,7 @@ editor_options:
   chunk_output_type: console
 ---
 
+# Process landscape snapshots to get item and agent abundance
 
 ```{r }
 library(data.table)
@@ -11,42 +12,54 @@ library(glue)
 library(ggplot2)
 ```
 
+## Get agent abundances
 
-## get agents in all gens
+Prepare paths.
 
-
-```{r }
-params <- fread("data_sim/results/data_param_combinations.csv")
-params$folder_path <- stringr::str_replace(
-  params$folder_path,
-  "data",
-  "data_sim"
-)
-
-params = params[regrowth <= 0.05,]
+```{r}
+# read paths
+paths <- list.dirs("data_sim/", recursive = F)
+paths <- paths[grep("rep_", paths)]
 
 # select gens
-gens_for_figure <- stringr::str_pad(seq(50), width = 5, pad = "0")
+gens_for_figure <- stringr::str_pad(
+  unique(
+    c(
+      seq(1, 10),
+      seq(10, 50, 10),
+      seq(50, 950, by = 50)
+    )
+  ), 
+  width = 5, pad = "0"
+)
 
-# get paths for files
-params$gens <- list(gens_for_figure)
+# make df
+data = CJ(
+  path = paths,
+  gen = gens_for_figure
+)
 
-# unlist
-params <- params[, unlist(gens_for_figure, recursive = F),
-  by = list(sim_type, replicate, regrowth, folder_path)
+# get replicate
+data[, rep := as.numeric(
+  stringr::str_extract_all(path, "rep_(\\d{3})") |> 
+    stringr::str_extract_all("\\d{3}")
+)]
+
+# get sim type
+data[, sim_type := stringr::str_extract(
+  path, "obligate|facultative|foragers|random"
+ ) 
 ]
-# rename col
-setnames(params, "V1", "gen")
+
+data[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 
 # get paths
-params$image <- glue_data(params, "{folder_path}/{gen}.png")
+data$image <- glue_data(data, "{path}/{gen}.png")
+```
 
-# copy as data
-data <- copy(params)
+Prepare paths for scenario 2, which has to be handled differently to count foragers and kleptoparasites separately.
 
-# remove unused growth rates
-data = data[regrowth <= 0.05,]
-
+```{r }
 # separate data for scenario 2
 data_sc2 = data[sim_type == "obligate", ]
 
@@ -60,7 +73,7 @@ data_sc2 = setkey(data_sc2[, c(k = 1, .SD)], k)[
 data_sc2[, k := NULL]
 ```
 
-
+## Process agent counts for all scenarios
 
 ```{r }
 # get data for scenarios 1 and 3
@@ -91,7 +104,6 @@ agent_data_sc2 = Map(function(file, strategy) {
 
 ## Remove unoccupied cells
 
-
 ```{r }
 # remove where agents are 0
 agent_data <- lapply(
@@ -103,9 +115,7 @@ agent_data <- lapply(
 )
 ```
 
-
-## get quality layer
-
+## Process productivity layer
 
 ```{r }
 quality_data <- kleptomoveMS::read_landscape(
@@ -117,29 +127,45 @@ setnames(quality_data, old = "items", new = "quality")
 
 # agent quality data
 agent_data <- lapply(agent_data, function(df) {
-  merge(df, quality_data, by = intersect(names(df), names(quality_data)), all = F)
+  merge(
+    df, quality_data, 
+    by = intersect(names(df), names(quality_data)), 
+    all = F
+  )
 })
 
 # scenario 2 agent quality matching
 agent_data_sc2 = lapply(agent_data_sc2, function(df) {
-  merge(df, quality_data, by = intersect(names(df), names(quality_data)), all = F)
+  merge(
+    df, quality_data, 
+    by = intersect(names(df), names(quality_data)), 
+    all = F
+  )
 })
+```
 
+## Prepare data for export
+
+```{r}
 # unlist and merge with simulation parameters
 data$layer_data <- agent_data
 
 data_sc2$layer_data = agent_data_sc2
 
+# remove cols
+data = data[, !c("path", "image")]
+
 # unlist
 data <- data[, unlist(layer_data, recursive = F),
-  by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image")
+  by = c("sim_type", "gen", "rep", "regrowth")
 ]
 
 # assign strategy
 data$strategy =  "all_agents"
 
+data_sc2 = data_sc2[, !c("path", "image")]
 data_sc2 = data_sc2[, unlist(layer_data, recursive = F),
-  by = c("sim_type", "gen", "replicate", "regrowth", "folder_path", "image",
+  by = c("sim_type", "gen", "rep", "regrowth",
          "strategy")
 ]
 setnames(data_sc2, "foragers", "agents")
@@ -149,10 +175,10 @@ data = rbindlist(list(data, data_sc2), use.names = TRUE)
 
 # select data
 data[, gen := as.numeric(gen)]
-data <- data[, list(sim_type, gen, replicate, regrowth, 
+data <- data[, list(sim_type, gen, rep, regrowth, 
                     x, y, agents, quality, strategy)]
 
 # save data
-fwrite(data, file = "data_sim/results/data_quality_counts_1_150.csv")
+fwrite(data, file = "data_sim/results/data_input_matching.csv")
 ```
 
