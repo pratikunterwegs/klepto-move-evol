@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # copy pdfs and name correctly
-rm docs/ms_kleptomove_*.pdf
+# rm docs/ms_kleptomove_*.pdf
 
 cp figures/fig_0*.png overleaf-kleptomove/figures
 

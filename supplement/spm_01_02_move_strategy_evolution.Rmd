@@ -124,7 +124,7 @@ invisible(
 )
 ```
 
-## Frequencies of Relative Preferences
+## Frequencies of Relative Cue Preferences
 
 ![**Evolution of relative cue preferences in scenario 1**. Across simulation replicates ($r_{max}$ = 0.01), populations of foragers consistently evolve a wide range of relative preferences, largely to move towards prey items ($s_P$), to largely move towards successful foragers (handlers; $s_H$), and to mostly avoid unsuccessful foragers (non-handlers; $s_N$).]("figures/fig_rel_pref_evo_sc_foragers.png"){width=99%}
 
