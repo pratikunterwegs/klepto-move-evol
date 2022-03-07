@@ -6,12 +6,13 @@ editor_options:
 
 # Process landscape snapshots
 
-
 ```{r }
 library(data.table)
 library(glue)
 library(stringr)
-library(kleptomoveMS)
+
+# load local functions
+devtools::load_all()
 ```
 
 ## Items per cell
@@ -20,7 +21,7 @@ Prepare the data paths.
 
 ```{r }
 # read paths
-paths <- list.dirs("data_sim/", recursive = F)
+paths <- list.dirs("data/", recursive = F)
 paths <- paths[grep("rep_001", paths)]
 
 # select gens
@@ -55,7 +56,7 @@ Get data from prepared paths.
 ```{r}
 # get data
 data_landscape$data <- lapply(data_landscape$image,
-  kleptomoveMS::read_landscape,
+  read_landscape,
   layer = 4,
   crop_dim = 60,
   type = "items"
@@ -71,7 +72,7 @@ data_landscape <- data_landscape[, unlist(data, recursive = F),
 
 # save
 fwrite(data_landscape,
-  file = "data_sim/results/data_landscape_progression.csv"
+  file = "data/results/data_landscape_progression.csv"
 )
 ```
 
@@ -79,7 +80,7 @@ fwrite(data_landscape,
 
 ```{r }
 # read paths
-paths <- list.dirs("data_sim/", recursive = F)
+paths <- list.dirs("data/", recursive = F)
 paths <- paths[grep("rep_001", paths)]
 
 # select gens
@@ -110,7 +111,7 @@ data_landscape$image <- glue_data(data_landscape, "{path}/{gen}.png")
 
 # get data
 data_landscape$agent_data <- lapply(data_landscape$image,
-  kleptomoveMS::read_landscape,
+  read_landscape,
   layer = c(1, 2, 3),
   crop_dim = 60,
   type = "items"
@@ -132,5 +133,5 @@ data_landscape$agents = data_landscape$agents /
   (min(data_landscape$agents[data_landscape$agents > 0]))
 
 # save data
-fwrite(data_landscape, file = "data_sim/results/data_agent_locations.csv")
+fwrite(data_landscape, file = "data/results/data_agent_locations.csv")
 ```
