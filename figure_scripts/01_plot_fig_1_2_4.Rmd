@@ -20,7 +20,7 @@ library(colorspace)
 
 ```{r }
 # activity data
-data_activity <- fread("data_sim/results/data_strategy_gen.csv")
+data_activity <- fread("data/results/data_pop_activity_budget.csv")
 data_activity <- data_activity[
   # sim_type == "foragers" &
     regrowth == 0.01
@@ -73,7 +73,7 @@ plot_activity = lapply(data_activity, function(df) {
     aes(
       gen, value,
       colour = variable,
-      group = interaction(variable, replicate)
+      group = interaction(variable, rep)
     )
   ) +
   scale_colour_manual(
@@ -120,21 +120,24 @@ plot_activity = plot_activity[c(
 ## Proportion of fixed kleptoparasites
 
 ```{r}
-data_strat = fread("data_sim/results/data_sparse_weight_evolution.csv")
-data_strat = data_strat[weight_id == 5 & sim_type == "obligate",]
+# load the relative preference evolution dataset
+data_strat = fread("data/results/data_relative_preference_evolution.csv")
 
-# get numeric weight value
-data_strat[, wt_num := stringi::stri_extract_last(weight_value, regex = "[-0-9]+\\.\\d{2}")]
+# keep only the data for wt_5, aka w0, the bias to be a kleptoparasite
+# examine only scenario 2
+data_strat = data_strat[wt == "wt_5" & sim_type == "obligate",]
 
 # assign strategy and sum proportions
-data_strat[, strategy := fifelse(wt_num < 0, "klept", "forager")]
+data_strat[, strategy := fifelse(wt_value > 0, "forager", "klept")]
 
 data_strat = data_strat[, list(
-  prop = sum(weight_prop)
+  prop = sum(prop)
 ), by = c("gen", "rep", "strategy")]
 ```
 
 ```{r}
+# add the proportion of the population that are fixed kleptoparasites
+# as an element of the plot for scenario 2
 plot_activity[["obligate"]] = plot_activity[["obligate"]] +
   geom_path(
     data = data_strat[strategy == "klept"],
@@ -152,12 +155,12 @@ plot_activity[["obligate"]] = plot_activity[["obligate"]] +
 plot_intake <- lapply(data_activity, function(df) {
   ggplot(
     unique(df,
-      by = c("gen", "replicate", "pop_fitness")
+      by = c("gen", "rep", "pop_fitness")
     )
   ) +
   geom_path(
     aes(gen, pop_fitness,
-      group = replicate
+      group = rep
     ),
   ) +
   scale_x_log10(
@@ -188,7 +191,7 @@ plot_intake = plot_intake[c(
 
 ```{r }
 # raw correlation data
-data_quality <- fread("data_sim/results/data_corr_input_matching.csv")
+data_quality <- fread("data/results/data_corr_input_matching.csv")
 data_quality <- data_quality[regrowth == 0.01, ]
 ```
 
@@ -276,10 +279,10 @@ plots_quality = plots_quality[c(
 
 ```{r }
 # get landscape and agent data
-data_land <- fread("data_sim/results/data_landscape_progression.csv")
+data_land <- fread("data/results/data_landscape_progression.csv")
 data_land <- data_land[gen %in% c(1, 10, 50, 950) & regrowth == 0.01, ]
 
-data_agent = fread("data_sim/results/data_agent_locations.csv")
+data_agent = fread("data/results/data_agent_locations.csv")
 data_agent <- data_agent[gen %in% c(1, 10, 50, 950) & regrowth == 0.01, ]
 ```
 
@@ -289,8 +292,10 @@ data_agent = split(data_agent, by = "sim_type")
 ```
 
 ```{r}
-plots_landscape = 
-Map(data_land, data_agent, f = function(df_land, df_agent) {
+plots_landscape = Map(
+  data_land, data_agent, 
+  
+  f = function(df_land, df_agent) {
   ggplot() +
   geom_tile(
     data = df_land,
@@ -328,7 +333,7 @@ Map(data_land, data_agent, f = function(df_land, df_agent) {
     guide = guide_legend(order = 2)
   )+
   coord_equal(expand = F) +
-  kleptomoveMS::theme_custom(
+  theme_custom(
     landscape = T, 
     base_size = 8,
     base_family = "Arial"
@@ -345,13 +350,8 @@ plots_landscape = plots_landscape[c(
 
 ```{r}
 # load relative preferences
-data_pref = fread("data_sim/results/data_rel_pref.csv")
+data_pref = fread("data/results/data_rel_pref.csv")
 data_pref = data_pref[rep == 3,]
-
-# assign strategy
-data_pref[sim_type == "obligate", strategy := fifelse(
-  wt_5 > 0, "forager", "klept"
-)]
 
 # split by sim type
 data_pref = split(data_pref, by = "sim_type")
@@ -360,9 +360,15 @@ data_pref = split(data_pref, by = "sim_type")
 ```{r}
 plot_pref = Map(
   data_pref, names(data_pref),
+  
   f = function(df, n) {
+    
+    # generations to plot
     g = c(10, 30, 300, 950)
+    
+    # which generations if scenario 3
     if(n == "facultative") g = c(10, 30, 950)
+    
     p = ggplot(df[gen %in% g])+
       geom_abline(
         intercept = c(0, 1, -1),
@@ -430,10 +436,10 @@ plot_pref = Map(
       if (n == "obligate") {
         p = p +
           facet_grid(
-            rows = vars(strategy),
+            rows = vars(comp_strat),
             cols = vars(gen),
             labeller = labeller(
-              strategy = c(
+              comp_strat = c(
                 "forager" = "Foragers",
                 "klept" = "Klept."
               ),
@@ -461,7 +467,7 @@ plot_pref = plot_pref[c(
 ## Conditional strategies: Competition choices under ecological scenarios
 
 ```{r}
-data_comp = fread("data_sim/results/data_sc3_comp_choice.csv")
+data_comp = fread("data/results/data_sc3_comp_choice.csv")
 
 data_comp = data_comp[gen == 950,]
 data_comp = data_comp[, list(
