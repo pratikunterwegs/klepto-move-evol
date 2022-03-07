@@ -12,6 +12,8 @@ These are the relative preferences that determine movement strategies.
 # load libs
 library(data.table)
 library(stringr)
+
+# load functions defined locally in R/
 devtools::load_all()
 ```
 
@@ -19,7 +21,7 @@ Prepare data paths.
 
 ```{r}
 # read paths
-paths <- list.dirs("data_sim/", recursive = F)
+paths <- list.dirs("data/", recursive = F)
 paths <- paths[grep("rep_", paths)]
 
 # make df
