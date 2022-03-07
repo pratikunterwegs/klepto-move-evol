@@ -76,6 +76,6 @@ img_data['p_clueless'] = img_data['path'].apply(get_prop_plateau, dim=512, layer
 # drop filename column
 img_data = img_data.drop(columns="path")
 
-img_data.to_csv("data/results/data_p_clueless.csv")
+img_data.to_csv("data/results/data_p_clueless.csv", index=False)
 
 # ends here
