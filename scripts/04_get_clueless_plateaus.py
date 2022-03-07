@@ -8,7 +8,7 @@ import sys
 for p in sys.path:
     print(p)
 
-import pandas as pd  # similar to dplyr! yay!
+import pandas as pd  # similar to dplyr + data.frames
 import os  # has list dir functions etc
 import numpy as np  # some matrix functions
 import re
@@ -19,7 +19,7 @@ import imageio  # library to read images
 # check the current working directory
 os.getcwd()
 # gather image output
-output_folder = os.path.join(os.getcwd(), "data_sim/")  # os.path.abspath("output")
+output_folder = os.path.join(os.getcwd(), "data/")  # os.path.abspath("output")
 # check for the right folder
 # if "images" not in output_folder:
 #     raise Exception('seems like the wrong output folder...')
@@ -51,6 +51,7 @@ def get_image_data (x):
     sim_rmax = float(re.findall(r'\d+\.\d+', x)[0]) # unfortunately hardcoded
     return [sim_type, sim_gen, sim_rep, sim_rmax, x]
 
+
 # get the image identity to match to parameters later
 img_data = list(map(get_image_data, img_files))
 # make data frame
@@ -72,7 +73,9 @@ def get_prop_plateau (x, dim, layer):
 
 # run over files
 img_data['p_clueless'] = img_data['path'].apply(get_prop_plateau, dim=512, layer=3)
+# drop filename column
+img_data = img_data.drop(columns="path")
 
-img_data.to_csv("data_sim/results/data_p_clueless.csv")
+img_data.to_csv("data/results/data_p_clueless.csv")
 
 # ends here
