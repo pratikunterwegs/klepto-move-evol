@@ -18,13 +18,11 @@ library(patchwork)
 ## Prepare handler preference
 
 ```{r }
-data_pref = fread("data_sim/results/data_syndrome_by_strategy.csv")
-
-data_pref[, strategy := fifelse(sim_type == "obligate", klept_bias, "consumer")]
+data_pref = fread("data/results/data_handler_tracking_by_strategy.csv")
 
 data_pref = data_pref[handler_pref == T, list(
   handler_pref = mean(prop_handler_pref)
-), by = c("sim_type", "rep", "strategy", "gen")]
+), by = c("sim_type", "rep", "comp_strat", "gen")]
 ```
 
 ```{r}
@@ -32,7 +30,7 @@ ggplot(data_pref)+
   geom_point(
     aes(
       gen, handler_pref,
-      col = strategy
+      col = comp_strat
     )
   )
 ```
@@ -44,13 +42,9 @@ ggplot(data_pref)+
 focus_r <- c(0.01)
 
 # read clueless data
-data <- fread("data_sim/results/data_p_clueless.csv")
-data[, path := NULL]
+data <- fread("data/results/data_p_clueless.csv")
 data <- data[regrowth %in% focus_r, ]
 data[, sim_type := ifelse(sim_type == "forager", "foragers", sim_type)]
-
-# remove v1
-data[, V1 := NULL]
 
 # remove random
 data <- data[sim_type != "random"]
@@ -62,6 +56,7 @@ data$p_clueless <- 1 - data$p_clueless
 data$sim_type <- factor(data$sim_type,
   levels = c("foragers", "obligate", "facultative")
 )
+setnames(data, "rep", "replicate")
 
 # split data
 data <- split(data, by = "sim_type")
@@ -126,8 +121,8 @@ Map(
     geom_path(
       data = df_wt,
       aes(gen, handler_pref,
-        col = strategy,
-        group = interaction(rep, strategy)
+        col = comp_strat,
+        group = interaction(replicate, compt_strat)
       )
     )+
     scale_colour_manual(
