@@ -10,6 +10,10 @@ editor_options:
 library(data.table)
 library(glue)
 library(ggplot2)
+library(stringr)
+
+# load local functions
+devtools::load_all()
 ```
 
 ## Get agent abundances
@@ -18,7 +22,7 @@ Prepare paths.
 
 ```{r}
 # read paths
-paths <- list.dirs("data_sim/", recursive = F)
+paths <- list.dirs("data/", recursive = F)
 paths <- paths[grep("rep_", paths)]
 
 # select gens
@@ -75,23 +79,34 @@ data_sc2[, k := NULL]
 
 ## Process agent counts for all scenarios
 
+From the exported image data, count the number of individuals in each landscape cell. This uses the function `read_landscape`, which is defined in `R/fun_read_land.R`.
+
 ```{r }
 # get data for scenarios 1 and 3
-agent_data <- lapply(data$image,
-  kleptomoveMS::read_landscape,
-  layer = c(1, 3), # read only foragers and klepts if any
-  crop_dim = 60,
+agent_data <- lapply(
+  X = data$image,
+  
+  # apply this function over the landscape simulation data
+  FUN = read_landscape,
+  
+  # arguments to the function
+  layer = c(1, 2, 3), # read all individuals
+  crop_dim = 10,
   type = "items"
 )
 
 # scenario 2 agent data
-agent_data_sc2 = Map(function(file, strategy) {
+agent_data_sc2 = Map(
+  data_sc2$image, data_sc2$strategy,
+  
+  # map this function over the two elements
+  f = function(file, strategy) {
   
   layer = ifelse(strategy == "foragers", 3, 1)
   
   d = kleptomoveMS::read_landscape(
     landscape_file = file, layer = layer,
-    crop_dim = 60,
+    crop_dim = 10,
     type = "items"
   )
   
@@ -99,7 +114,7 @@ agent_data_sc2 = Map(function(file, strategy) {
   
   setnames(d, "items", strategy)
   
-}, data_sc2$image, data_sc2$strategy)
+})
 ```
 
 ## Remove unoccupied cells
@@ -118,14 +133,15 @@ agent_data <- lapply(
 ## Process productivity layer
 
 ```{r }
-quality_data <- kleptomoveMS::read_landscape(
-  "data_sim/data_parameters/kernels32.png",
-  layer = 1, crop_dim = 60, type = "items"
+# load the productivity layer
+quality_data <- read_landscape(
+  "data/data_parameters/kernels32.png",
+  layer = 1, crop_dim = 10, type = "items"
 )
 
 setnames(quality_data, old = "items", new = "quality")
 
-# agent quality data
+# combine agent presence data with the productivity layer data
 agent_data <- lapply(agent_data, function(df) {
   merge(
     df, quality_data, 
@@ -134,7 +150,7 @@ agent_data <- lapply(agent_data, function(df) {
   )
 })
 
-# scenario 2 agent quality matching
+# combine agent presence data for scenario 2 with the productivity layer data
 agent_data_sc2 = lapply(agent_data_sc2, function(df) {
   merge(
     df, quality_data, 
@@ -161,7 +177,7 @@ data <- data[, unlist(layer_data, recursive = F),
 ]
 
 # assign strategy
-data$strategy =  "all_agents"
+data$strategy =  "consumers"
 
 data_sc2 = data_sc2[, !c("path", "image")]
 data_sc2 = data_sc2[, unlist(layer_data, recursive = F),
@@ -179,6 +195,5 @@ data <- data[, list(sim_type, gen, rep, regrowth,
                     x, y, agents, quality, strategy)]
 
 # save data
-fwrite(data, file = "data_sim/results/data_input_matching.csv")
+fwrite(data, file = "data/results/data_input_matching.csv")
 ```
-
