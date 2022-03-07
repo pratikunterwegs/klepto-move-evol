@@ -81,30 +81,58 @@ fwrite(data_rel_pref, file = "data/results/data_rel_pref.csv")
 
 ## Evolution of handler tracking
 
+Get the preference for moving towards handlers, i.e., successful foragers, sub-divided by competitive strategy.
+This is done by processing each simulation replicate using `get_pref_handler_by_strat`, which is defined and documented in `R/fun_syndrome.R`
+
+The naming refers to the idea that certain behaviours may be correlated, forming a 'syndrome'.
+
 ```{r}
-# weight data
-syndrome_data <- lapply(data$path, function(path) {
-  kleptomoveMS::get_pref_handler_by_strat(
-    data_folder = path,
-    generations = unique(
-      seq(1, 999, 2)
-    ),
-    weight_klept_bias = 5,
-    weight_of_interest = c(
-      handler_pref = 3
-    ),
-    handler_pref_by_strategy = TRUE
+# run the function over each simulation replicate
+syndrome_data <- lapply(
+  X = data$path, 
+  
+  # apply this function, based around get_pref_handler_by_strat
+  FUN = function(path) {
+    get_pref_handler_by_strat(
+      data_folder = path,
+      generations = unique(
+        seq(1, 999, 2)
+      ),
+      weight_comp_strat = 5,
+      weight_of_interest = c(
+        handler_pref = 3
+      ),
+      handler_pref_by_strategy = TRUE
   )
 })
+
+# make a copy
 data_si_strategy = copy(data)
+
 # add to data
 data_si_strategy$syndrome_data <- syndrome_data
+
 # unlist
 data_si_strategy <- data_si_strategy[, unlist(syndrome_data, recursive = FALSE),
   by = c("sim_type", "rep", "regrowth")
 ]
+
+# combine proportions and counts for all but the scenario 2 obligate case
+data_si_strategy[, comp_strat := fifelse(
+  sim_type == "obligate", comp_strat, "consumer"
+)]
+
+data_si_strategy = data_si_strategy[, list(
+  prop_handler_pref = sum(prop_handler_pref)
+),
+by = c(
+  "sim_type", "rep", "regrowth", 
+  "comp_strat", "handler_pref", "gen"
+)
+]
+
 # save data
-fwrite(data_si_strategy, file = "data_sim/results/data_syndrome_by_strategy.csv")
+fwrite(data_si_strategy, file = "data/results/data_handler_tracking_by_strategy.csv")
 ```
 
 ## Relative preferences for competitive strategies
