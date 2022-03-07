@@ -14,7 +14,7 @@ library(colorspace)
 
 ```{r }
 # read in data
-data <- fread("data_sim/results/data_strategy_gen.csv")
+data <- fread("data/results/data_pop_activity_budget.csv")
 
 # remove random data
 data = data[sim_type != "random",]
@@ -278,5 +278,3 @@ ggsave(
   height = 75, width = 160, units = "mm"
 )
 ```
-
-
