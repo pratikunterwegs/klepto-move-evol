@@ -36,6 +36,14 @@ get_scaled_move_prefs <- function(filepath,
     # change names
     data.table::setnames(dt_, sprintf("wt_%i", seq(ncol(dt_))))
     
+    # pick out the fixed strategy weight for scenario 2 cases
+    comp_strat = dt_[["wt_5"]] # this is hardcoded
+    
+    # the competition strategy is forager if comp_strat value >= 0, else klept
+    comp_strat = data.table::fifelse(
+      comp_strat < 0, "klept", "forager"
+    )
+    
     # add fitness
     dt_[, intake := g_data$agents$fit[seq_len(n_agents)]]
     
@@ -50,15 +58,17 @@ get_scaled_move_prefs <- function(filepath,
     weights_to_scale = sprintf("wt_%i", as.integer(weights))
 
     dt_ = dt_[, !..weights_to_exclude]
-
-    # get sum of absolute values
-    dt_[, wt_abs_sum := apply(
-        dt_[, ..weights_to_scale], 
-        1, 
-        FUN = function(x) {
-            sum(abs(x))
-        })
-    ]
+    
+    # get the sum of the absolute weights
+    wt_abs_sum_ = apply(
+      dt_[, ..weights_to_scale], 
+      1, 
+      FUN = function(x) {
+        sum(abs(x))
+      })
+    
+    # assign the sum of absolute values to the data frame
+    dt_[, wt_abs_sum := wt_abs_sum_]
 
     # scale by sum of values
     dt_[, c(weights_to_scale) := lapply(
@@ -73,6 +83,10 @@ get_scaled_move_prefs <- function(filepath,
           c("sN", "sH", "sP")
       )
     }
+    
+    # assign a strategy
+    # this is only useful in scenario 2
+    dt_[, comp_strat := comp_strat]
     
     dt_
     
