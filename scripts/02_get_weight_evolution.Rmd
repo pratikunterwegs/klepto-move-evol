@@ -50,7 +50,7 @@ data[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 data = data[regrowth == 0.01,]
 ```
 
-Get frequencies of evolved cue preferences using the custom function `get_sim_
+Get frequencies of evolved cue preferences using the custom function `get_sim_weight_evol`, documented in `R/fun_weight_evo.R`
 
 ```{r}
 # from each simulation
@@ -59,10 +59,11 @@ temp_gen_data <- lapply(
   function(x) {
     
     # this applies a custom function to each simulation replicate
+    get_sim_weight_evol(
       data_folder = x,
       generations = unique(
         c(
-          seq(1, 999, 2)
+          seq(1, 999, 300)
         )
       ),
       which_weight = NA
@@ -78,5 +79,5 @@ data <- data[, unlist(wt_data, recursive = F),
   by = list(sim_type, rep, regrowth)
 ]
 
-fwrite(data, file = "data_sim/results/data_relative_preference_evolution.csv")
+fwrite(data, file = "data/results/data_relative_preference_evolution.csv")
 ```
