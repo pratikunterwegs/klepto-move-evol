@@ -14,6 +14,8 @@ library(data.table)
 library(ggplot2)
 library(patchwork)
 library(colorspace)
+
+devtools::load_all()
 ```
 
 ## Get data
