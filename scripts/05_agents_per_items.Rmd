@@ -91,7 +91,7 @@ agent_data <- lapply(
   
   # arguments to the function
   layer = c(1, 2, 3), # read all individuals
-  crop_dim = 10,
+  crop_dim = 60,
   type = "items"
 )
 
@@ -106,7 +106,7 @@ agent_data_sc2 = Map(
   
   d = kleptomoveMS::read_landscape(
     landscape_file = file, layer = layer,
-    crop_dim = 10,
+    crop_dim = 60,
     type = "items"
   )
   
@@ -136,7 +136,7 @@ agent_data <- lapply(
 # load the productivity layer
 quality_data <- read_landscape(
   "data/data_parameters/kernels32.png",
-  layer = 1, crop_dim = 10, type = "items"
+  layer = 1, crop_dim = 60, type = "items"
 )
 
 setnames(quality_data, old = "items", new = "quality")
