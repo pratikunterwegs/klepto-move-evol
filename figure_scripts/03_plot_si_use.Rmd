@@ -13,6 +13,9 @@ library(glue)
 library(ggplot2)
 library(colorspace)
 library(patchwork)
+
+# load local functions
+devtools::load_all()
 ```
 
 ## Prepare handler preference
@@ -132,9 +135,9 @@ Map(
       breaks = break_vals
     ) +
     scale_x_continuous(
-      trans = "log10",
+      trans = "sqrt",
       limits = c(1, 1000),
-      breaks = c(1, 10, 100, 1000)
+      breaks = c(1, 10, 100, 500, 1000)
     )+
     scale_y_continuous(
       limits = c(0, 1.0),
@@ -182,7 +185,7 @@ Here we show a landscape with and without clues at 1, 10, and 40th generation fo
 
 ```{r }
 # list folders
-paths <- list.dirs("data_sim/for_landscape/", recursive = F)
+paths <- list.dirs("data/for_landscape/", recursive = F)
 
 # select gens
 gens_for_figure <- stringr::str_pad(c(1, 10, 950), width = 5, pad = "0")
@@ -201,7 +204,7 @@ landscape_data$image <- glue_data(landscape_data, "{path}/{gen}.png")
 
 # get data
 landscape_data$data <- lapply(landscape_data$image,
-  kleptomoveMS::read_landscape,
+  read_landscape,
   layer = 4,
   crop_dim = 60,
   type = "items"
@@ -221,7 +224,7 @@ landscape_items <- landscape_data[, unlist(data, recursive = F),
 ```{r }
 # get data
 landscape_data$data <- lapply(landscape_data$image,
-  kleptomoveMS::read_landscape,
+  read_landscape,
   layer = 4,
   crop_dim = 60,
   type = "gradient"
@@ -333,7 +336,7 @@ plots_land =
 figure_5 =
   wrap_plots(
     plots_land, plots_cues, 
-    design = "AAAABB",
+    design = "AAAABBB",
     guides = "collect"
   ) &
   plot_annotation(tag_levels = c("A", "1")) &
