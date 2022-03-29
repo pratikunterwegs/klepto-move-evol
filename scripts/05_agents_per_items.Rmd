@@ -61,22 +61,6 @@ data[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 data$image <- glue_data(data, "{path}/{gen}.png")
 ```
 
-Prepare paths for scenario 2, which has to be handled differently to count foragers and kleptoparasites separately.
-
-```{r }
-# separate data for scenario 2
-data_sc2 = data[sim_type == "obligate", ]
-
-# separate other data
-data = data[!data_sc2, on = names(data)]
-
-# handle data from scenario 2
-sc2_strat = data.table(strategy = c("foragers", "klepts"))
-data_sc2 = setkey(data_sc2[, c(k = 1, .SD)], k)[
-  sc2_strat[, c(k = 1, .SD)], allow.cartesian = TRUE]
-data_sc2[, k := NULL]
-```
-
 ## Process agent counts for all scenarios
 
 From the exported image data, count the number of individuals in each landscape cell. This uses the function `read_landscape`, which is defined in `R/fun_read_land.R`.
@@ -94,27 +78,6 @@ agent_data <- lapply(
   crop_dim = 60,
   type = "items"
 )
-
-# scenario 2 agent data
-agent_data_sc2 = Map(
-  data_sc2$image, data_sc2$strategy,
-  
-  # map this function over the two elements
-  f = function(file, strategy) {
-  
-  layer = ifelse(strategy == "foragers", 3, 1)
-  
-  d = kleptomoveMS::read_landscape(
-    landscape_file = file, layer = layer,
-    crop_dim = 60,
-    type = "items"
-  )
-  
-  d = d[items > 0, ]
-  
-  setnames(d, "items", strategy)
-  
-})
 ```
 
 ## Remove unoccupied cells
@@ -149,15 +112,6 @@ agent_data <- lapply(agent_data, function(df) {
     all = F
   )
 })
-
-# combine agent presence data for scenario 2 with the productivity layer data
-agent_data_sc2 = lapply(agent_data_sc2, function(df) {
-  merge(
-    df, quality_data, 
-    by = intersect(names(df), names(quality_data)), 
-    all = F
-  )
-})
 ```
 
 ## Prepare data for export
@@ -165,8 +119,6 @@ agent_data_sc2 = lapply(agent_data_sc2, function(df) {
 ```{r}
 # unlist and merge with simulation parameters
 data$layer_data <- agent_data
-
-data_sc2$layer_data = agent_data_sc2
 
 # remove cols
 data = data[, !c("path", "image")]
@@ -176,18 +128,8 @@ data <- data[, unlist(layer_data, recursive = F),
   by = c("sim_type", "gen", "rep", "regrowth")
 ]
 
-# assign strategy
+# assign strategy -- keep this step tho not necessary any more
 data$strategy =  "consumers"
-
-data_sc2 = data_sc2[, !c("path", "image")]
-data_sc2 = data_sc2[, unlist(layer_data, recursive = F),
-  by = c("sim_type", "gen", "rep", "regrowth",
-         "strategy")
-]
-setnames(data_sc2, "foragers", "agents")
-
-# bind rows together
-data = rbindlist(list(data, data_sc2), use.names = TRUE)
 
 # select data
 data[, gen := as.numeric(gen)]
