@@ -5,7 +5,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Individual Differences in Movement Strategies in Scenarios 2 and 3
+# Individual Differences in Movement Strategies in Scenarios 2 -- 3
 
 ```{r }
 library(data.table)

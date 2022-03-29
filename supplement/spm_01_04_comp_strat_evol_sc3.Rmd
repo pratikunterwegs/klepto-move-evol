@@ -5,7 +5,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Evolution of, and Variation in Competition Strategies in Scenario 3
+# Evolution of Competition Strategies in Scenario 3
 
 ```{r }
 library(data.table)
