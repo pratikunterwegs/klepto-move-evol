@@ -13,11 +13,14 @@ library(data.table)
 library(ggplot2)
 library(patchwork)
 library(colorspace)
+
+# load local packages
+devtools::load_all()
 ```
 
 ```{r load_sm1_data}
 # load data, split by simulation and regrowth
-data_land <- fread("data_sim/results/data_landscape_progression.csv")
+data_land <- fread("data/results/data_landscape_progression.csv")
 data_land <- data_land[gen %in% c(1, 10, 50, 950) & 
   regrowth %in% c(0.001, 0.005, 0.02, 0.05), ]
 

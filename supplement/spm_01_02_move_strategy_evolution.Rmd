@@ -16,7 +16,7 @@ library(colorspace)
 ```
 
 ```{r}
-data_pref_evol = fread("data_sim/results/data_relative_preference_evolution.csv")
+data_pref_evol = fread("data/results/data_relative_preference_evolution.csv")
 data_pref_evol = data_pref_evol[wt %in% glue::glue("wt_{seq(2,4)}")]
 data_pref_evol = data_pref_evol[sim_type != "random"]
 
@@ -138,13 +138,8 @@ invisible(
 
 ```{r}
 # load relative preferences
-data_pref = fread("data_sim/results/data_rel_pref.csv")
+data_pref = fread("data/results/data_rel_pref.csv")
 # data_pref = data_pref[rep == 3,]
-
-# assign strategy
-data_pref[sim_type == "obligate", strategy := fifelse(
-  wt_5 > 0, "forager", "klept"
-)]
 
 # split by sim type
 data_pref = split(data_pref, by = "sim_type")
@@ -222,10 +217,10 @@ plot_pref = Map(
       if (n == "obligate") {
         p = p +
           facet_grid(
-            rows = vars(rep, strategy),
+            rows = vars(rep, comp_strat),
             cols = vars(gen),
             labeller = labeller(
-              strategy = c(
+              compt_strat = c(
                 "forager" = "Foragers",
                 "klept" = "Klept."
               ),
