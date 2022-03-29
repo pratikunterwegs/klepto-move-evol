@@ -4,6 +4,10 @@
 
 \usepackage{lineno}
 % \KOMAoption{fontsize}{10pt}
+\renewcommand{\figurename}{Figure S}
+\makeatletter
+\def\fnum@figure{\figurename\thefigure}
+\makeatother
 
 % \IfFontExistsTF{Palatino}{\setmainfont[]{Palatino}}{} 
 \usepackage{mathpazo}
