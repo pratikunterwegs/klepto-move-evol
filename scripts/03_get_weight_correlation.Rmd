@@ -124,14 +124,22 @@ data_si_strategy[, comp_strat := fifelse(
   sim_type == "obligate", comp_strat, "consumer"
 )]
 
+# sum the number of handler trackers by competitive strategy and
+# handler tracking preference (avoid = FALSE, prefer = TRUE)
 data_si_strategy = data_si_strategy[, list(
-  prop_handler_pref = sum(prop_handler_pref)
+  n_handler_pref = sum(N)
 ),
 by = c(
   "sim_type", "rep", "regrowth", 
   "comp_strat", "handler_pref", "gen"
 )
 ]
+
+# convert to proportions
+data_si_strategy[,prop_handler_pref := n_handler_pref / sum(n_handler_pref),
+                 by = c(
+                   "sim_type", "rep", "regrowth", "gen", "comp_strat"
+                 )]
 
 # save data
 fwrite(data_si_strategy, file = "data/results/data_handler_tracking_by_strategy.csv")
