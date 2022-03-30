@@ -582,7 +582,7 @@ invisible(
     if(n == "2") {
       ggsave(
         p,
-        filename = sprintf("figures/fig_0%s.png", n),
+        filename = sprintf("supplement/figures/fig_0%s.png", n),
         height = 110, width = 150, units = "mm"
       )
     } else {
