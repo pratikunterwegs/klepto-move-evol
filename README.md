@@ -24,28 +24,6 @@ Cite this repository archived on Zenodo as
 
 Pratik Rajan Gupte, Christoph FG Netz, & Franz J Weissing. (2021). Source Code and Supplementary Material for "The Joint Evolution of Movement and Competition Strategies" (v1.0). Zenodo. https://doi.org/10.5281/zenodo.5112915.
 
-```bibtex
-@software{pratik_rajan_gupte_2021_5112915,
-  author       = {Pratik Rajan Gupte and
-                  Christoph FG Netz and
-                  Franz J Weissing},
-  title        = {{Source Code and Supplementary Material for "The 
-                   Joint Evolution of Movement and Competition
-                   Strategies"}},
-  month        = jul,
-  year         = 2021,
-  note         = {{PRG was supported by an Adaptive Life Programme 
-                   grant made possible by the Groningen Institute for
-                   Evolutionary Life Sciences (GELIFES). C.F.G.N. and
-                   F.J.W acknowledge funding from the European
-                   Research Council (ERC Advanced Grant No. 789240).}},
-  publisher    = {Zenodo},
-  version      = {v1.0},
-  doi          = {10.5281/zenodo.5112915},
-  url          = {https://doi.org/10.5281/zenodo.5112915}
-}
-```
-
 The Zenodo DOI https://doi.org/10.5281/zenodo.4904497 refers to all versions of this repository, and by default, to the latest version (on Zenodo) by default.
 
 ## Simulation Source Code
@@ -54,25 +32,6 @@ The simulation source code is provided at a different repository, [_Kleptomove_]
 The _Kleptomove_ simulation is archived on Zenodo as https://zenodo.org/record/5887618, and can be cited as
 
 Christoph FG Netz, & Pratik Rajan Gupte. (2022). Source Code for the "Kleptomove" Simulation (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.5887618.
-
-```bibtex
-@software{christoph_fg_netz_2022_5887618,
-  author       = {Christoph FG Netz and
-                  Pratik Rajan Gupte},
-  title        = {Source Code for the "Kleptomove" Simulation},
-  month        = jan,
-  year         = 2022,
-  note         = {{C.F.G.N. acknowledges funding from the European 
-                   Research Council (ERC Advanced Grant No. 789240).
-                   PRG was supported by an Adaptive Life Programme
-                   grant made possible by the Groningen Institute for
-                   Evolutionary Life Sciences (GELIFES).}},
-  publisher    = {Zenodo},
-  version      = {v1.0.0},
-  doi          = {10.5281/zenodo.5887618},
-  url          = {https://doi.org/10.5281/zenodo.5887618}
-}
-```
 
 ## Simulation Data
 
@@ -189,8 +148,8 @@ A brief description of this workflow is:
 
     ```sh
     README.md           # the Readme you are now reading
-    NAMESPACE           # the 'package' namespace
-    DESCRIPTION         # the 'package' description including contact details
+    DESCRIPTION         # the 'package' description
+    NAMESPACE           # the 'package' functions
     kleptomove-ms.Rproj # the RStudio project file
     ```
 
@@ -238,36 +197,26 @@ A brief description of this workflow is:
 
 ## Analysis Functions
 
-The simulation data are summarised by a series of `R` functions, and this repository is configured to be an `R` package that can be built (`devtools::build`) and installed (`devtools::install`).
+The simulation data are summarised by a series of `R` functions, and this repository is configured to be an `R` package, whose functions can be accessed using `devtools::load_all`.
 These functions are in the directory `R/`, and are documented in the directory `man/`.
 
-- `R/fun_functional_response.R`
+**Do not build the project using `devtools::build()`!** This will attempt to load data from `data` into the package, which **will** fail due to the data's size.
 
-    - `bin_vec` Function to bin numeric vectors.
-
-    - `do_read_data` Function to get the cell specific, per-timestep value of a single variable in each of the generations queried. _Not used in this manuscript_.
-
-    - `get_intake_variance` Get variance in intake per strategy. _Not used here._
-
-    - `get_functional_response` Get the intake per strategy over cells, grouped by number of items and number of individuals.
+- `R/fun_get_scaled_wts.R` contains `get_scaled_move_prefs`, which returns the movement strategies of a number of individuals from specific generations and simulations.
 
 - `R/fun_get_strategy_gen.R` contains `get_strategy_gen`, which gets the per-generation 'activity budget' from the data.
-
-- `R/fun_potential_intake.R` A small function to get the probability of finding (not acquiring!) a food item on a cell with _N_ items.
 
 - `R/fun_read_land.R` 
 
     - `read_landscape` Function to fully or partially read in a `.png` 'ecological snapshot' exported from the simulation, and return the individuals or items per cell; the `type` option allow for raw counts (`items`) or the two-dimensional gradient (`gradient`).
 
-    - `get_layer_variance` Function to read in specific layers from an ecological snapshot, and get the variance in values.
+    - `get_layer_variance` Function to read in specific layers from an ecological snapshot, and get the variance in values. _Not used in this project_.
 
 - `R/fun_syndrome.R` contains a function, `get_pref_handler_by_strat` to determine how handler preference (or another decision making weight) varies by competition strategy.
 
 - `R/fun_theme.R` defines a custom theme for the figures.
 
 - `R/fun_weight_evo.R`
-
-    - `prepare_extractor` A function to prepare the extractor program. _Not used here._
 
     - `get_generation_data` Gets data for a single generation from a single simulation replicate output.
 
@@ -283,21 +232,19 @@ These functions are in the directory `R/`, and are documented in the directory `
 
 The source code for the analyses reported here can be found in the directory `scripts/`, and is explained here:
 
-- `scripts/00_landscape_item_count.R` Counts the number of items and individuals per cell from ecological snapshots from the simulation.
+- `scripts/00_landscape_item_count.Rmd` Counts the number of items and individuals per cell from ecological snapshots from the simulation.
 
-- `scripts/01_get_evo_equilibria.R` Get the activity budget over multiple generations.
+- `scripts/01_get_evo_equilibria.Rmd` Get the activity budget over multiple generations.
 
-- `scripts/02_get_weight_evolution.R` Get the evolution of movement and foraging strategy decision making weight evolution over multiple generations.
+- `scripts/02_get_weight_evolution.Rmd` Get the evolution of movement and foraging strategy decision making weight evolution over multiple generations.
 
-- `scripts/03_get_syndrome.R` Get the preference for handlers by strategy per generation.
+- `scripts/03_get_weight_correlation.Rmd` Get the preference for handlers by strategy per generation.
 
 - `scripts/04_get_clueless_plateaus.py` Get the proportion of each ecological snapshot landscape from which no better moves are possible.
 
-- `scripts/05_agents_per_items.R` Get data on individuals per items from each generation per replicate.
+- `scripts/05_agents_per_items.Rmd` Get data on individuals per items from each generation per replicate.
 
-- `scripts/06_intake_variance.R` Get data on variance on intake rates per generation.
-
-- `scripts/07_matching_rule.R` Get correlations between individual abundances and items and cell productivity.
+- `scripts/06_matching_rule.Rmd` Get correlations between individual abundances and items and cell productivity.
 
 ## Figure Source Code
 
@@ -305,21 +252,11 @@ The source code for the figures in this manuscript is in the directory `figure_s
 
 ## Main Text
 
-The main text of the manuscript is written in LaTeX and is stored in the (private) submodule, `overleaf-kleptomove`. A dated version rendered as PDF can be found in the directory `docs/` -- `docs/ms_kleptomove_DATE.pdf`, where `DATE` is the date the manuscript was rendered.
+The main text of the manuscript is written in LaTeX and is stored in the (private) submodule, `overleaf-kleptomove`.
 
 ## Supplementary Material
 
-The supplementary material provided with this manuscript is generated from the `supplement/` directory. A dated version rendered as PDF can be found in the directory `docs/` -- `docs/ms_kleptomove_supplementary_material_DATE.pdf`, where `DATE` is the date the manuscript was rendered.
-
-- `supplement/spm_01_landscapes.Rmd` Code for figures 1.1 -- 1.3.
-
-- `supplement/spm_02_weight_evolution.Rmd` Code for figures 2.1 -- 2.3.
-
-- `supplement/figures` Figure output for the supplementary material file.
-
-- `supplement/latex` LaTeX options for the supplementary material file.
-
-Other files relate to formatting.
+The supplementary material provided with this manuscript is generated from the `supplement/` directory. These scripts mostly contain plotting code, and we do not describe them further. Other files in this sub-directory relate to formatting.
 
 ## Other Directories
 
