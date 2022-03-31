@@ -12,6 +12,8 @@ These are the relative preferences that determine movement strategies.
 # load libs
 library(data.table)
 library(stringr)
+
+# load functions defined locally in R/
 devtools::load_all()
 ```
 
@@ -19,7 +21,7 @@ Prepare data paths.
 
 ```{r}
 # read paths
-paths <- list.dirs("data_sim/", recursive = F)
+paths <- list.dirs("data/", recursive = F)
 paths <- paths[grep("rep_", paths)]
 
 # make df
@@ -50,76 +52,139 @@ data = data[regrowth == 0.01,]
 Read scaled movement weights from 2500 individuals in each simulation from generations 1, 10, 30, 100, and 950.
 
 ```{r}
+# make a copy
 data_rel_pref = copy(data)
+
+# get relative preferences using the function get_scaled_move_prefs
 data_rel_pref[, rel_pref := lapply(
-  path, get_scaled_move_prefs, 
-  gens = c(1, 10, 30, 100, 300, 950), n_agents = 2500
+  X = path, 
+  
+  # apply this function over all the paths
+  FUN = get_scaled_move_prefs, 
+  
+  # these are arguments to get_scaled_move_prefs
+  gens = c(1, 10, 30, 100, 300, 950), 
+  n_agents = 2500
 )]
 
+# unlist (un-compress) the data to make an ordinary data.frame
 data_rel_pref = data_rel_pref[, unlist(rel_pref, recursive = F),
   by = list(sim_type, rep, regrowth)
 ]
 
 # assign strategy
-data_rel_pref[, strategy := fcase(
-  sim_type == "obliagte" & wt_5 > 0, "forager", 
-  sim_type == "obliagte" & wt_5 > 0, "klept",
-  sim_type != "obligate", "consumer"
+data_rel_pref[, comp_strat := fifelse(
+  sim_type == "obligate", comp_strat, "consumer"
   )
 ]
 
-fwrite(data_rel_pref, file = "data_sim/results/data_rel_pref.csv")
+fwrite(data_rel_pref, file = "data/results/data_rel_pref.csv")
 ```
 
 ## Evolution of handler tracking
 
+Get the preference for moving towards handlers, i.e., successful foragers, sub-divided by competitive strategy.
+This is done by processing each simulation replicate using `get_pref_handler_by_strat`, which is defined and documented in `R/fun_syndrome.R`
+
+The naming refers to the idea that certain behaviours may be correlated, forming a 'syndrome'.
+
 ```{r}
-# weight data
-syndrome_data <- lapply(data$path, function(path) {
-  kleptomoveMS::get_pref_handler_by_strat(
-    data_folder = path,
-    generations = unique(
-      seq(1, 999, 2)
-    ),
-    weight_klept_bias = 5,
-    weight_of_interest = c(
-      handler_pref = 3
-    ),
-    handler_pref_by_strategy = TRUE
+# run the function over each simulation replicate
+syndrome_data <- lapply(
+  X = data$path, 
+  
+  # apply this function, based around get_pref_handler_by_strat
+  FUN = function(path) {
+    get_pref_handler_by_strat(
+      data_folder = path,
+      generations = unique(
+        seq(1, 999, 2)
+      ),
+      weight_comp_strat = 5,
+      weight_of_interest = c(
+        handler_pref = 3
+      ),
+      handler_pref_by_strategy = TRUE
   )
 })
+
+# make a copy
 data_si_strategy = copy(data)
+
 # add to data
 data_si_strategy$syndrome_data <- syndrome_data
+
 # unlist
 data_si_strategy <- data_si_strategy[, unlist(syndrome_data, recursive = FALSE),
   by = c("sim_type", "rep", "regrowth")
 ]
+
+# combine proportions and counts for all but the scenario 2 obligate case
+data_si_strategy[, comp_strat := fifelse(
+  sim_type == "obligate", comp_strat, "consumer"
+)]
+
+# sum the number of handler trackers by competitive strategy and
+# handler tracking preference (avoid = FALSE, prefer = TRUE)
+data_si_strategy = data_si_strategy[, list(
+  n_handler_pref = sum(N)
+),
+by = c(
+  "sim_type", "rep", "regrowth", 
+  "comp_strat", "handler_pref", "gen"
+)
+]
+
+# convert to proportions
+data_si_strategy[,prop_handler_pref := n_handler_pref / sum(n_handler_pref),
+                 by = c(
+                   "sim_type", "rep", "regrowth", "gen", "comp_strat"
+                 )]
+
 # save data
-fwrite(data_si_strategy, file = "data_sim/results/data_syndrome_by_strategy.csv")
+fwrite(data_si_strategy, file = "data/results/data_handler_tracking_by_strategy.csv")
 ```
 
 ## Relative preferences for competitive strategies
 
+Determine how individuals in scenario 3, who can choose their competition strategy, weigh the presence of other individuals --- successful handler and unsuccessful non-handlers --- when deciding whether to steal or forage.
+
 ```{r}
+# make a copy of the data
 data_comp_pref = copy(data)
+
+# select for scenario 3 individuals
 data_comp_pref = data_comp_pref[sim_type == "facultative",]
 
 data_comp_pref[, comp_pref := lapply(
-  path, get_scaled_move_prefs, 
+  X = path, 
+  
+  # apply the function get_scaled_move_prefs, which also works for
+  # competition strategy weights
+  FUN = get_scaled_move_prefs, 
+  
+  # arguments to the function, which weights should be scaled
   weights = c(5,6,7,8),
-  gens = c(1, 10, 30, 100, 300, 950), n_agents = 2500
+  gens = c(1, 10, 30, 100, 300, 950), 
+  n_agents = 2500
 )]
 
+# uncompress the data into a regular data frame
 data_comp_pref = data_comp_pref[, unlist(comp_pref, recursive = F),
   by = list(sim_type, rep, regrowth)
 ]
 
-fwrite(data_comp_pref, file = "data_sim/results/data_comp_pref.csv")
+# save to file
+fwrite(data_comp_pref, file = "data/results/data_comp_pref.csv")
 ```
 
+### Calculate competition choices in Scenario 3
+
+Calculate how many individuals would choose to steal or forage given different combinations of food items and handlers, or successful foragers. An individual is a forager if $(w_HH + w_FF) \geq w_0$, assuming there are no non-handlers. We make this assumption to better visualise the outcome on a 2D surface with $F$ and $H$ as the axes.
+
 ```{r}
-data_comp_pref = fread("data_sim/results/data_comp_pref.csv")
+# read in saved data
+data_comp_pref = fread("data/results/data_comp_pref.csv")
 # data_comp_pref = data_comp_pref[gen == 950,]
 
 # choice under different number of prey and handlers
@@ -130,15 +195,17 @@ data_comp_expand = tidyr::crossing(
 )
 setDT(data_comp_expand)
 
-# calculate decision
+# calculate decision; wF = wt_8, and wH = wt_7, w_0 = wt_5
 data_comp_expand[, choice := (wt_7 * handlers) + (wt_8 * food) >= wt_5]
 data_comp_expand[, choice := fifelse(choice, "forage", "steal")]
 
-# summarise decision
+# summarise decision: how many individuals would steal or forage
+# under different ecological circumstances
 data_comp_prop = data_comp_expand[, .N, 
   by = c("gen", "food", "handlers", "choice", "rep")
 ]
 
+# spread the data into a wide format
 data_comp_prop = dcast(
   data_comp_prop,
   gen + food + handlers + rep ~ choice,
@@ -146,5 +213,5 @@ data_comp_prop = dcast(
 )
 
 # save data
-fwrite(data_comp_prop, "data_sim/results/data_sc3_comp_choice.csv")
+fwrite(data_comp_prop, "data/results/data_sc3_comp_choice.csv")
 ```

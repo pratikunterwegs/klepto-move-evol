@@ -1,0 +1,39 @@
+---
+output:
+ pdf_document: default
+editor_options:
+ chunk_output_type: console
+---
+
+# The effect of initialisation of cue preferences
+
+In our default implementation, our model's population always begins with essentially every movement strategy that could exist already present upon initialisation (G = 1).
+This makes it unclear whether the movement strategies seen once ecological equilibrium is reached (at about G = 50) and beyond, have simply persisted since initialisation, or whether they would actually evolve from rather different strategies.
+The broader question is whether our model population suffers from a steady weathering away of standing variation, which leaves viable movement strategies, or whether the evolutionary process we model can actually generate variation, and specifically, the movement strategies we observe in our default implementation.
+
+Here we demonstrate _(1)_ that our model's ecological and evolutionary setup does generate variation, and _(2)_ that this process leads to the same strategies we observed in the results presented in the _Main Text_.
+We focus on our most complex scenario, Scenario 3, in which individuals can choose both their next move, as well as their competition strategy at their destination, in each timestep.
+We initialised _all_ individuals' cue preferences for movement decisions ($s_P, s_H, s_N$), and for competition decisions ($w_0, w_P, w_H, w_N$) at three identical values: 0.0, +0.01, and -0.01.
+This makes the population perfectly monomorphic for both movement and competition strategies.
+We ran the simulation as before, with 1,000 generations, 10,000 individuals on a landscape of $512_2$ cells, with global natal dispersal, and implementing the same mutational probabilities ($p_\text{mut} = 0.001$, mutational step size drawn from a Cauchy distribution with scale = 0.001).
+
+In the figures that follow, we focus on the movement strategy trait space. 
+We show that regardless of where in the movement and competition strategy trait space the population is initialised, within 30 generations, considerable functional variation is generated, and the population is no longer monomorphic in its movement strategy (Figs. S16 -- S18; panel G = 30).
+Furthermore, in each case, the population always evolves to occupy a small range of of the strategy space: _(1)_ nearly neutral to food items (normalised $s_P \approx 0.0$), _(2)_ strongly attracted to handlers (mormalised $s_H > 0.75$), and _(3)_ avoiding or neutral to non-handlers (normalied $s_N \leq 0.0$) (Figs. S16 -- S18; compare Fig. 4E).
+We conclude that the results concerning movement strategies presented in the _Main Text_ are robust to choices regarding initialisation of the cue preferences.
+
+Since the evolved movement strategies converge upon our main results, it is not surprising that the main ecological outcomes of the activity budget --- the time each generation spends on searching for prey, in handling prey, and in attempts to steal prey --- also closely resemble findings from our default implementation (Figs. S19 -- S21; compare Fig. 4B).
+A minor difference between monomorphic and `diverse' initialisation is that monomorphic populations reach stable activity budget equilibria by about generation 100, while this is reached somewhat earlier in our default implementation, at about generation 30.
+Overall, our results suggest that initialisation with a wide range of behavioural strategies already present is a defensible way of implementing evolutionary, individual-based simulations, at least concerning the robustness of ecological and evolutionary outcomes to starting conditions.
+
+![**Evolution of movement strategies upon initialising all movement and competition preferences at 0.0.** Each panel shows 2,500 individuals from a single replicate.](figures/fig_rel_pref_sc_03_init_zero.png)
+
+![**Evolution of movement strategies upon initialising all movement and competition preferences at -0.001.** Each panel shows 2,500 individuals from a single replicate.](figures/fig_rel_pref_sc_03_init_neg.png)
+
+![**Evolution of movement strategies upon initialising all movement and competition preferences at 0.001.** Each panel shows 2,500 individuals from a single replicate.](figures/fig_rel_pref_sc_03_init_pos.png)
+
+![**Ecological equilibria in population activity budget upon initialising all movement and competition preferences at 0.0.** Panel shows the outcome of 3 replicates simulations.](figures/fig_activity_sc_03_init_zero.png)
+
+![**Ecological equilibria in population activity budget upon initialising all movement and competition preferences at -0.001.** Panel shows the outcome of 3 replicates simulations.](figures/fig_activity_sc_03_init_neg.png)
+
+![**Ecological equilibria in population activity budget upon initialising all movement and competition preferences at 0.001.** Panel shows the outcome of 3 replicates simulations.](figures/fig_activity_sc_03_init_pos.png)

@@ -8,16 +8,18 @@ editor_options:
 
 ```{r }
 library(data.table)
-library(kleptomoveMS)
+
+# load custom functions
+devtools::load_all()
 ```
 
 ## Agents ~ quality
 
 ```{r }
 # read data
-data <- fread("data_sim/results/data_input_matching.csv")
+data <- fread("data/results/data_input_matching.csv")
 
-# get correlation
+# get correlation between agent presence and productivity
 data_summary <- data[, list(
   cf = tryCatch(
     expr = cor.test(agents, quality)[["estimate"]],
@@ -36,6 +38,5 @@ by = c("sim_type", "gen", "rep", "regrowth", "strategy")
 ]
 
 # write data
-fwrite(data_summary, file = "data_sim/results/data_corr_input_matching.csv")
+fwrite(data_summary, file = "data/results/data_corr_input_matching.csv")
 ```
-

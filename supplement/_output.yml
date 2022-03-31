@@ -1,5 +1,5 @@
 bookdown::pdf_document2:
-  keep_tex: true
+  keep_tex: false
   fontsize: 10pt
   toc: true
   papersize: a4

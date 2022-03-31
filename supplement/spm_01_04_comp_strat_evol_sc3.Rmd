@@ -5,7 +5,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Evolution of, and Variation in Competition Strategies in Scenario 3
+# Evolution of Competition Strategies in Scenario 3
 
 ```{r }
 library(data.table)
@@ -16,7 +16,7 @@ library(colorspace)
 ```
 
 ```{r}
-data_comp = fread("data_sim/results/data_sc3_comp_choice.csv")
+data_comp = fread("data/results/data_sc3_comp_choice.csv")
 
 # data_comp = data_comp[gen == 950,]
 data_comp = data_comp[, list(

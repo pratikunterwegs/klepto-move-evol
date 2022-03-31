@@ -5,7 +5,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Individual Differences in Movement Strategies in Scenarios 2 and 3
+# Individual Differences in Movement Strategies in Scenarios 2 -- 3
 
 ```{r }
 library(data.table)
@@ -17,16 +17,11 @@ library(colorspace)
 
 ```{r}
 # load relative preferences
-data_pref = fread("data_sim/results/data_rel_pref.csv")
+data_pref = fread("data/results/data_rel_pref.csv")
 data_pref = data_pref[gen == 950,]
 
 # no foragers
 data_pref = data_pref[sim_type %in% c("obligate", "facultative")]
-
-# assign strategy
-data_pref[sim_type == "obligate", strategy := fifelse(
-  wt_5 > 0, "forager", "klept"
-)]
 
 data_pref$sim_type = factor(data_pref$sim_type, 
   levels = c("obligate", "facultative"))
@@ -44,7 +39,7 @@ fig_variation = ggplot(data_pref)+
   geom_jitter(
     aes(
       sP, sH, 
-      fill = strategy
+      fill = comp_strat
     ),
     shape = 21,
     size = 3,

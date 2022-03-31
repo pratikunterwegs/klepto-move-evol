@@ -13,18 +13,19 @@ library(glue)
 library(ggplot2)
 library(colorspace)
 library(patchwork)
+
+# load local functions
+devtools::load_all()
 ```
 
 ## Prepare handler preference
 
 ```{r }
-data_pref = fread("data_sim/results/data_syndrome_by_strategy.csv")
-
-data_pref[, strategy := fifelse(sim_type == "obligate", klept_bias, "consumer")]
+data_pref = fread("data/results/data_handler_tracking_by_strategy.csv")
 
 data_pref = data_pref[handler_pref == T, list(
   handler_pref = mean(prop_handler_pref)
-), by = c("sim_type", "rep", "strategy", "gen")]
+), by = c("sim_type", "rep", "comp_strat", "gen")]
 ```
 
 ```{r}
@@ -32,7 +33,7 @@ ggplot(data_pref)+
   geom_point(
     aes(
       gen, handler_pref,
-      col = strategy
+      col = comp_strat
     )
   )
 ```
@@ -44,13 +45,9 @@ ggplot(data_pref)+
 focus_r <- c(0.01)
 
 # read clueless data
-data <- fread("data_sim/results/data_p_clueless.csv")
-data[, path := NULL]
+data <- fread("data/results/data_p_clueless.csv")
 data <- data[regrowth %in% focus_r, ]
 data[, sim_type := ifelse(sim_type == "forager", "foragers", sim_type)]
-
-# remove v1
-data[, V1 := NULL]
 
 # remove random
 data <- data[sim_type != "random"]
@@ -62,6 +59,7 @@ data$p_clueless <- 1 - data$p_clueless
 data$sim_type <- factor(data$sim_type,
   levels = c("foragers", "obligate", "facultative")
 )
+setnames(data, "rep", "replicate", skip_absent = TRUE)
 
 # split data
 data <- split(data, by = "sim_type")
@@ -115,7 +113,7 @@ Map(
       lty = 2,
       size = 0.3
     )+
-    geom_path(
+    geom_line(
       data = df_land[gen > 0,],
       aes(
         gen, p_clueless,
@@ -125,9 +123,10 @@ Map(
     )+
     geom_path(
       data = df_wt,
-      aes(gen, handler_pref,
-        col = strategy,
-        group = interaction(rep, strategy)
+      aes(
+        gen, handler_pref,
+        col = comp_strat,
+        group = interaction(rep, comp_strat)
       )
     )+
     scale_colour_manual(
@@ -136,9 +135,9 @@ Map(
       breaks = break_vals
     ) +
     scale_x_continuous(
-      trans = "log10",
+      trans = "sqrt",
       limits = c(1, 1000),
-      breaks = c(1, 10, 100, 1000)
+      breaks = c(1, 10, 100, 500, 1000)
     )+
     scale_y_continuous(
       limits = c(0, 1.0),
@@ -186,7 +185,7 @@ Here we show a landscape with and without clues at 1, 10, and 40th generation fo
 
 ```{r }
 # list folders
-paths <- list.dirs("data_sim/for_landscape/", recursive = F)
+paths <- list.dirs("data/for_landscape/", recursive = F)
 
 # select gens
 gens_for_figure <- stringr::str_pad(c(1, 10, 950), width = 5, pad = "0")
@@ -205,7 +204,7 @@ landscape_data$image <- glue_data(landscape_data, "{path}/{gen}.png")
 
 # get data
 landscape_data$data <- lapply(landscape_data$image,
-  kleptomoveMS::read_landscape,
+  read_landscape,
   layer = 4,
   crop_dim = 60,
   type = "items"
@@ -225,7 +224,7 @@ landscape_items <- landscape_data[, unlist(data, recursive = F),
 ```{r }
 # get data
 landscape_data$data <- lapply(landscape_data$image,
-  kleptomoveMS::read_landscape,
+  read_landscape,
   layer = 4,
   crop_dim = 60,
   type = "gradient"
@@ -337,7 +336,7 @@ plots_land =
 figure_5 =
   wrap_plots(
     plots_land, plots_cues, 
-    design = "AAAABB",
+    design = "AAAABBB",
     guides = "collect"
   ) &
   plot_annotation(tag_levels = c("A", "1")) &

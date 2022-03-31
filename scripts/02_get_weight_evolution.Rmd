@@ -14,6 +14,7 @@ These are the tanh scaled weights, and not the relative preferences.
 # load libs
 library(data.table)
 library(stringr)
+# load local functions in `R/`
 devtools::load_all()
 ```
 
@@ -23,7 +24,7 @@ Prepare data paths.
 
 ```{r }
 # read paths
-paths <- list.dirs("data_sim/", recursive = F)
+paths <- list.dirs("data/", recursive = F)
 paths <- paths[grep("rep_", paths)]
 
 # make df
@@ -45,17 +46,19 @@ data[, sim_type := stringr::str_extract(
 
 data[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 
-# select regrowth
+# select the default scenario with regrowth == 0.01
 data = data[regrowth == 0.01,]
 ```
 
-Read data from paths.
+Get frequencies of evolved cue preferences using the custom function `get_sim_weight_evol`, documented in `R/fun_weight_evo.R`
 
 ```{r}
 # from each simulation
 temp_gen_data <- lapply(
   data$path,
   function(x) {
+    
+    # this applies a custom function to each simulation replicate
     get_sim_weight_evol(
       data_folder = x,
       generations = unique(
@@ -76,5 +79,5 @@ data <- data[, unlist(wt_data, recursive = F),
   by = list(sim_type, rep, regrowth)
 ]
 
-fwrite(data, file = "data_sim/results/data_relative_preference_evolution.csv")
+fwrite(data, file = "data/results/data_relative_preference_evolution.csv")
 ```

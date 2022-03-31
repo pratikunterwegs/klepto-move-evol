@@ -1,3 +1,5 @@
+^renv$
+^renv\.lock$
 ^kleptomove-ms\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
@@ -7,7 +9,7 @@
 ^docs$
 ^pkgdown$
 ^docs$
-^data_sim$
+^data$
 ^figures$
 ^figure_scripts$
 ^scripts$

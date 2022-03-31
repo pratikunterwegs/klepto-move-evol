@@ -2,8 +2,8 @@
 #'
 #' @param data_folder The data folder, should refer to an obligate simulation.
 #' @param generations The generations to extact, recommended 1 - 100.
-#' @param weight_klept_bias Which weight (mostly 5 or 7) refers to the kleptoparasite
-#' strategy, this is the bias in obligate simulations.
+#' @param weight_comp_strat Which weight (mostly wt_5) refers to the 
+#' inherited preference that controls the competition strategy in scenario 2.
 #' @param weight_of_interest Which weight are we interested in. A named vector
 #' of weight numbers.
 #'
@@ -13,7 +13,7 @@
 get_pref_handler_by_strat <- function(
   data_folder,
   generations,
-  weight_klept_bias,
+  weight_comp_strat,
   weight_of_interest,
   handler_pref_by_strategy = FALSE
   ) {
@@ -29,11 +29,11 @@ get_pref_handler_by_strat <- function(
     # get the two weights we want
     # why do we multiply by 20, who knows
     weights <- G[["agents"]][["ann"]][,
-      c(weight_klept_bias, weight_of_interest)
+      c(weight_comp_strat, weight_of_interest)
     ]
 
     # set names
-    colnames(weights) <- c("klept_bias", names(weight_of_interest))
+    colnames(weights) <- c("comp_strat", names(weight_of_interest))
 
     # this is a matrix, discretise the klept bias and handler pref 1,1 is
     # forager, has handler preference
@@ -42,7 +42,7 @@ get_pref_handler_by_strat <- function(
       # make data tables
       weights <- data.table::as.data.table(weights)
       # count by unique values
-      weights <- weights[, .N, by = c("klept_bias", names(weight_of_interest))]
+      weights <- weights[, .N, by = c("comp_strat", names(weight_of_interest))]
       # add generation
       weights$gen <- g
     } else {
@@ -54,12 +54,12 @@ get_pref_handler_by_strat <- function(
 
       weights <- data.table::as.data.table(weights)
       weights <- weights[, list(.N),
-        by = c("klept_bias", names(weight_of_interest))
+        by = c("comp_strat", names(weight_of_interest))
       ]
-      weights[, prop_handler_pref := N / sum(N), by = "klept_bias"]
+      weights[, prop_handler_pref := N / sum(N), by = "comp_strat"]
       weights$gen <- g
       
-      weights[, klept_bias := fifelse(klept_bias, "forager", "klept")]
+      weights[, comp_strat := fifelse(comp_strat, "forager", "klept")]
     }
     weights
   })

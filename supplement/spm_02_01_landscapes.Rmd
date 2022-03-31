@@ -7,17 +7,20 @@ editor_options:
 
 # Effect of Landscape Productivity ($r_{max}$) on Resource Landscape Depletion
 
-```{r libs_sm1}
+```{r libs_sm1, eval=TRUE}
 # load libraries
 library(data.table)
 library(ggplot2)
 library(patchwork)
 library(colorspace)
+
+# load local packages
+devtools::load_all()
 ```
 
-```{r load_sm1_data}
+```{r load_sm1_data, eval=TRUE}
 # load data, split by simulation and regrowth
-data_land <- fread("data_sim/results/data_landscape_progression.csv")
+data_land <- fread("data/results/data_landscape_progression.csv")
 data_land <- data_land[gen %in% c(1, 10, 50, 950) & 
   regrowth %in% c(0.001, 0.005, 0.02, 0.05), ]
 
@@ -28,7 +31,7 @@ data_land = lapply(data_land, function(df) {
 })
 ```
 
-```{r plot_function}
+```{r plot_function, eval=TRUE}
 # function from plots
 plot_subplots = function(df) {
   ggplot(df)+
@@ -75,7 +78,7 @@ plot_subplots = function(df) {
 ```
 
 
-```{r make_plots_sm1}
+```{r make_plots_sm1, eval=TRUE}
 # wrap all plots
 plots = lapply(data_land, function(l) {
   subplots = lapply(l, plot_subplots)
@@ -90,14 +93,16 @@ plots = lapply(data_land, function(l) {
 })
 ```
 
-```{r fig.cap="In scenario 1, foragers completely deplete the resource landscape within 10 generations at low $r_{max}$ (A, B). However, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated until most cells carry 5 items, the maximum allowed in our model."}
+```{r fig.cap="In scenario 1, foragers completely deplete the resource landscape within 10 generations at low $r_{max}$ (A, B). However, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated until most cells carry 5 items, the maximum allowed in our model.", eval=TRUE}
 plots[["foragers"]]
 ```
 
-```{r fig.cap="In scenario 2, foragers can only deplete the resource landscape at very low $r_{max}$ (A): 1 prey item generated per 1,000 timesteps, or 2.5 generations. At all $r_{max} \\geq$ 0.05 (B, C, D), prey item regeneration matches or exceeds depletion and the resource landscape either shows strong spatial structure, or is entirely saturated with prey items."}
+```{r fig.cap="In scenario 2, foragers can only deplete the resource landscape at very low $r_{max}$ (A): 1 prey item generated per 1,000 timesteps, or 2.5 generations. At all $r_{max} \\geq$ 0.05 (B, C, D), prey item regeneration matches or exceeds depletion and the resource landscape either shows strong spatial structure, or is entirely saturated with prey items.", eval=TRUE}
 plots[["obligate"]]
 ```
 
-```{r fig.cap="Scenario 3 is similar to scenario 1 at low $r_{max}$ (A, B), where foragers completely deplete the resource landscape). Similarly, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated to a carrying capacity of 5 prey items per cell."}
+```{r fig.cap="Scenario 3 is similar to scenario 1 at low $r_{max}$ (A, B), where foragers completely deplete the resource landscape). Similarly, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated to a carrying capacity of 5 prey items per cell.", eval=TRUE}
 plots[["facultative"]]
 ```
+
+\newpage

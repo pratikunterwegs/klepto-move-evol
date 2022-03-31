@@ -18,11 +18,8 @@ library(patchwork)
 ```
 
 ```{r }
-data = fread("data_sim/results/data_rel_pref.csv")
+data = fread("data/results/data_rel_pref.csv")
 data = data[regrowth == 0.01 & sim_type == "obligate"]
-
-# assign strategy
-data[, strategy := fifelse(wt_5 > 0, "forager", "klept")]
 ```
 
 ```{r}
@@ -75,9 +72,9 @@ ggplot(data[rep == 3 & gen %in% c(10, 100, 300, 950)])+
   )+
   facet_grid(
     cols = vars(gen),
-    rows = vars(strategy),
+    rows = vars(comp_strat),
     labeller = labeller(
-      strategy = c(
+      comp_strat = c(
         "forager" = "Foragers",
         "klept" = "Klept."
       ),

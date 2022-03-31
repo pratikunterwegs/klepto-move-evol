@@ -10,6 +10,10 @@ editor_options:
 library(data.table)
 library(glue)
 library(ggplot2)
+library(stringr)
+
+# load local functions
+devtools::load_all()
 ```
 
 ## Get agent abundances
@@ -18,7 +22,7 @@ Prepare paths.
 
 ```{r}
 # read paths
-paths <- list.dirs("data_sim/", recursive = F)
+paths <- list.dirs("data/", recursive = F)
 paths <- paths[grep("rep_", paths)]
 
 # select gens
@@ -57,49 +61,23 @@ data[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 data$image <- glue_data(data, "{path}/{gen}.png")
 ```
 
-Prepare paths for scenario 2, which has to be handled differently to count foragers and kleptoparasites separately.
-
-```{r }
-# separate data for scenario 2
-data_sc2 = data[sim_type == "obligate", ]
-
-# separate other data
-data = data[!data_sc2, on = names(data)]
-
-# handle data from scenario 2
-sc2_strat = data.table(strategy = c("foragers", "klepts"))
-data_sc2 = setkey(data_sc2[, c(k = 1, .SD)], k)[
-  sc2_strat[, c(k = 1, .SD)], allow.cartesian = TRUE]
-data_sc2[, k := NULL]
-```
-
 ## Process agent counts for all scenarios
+
+From the exported image data, count the number of individuals in each landscape cell. This uses the function `read_landscape`, which is defined in `R/fun_read_land.R`.
 
 ```{r }
 # get data for scenarios 1 and 3
-agent_data <- lapply(data$image,
-  kleptomoveMS::read_landscape,
-  layer = c(1, 3), # read only foragers and klepts if any
+agent_data <- lapply(
+  X = data$image,
+  
+  # apply this function over the landscape simulation data
+  FUN = read_landscape,
+  
+  # arguments to the function
+  layer = c(1, 2, 3), # read all individuals
   crop_dim = 60,
   type = "items"
 )
-
-# scenario 2 agent data
-agent_data_sc2 = Map(function(file, strategy) {
-  
-  layer = ifelse(strategy == "foragers", 3, 1)
-  
-  d = kleptomoveMS::read_landscape(
-    landscape_file = file, layer = layer,
-    crop_dim = 60,
-    type = "items"
-  )
-  
-  d = d[items > 0, ]
-  
-  setnames(d, "items", strategy)
-  
-}, data_sc2$image, data_sc2$strategy)
 ```
 
 ## Remove unoccupied cells
@@ -118,24 +96,16 @@ agent_data <- lapply(
 ## Process productivity layer
 
 ```{r }
-quality_data <- kleptomoveMS::read_landscape(
-  "data_sim/data_parameters/kernels32.png",
+# load the productivity layer
+quality_data <- read_landscape(
+  "data/data_parameters/kernels32.png",
   layer = 1, crop_dim = 60, type = "items"
 )
 
 setnames(quality_data, old = "items", new = "quality")
 
-# agent quality data
+# combine agent presence data with the productivity layer data
 agent_data <- lapply(agent_data, function(df) {
-  merge(
-    df, quality_data, 
-    by = intersect(names(df), names(quality_data)), 
-    all = F
-  )
-})
-
-# scenario 2 agent quality matching
-agent_data_sc2 = lapply(agent_data_sc2, function(df) {
   merge(
     df, quality_data, 
     by = intersect(names(df), names(quality_data)), 
@@ -150,8 +120,6 @@ agent_data_sc2 = lapply(agent_data_sc2, function(df) {
 # unlist and merge with simulation parameters
 data$layer_data <- agent_data
 
-data_sc2$layer_data = agent_data_sc2
-
 # remove cols
 data = data[, !c("path", "image")]
 
@@ -160,18 +128,8 @@ data <- data[, unlist(layer_data, recursive = F),
   by = c("sim_type", "gen", "rep", "regrowth")
 ]
 
-# assign strategy
-data$strategy =  "all_agents"
-
-data_sc2 = data_sc2[, !c("path", "image")]
-data_sc2 = data_sc2[, unlist(layer_data, recursive = F),
-  by = c("sim_type", "gen", "rep", "regrowth",
-         "strategy")
-]
-setnames(data_sc2, "foragers", "agents")
-
-# bind rows together
-data = rbindlist(list(data, data_sc2), use.names = TRUE)
+# assign strategy -- keep this step tho not necessary any more
+data$strategy =  "consumers"
 
 # select data
 data[, gen := as.numeric(gen)]
@@ -179,6 +137,5 @@ data <- data[, list(sim_type, gen, rep, regrowth,
                     x, y, agents, quality, strategy)]
 
 # save data
-fwrite(data, file = "data_sim/results/data_input_matching.csv")
+fwrite(data, file = "data/results/data_input_matching.csv")
 ```
-

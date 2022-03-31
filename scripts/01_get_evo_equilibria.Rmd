@@ -10,18 +10,16 @@ editor_options:
 # load libraries
 library(data.table)
 library(stringr)
+
 # some helper functions
-library(kleptomoveMS)
+devtools::load_all()
 ```
 
 Prepare data paths.
 
-```{r}
-Prepare the data paths.
-
 ```{r }
 # read paths
-paths <- list.dirs("data_sim/", recursive = F)
+paths <- list.dirs("data/", recursive = F)
 paths <- paths[grep("rep_", paths)]
 
 # make df
@@ -44,13 +42,20 @@ data[, sim_type := stringr::str_extract(
 data[, regrowth := as.numeric(str_extract(path, "(0\\.\\d+)"))]
 ```
 
+Get the population's evolved activity budget over evolutionary time. This is handled by the custom function `get_strategy_gen`, documented in `R/fun_get_strategy_gen.R`.
+
 ```{r }
 # get strategy, fitness and conflicts over gens
 data[, summary_data := lapply(
   path,
+  
+  # use the function get_strategy_gen, documented in 
   get_strategy_gen
+  
 )]
 ```
+
+Combine the data for simulation replicates, scenarios, and parameter combinations.
 
 ```{r }
 # unlist
@@ -59,8 +64,9 @@ data <- data[, unlist(summary_data, recursive = F),
 ]
 ```
 
+Save combined data.
+
 ```{r }
 # save data
-fwrite(data, file = "data_sim/results/data_strategy_gen.csv")
+fwrite(data, file = "data/results/data_pop_activity_budget.csv")
 ```
-
