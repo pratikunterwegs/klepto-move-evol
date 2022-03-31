@@ -1,24 +1,102 @@
-# Source Code and Supplementary Material for _The Joint Evolution of Movement and Competition Strategies_
+# Source Code and Supplementary Material for _The joint evolution of animal movement and competition strategies_
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4905475.svg)](https://doi.org/10.5281/zenodo.4905475)
 
->
 This is the source code for the analyses and figures for a manuscript that reports on models the joint evolution of movement and competition strategies using massive, spatial, individual-based models.
 This work was developed in the [Modelling Adaptive Response Mechanisms Group (Weissing Lab)](https://www.marmgroup.eu/) at the Groningen Institute for Evolutionary Life Science, at the University of Groningen.
 
 ## Contact and Attribution
 
-Please contact [Pratik Gupte](p.r.gupte@rug.nl) or [Franjo Weissing (PI)](f.j.weissing@rug.nl) for questions about the associated manuscript.
+Please contact Pratik Gupte or Franjo Weissing for questions about the associated manuscript.
+
+```md
+Name: Pratik Rajan Gupte
+Email: pratikgupte16@gmail.com OR p.r.gupte@rug.nl
+ORCID: https://orcid.org/0000-0001-5294-7819
+
+Name: Franz J Weissing
+Email: f.j.weissing@rug.nl
+ORCID: https://orcid.org/0000-0003-3281-663X
+```
+
+Cite this repository archived on Zenodo as
+
+Pratik Rajan Gupte, Christoph FG Netz, & Franz J Weissing. (2021). Source Code and Supplementary Material for "The Joint Evolution of Movement and Competition Strategies" (v1.0). Zenodo. https://doi.org/10.5281/zenodo.5112915.
+
+```bibtex
+@software{pratik_rajan_gupte_2021_5112915,
+  author       = {Pratik Rajan Gupte and
+                  Christoph FG Netz and
+                  Franz J Weissing},
+  title        = {{Source Code and Supplementary Material for "The 
+                   Joint Evolution of Movement and Competition
+                   Strategies"}},
+  month        = jul,
+  year         = 2021,
+  note         = {{PRG was supported by an Adaptive Life Programme 
+                   grant made possible by the Groningen Institute for
+                   Evolutionary Life Sciences (GELIFES). C.F.G.N. and
+                   F.J.W acknowledge funding from the European
+                   Research Council (ERC Advanced Grant No. 789240).}},
+  publisher    = {Zenodo},
+  version      = {v1.0},
+  doi          = {10.5281/zenodo.5112915},
+  url          = {https://doi.org/10.5281/zenodo.5112915}
+}
+```
+
+The Zenodo DOI https://doi.org/10.5281/zenodo.4904497 refers to all versions of this repository, and by default, to the latest version (on Zenodo) by default.
 
 ## Simulation Source Code
 
 The simulation source code is provided at a different repository, [_Kleptomove_](https://github.com/pratikunterwegs/Kleptomove).
+The _Kleptomove_ simulation is archived on Zenodo as https://zenodo.org/record/5887618, and can be cited as
+
+Christoph FG Netz, & Pratik Rajan Gupte. (2022). Source Code for the "Kleptomove" Simulation (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.5887618.
+
+```bibtex
+@software{christoph_fg_netz_2022_5887618,
+  author       = {Christoph FG Netz and
+                  Pratik Rajan Gupte},
+  title        = {Source Code for the "Kleptomove" Simulation},
+  month        = jan,
+  year         = 2022,
+  note         = {{C.F.G.N. acknowledges funding from the European 
+                   Research Council (ERC Advanced Grant No. 789240).
+                   PRG was supported by an Adaptive Life Programme
+                   grant made possible by the Groningen Institute for
+                   Evolutionary Life Sciences (GELIFES).}},
+  publisher    = {Zenodo},
+  version      = {v1.0.0},
+  doi          = {10.5281/zenodo.5887618},
+  url          = {https://doi.org/10.5281/zenodo.5887618}
+}
+```
 
 ## Simulation Data
 
 The simulation data are originally generated in the `data/` directory of the _Kleptomove_ repository, and manually copied to the `data/` directory in this repository.
 Simulation data used in this study are available on the DataverseNL repository as a draft: https://dataverse.nl/privateurl.xhtml?token=1467641e-2c30-486b-a059-1e37be815b7c, and will be available at this persistent link after publication: doi.org/10.34894/JFSC41.
+
+---
+
+## Workflow: Replicating Basic Results
+
+**Warning**: This is a relatively advanced computational study. Replicating it requires many interacting components. Please do _not_ expect it to work out of the box.
+
+A brief description of this workflow is:
+
+1. Download the _Kleptomove_ simulation from https://github.com/pratikunterwegs/Kleptomove. This can be done as
+
+    ```sh
+    git clone git@github.com:pratikunterwegs/Kleptomove.git
+    ```
+
+2. Build the C++ simulation in this repository using Visual Studio. The project was developed with Visual Studio 2019. Open the `kleptomove.sln` file with VS2019 and then _Build without debugging_. This should generate the `kleptomove.exe` file in the `bin/` subdirectory.
+
+3.  Create a `data/` folder in the _Kleptomove_ directory.
+
 
 ## Analysis Functions
 
