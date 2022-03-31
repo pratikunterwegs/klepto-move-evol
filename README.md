@@ -24,7 +24,7 @@ Cite this repository archived on Zenodo as
 
 Pratik Rajan Gupte, Christoph FG Netz, & Franz J Weissing. (2021). Source Code and Supplementary Material for "The Joint Evolution of Movement and Competition Strategies" (v1.0). Zenodo. https://doi.org/10.5281/zenodo.5112915.
 
-The Zenodo DOI https://doi.org/10.5281/zenodo.4904497 refers to all versions of this repository, and by default, to the latest version (on Zenodo) by default.
+The Zenodo DOI https://doi.org/10.5281/zenodo.4904497 refers to all versions of this repository, and by default, to the latest version (on Zenodo).
 
 ## Simulation Source Code
 
