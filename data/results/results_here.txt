@@ -1,0 +1,2 @@
+# this file included to generate directory structure when cloned
+# analysis code outputs results here
