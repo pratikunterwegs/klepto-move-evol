@@ -128,7 +128,7 @@ A brief description of this workflow is:
     │   └───sim_TYPE_rep_REPLICATE_gro_RMAX # simulation data replicates
     │       └───depends                     # there are multiple such folders
     │                                        # see template above for naming
-    ├───docs                # folder to hold documents. contents not uploaded
+    ├───docs                # folder to hold documents. not uploaded here
     ├───figures             # figures for the main text
     ├───figure_scripts      # scripts to generate main text figures
     ├───man                 # documentation for functions defined in R/
