@@ -1,7 +1,7 @@
 # Source Code and Supplementary Material for _The joint evolution of animal movement and competition strategies_
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4905475.svg)](https://doi.org/10.5281/zenodo.4905475)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4904497.svg)](https://doi.org/10.5281/zenodo.4904497)
 
 This is the source code for the analyses and figures for a manuscript that reports on models the joint evolution of movement and competition strategies using massive, spatial, individual-based models.
 This work was developed in the [Modelling Adaptive Response Mechanisms Group (Weissing Lab)](https://www.marmgroup.eu/) at the Groningen Institute for Evolutionary Life Science, at the University of Groningen.
@@ -42,7 +42,7 @@ Simulation data used in this study are available on the DataverseNL repository a
 
 ## Workflow: Replicating Basic Results
 
-**Warning**: This is a relatively advanced computational study. Replicating it requires many interacting components. Please do _not_ expect it to work out of the box. A small amount of shell scripting in the terminal is required, or at least, useful.
+**Warning**: This is a relatively advanced computational study. Replicating it requires many interacting components. Please do _not_ expect it to work out of the box. A small amount of shell scripting in the terminal is required.
 
 A brief description of this workflow is:
 
@@ -153,9 +153,9 @@ A brief description of this workflow is:
     kleptomove-ms.Rproj # the RStudio project file
     ```
 
-5. Prepare shell scripts to run the _Kleptomove_ simulation using `scripts\xx_make_kleptomove_batchfile.R`. This creates a script which repeatedly calls the `kleptomove.exe` program with different parameter combinations, overwriting the default `bin/config.ini` file present in _Kleptomove_ as appropriate.
+5. Prepare shell scripts to run the _Kleptomove_ simulation using `scripts/xx_make_kleptomove_batchfile.R`. This creates a script which repeatedly calls the `kleptomove.exe` program with different parameter combinations, overwriting the default `bin/config.ini` file present in _Kleptomove_ as appropriate.
 
-    This generates a `.bat` file with a time and data in the filename, for example `scripts/scripts\runs_2022-02-14_13_49_42.bat`. This, or similar files, should be copied into `Kleptomove/bin/Release/`, for it to access the simulation executable.
+    This generates a `.bat` file with a time and data in the filename, for example `scripts/scripts/runs_2022-02-14_13_49_42.bat`. This, or similar files, should be copied into `Kleptomove/bin/Release/`, for it to access the simulation executable.
 
 ### Run simulation replicates
 
@@ -257,7 +257,3 @@ The main text of the manuscript is written in LaTeX and is stored in the (privat
 ## Supplementary Material
 
 The supplementary material provided with this manuscript is generated from the `supplement/` directory. These scripts mostly contain plotting code, and we do not describe them further. Other files in this sub-directory relate to formatting.
-
-## Other Directories
-
-- `bash/` Some useful shell scripts for output rendering.
