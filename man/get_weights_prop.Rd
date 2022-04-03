@@ -4,24 +4,12 @@
 \alias{get_weights_prop}
 \title{Get weight data from \code{generation} output.}
 \usage{
-get_weights_prop(
-  gen_data,
-  weight_w,
-  min_w_val = -1.01,
-  max_w_val = 1.01,
-  steps = 50
-)
+get_weights_prop(gen_data, digits = 2)
 }
 \arguments{
 \item{gen_data}{A list object produced by \code{generation()}.}
 
-\item{weight_w}{The weight identity to be retrieved.}
-
-\item{min_w_val}{The lower bound of the scaled weight values.}
-
-\item{max_w_val}{The upper bound.}
-
-\item{steps}{The number of steps between bounds.}
+\item{digits}{Rounding digits when scaling preferences.}
 }
 \value{
 Returns a \code{data.table}

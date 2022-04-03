@@ -1,26 +1,5 @@
 #### helper functions for kleptomove ####
 
-#' Prepare the Kleptomove extractor.
-#'
-#' @param filepath The simulation filepath.
-#'
-#' @return An environment containing extractor functions.
-#' @export
-#'
-prepare_extractor = function(filepath) {
-  # get filepath of the function sourceME.r
-  toSource <- list.files(
-    path = filepath,
-    pattern = "sourceMe.R",
-    full.names = TRUE
-  )
-  
-  kleptomove_extractor = new.env()
-  
-  # source it
-  source(toSource, local = kleptomove_extractor)
-}
-
 #' Get generation data.
 #'
 #' @param filepath Simulation output path.

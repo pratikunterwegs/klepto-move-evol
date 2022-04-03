@@ -1,4 +1,4 @@
-# code for landscape gradients and moran i
+# code for landscape gradients
 
 #### importing libraries and paths
 # check python path
