@@ -5,17 +5,20 @@ editor_options:
  chunk_output_type: console
 ---
 
-# The effect of initialisation of cue preferences
+# Effect of initialisation of cue preferences
 
-In our default implementation, our model's population always begins with essentially every movement strategy that could exist already present upon initialisation (G = 1).
+In our default implementation, the initial populations harbour a broad range of movement strategies. In other words, our simulations are not mutation-limited in the initial phase of evolution. 
+In our default implementation, our model's population always begins with a broad range of movement strategies already present upon initialisation (G = 1).
+This speeds up adaptive evolution (and our simulations), but it is not self-evident that a monomorphic initialisation, where adaptive evolution requires the occurrence of 'suitable' new mutations, will lead to the same evolutionary outcome.
 This makes it unclear whether the movement strategies seen once ecological equilibrium is reached (at about G = 50) and beyond, have simply persisted since initialisation, or whether they would actually evolve from rather different strategies.
-The broader question is whether our model population suffers from a steady weathering away of standing variation, which leaves viable movement strategies, or whether the evolutionary process we model can actually generate variation, and specifically, the movement strategies we observe in our default implementation.
+Our model population could be suffering from a steady weathering away of standing variation, which leaves viable movement strategies, or whether the evolutionary process we model can actually generate variation, and specifically, the movement strategies we observe in our default implementation.
+Thus, it is not clear whether a similar degree of genetic polymorphism is achieved as in the default implementation of our model.
 
 Here we demonstrate _(1)_ that our model's ecological and evolutionary setup does generate variation, and _(2)_ that this process leads to the same strategies we observed in the results presented in the _Main Text_.
 We focus on our most complex scenario, Scenario 3, in which individuals can choose both their next move, as well as their competition strategy at their destination, in each timestep.
 We initialised _all_ individuals' cue preferences for movement decisions ($s_P, s_H, s_N$), and for competition decisions ($w_0, w_P, w_H, w_N$) at three identical values: 0.0, +0.01, and -0.01.
 This makes the population perfectly monomorphic for both movement and competition strategies.
-We ran the simulation as before, with 1,000 generations, 10,000 individuals on a landscape of $512_2$ cells, with global natal dispersal, and implementing the same mutational probabilities ($p_\text{mut} = 0.001$, mutational step size drawn from a Cauchy distribution with scale = 0.001).
+We ran the simulation as before, with 1,000 generations, 10,000 individuals on a landscape of $512^2$ cells, with global natal dispersal, and implementing the same mutational process ($p_\text{mut} = 0.001$, mutational step size drawn from a Cauchy distribution with scale = 0.001).
 
 In the figures that follow, we focus on the movement strategy trait space. 
 We show that regardless of where in the movement and competition strategy trait space the population is initialised, within 30 generations, considerable functional variation is generated, and the population is no longer monomorphic in its movement strategy (Figs. S16 -- S18; panel G = 30).
@@ -24,7 +27,6 @@ We conclude that the results concerning movement strategies presented in the _Ma
 
 Since the evolved movement strategies converge upon our main results, it is not surprising that the main ecological outcomes of the activity budget --- the time each generation spends on searching for prey, in handling prey, and in attempts to steal prey --- also closely resemble findings from our default implementation (Figs. S19 -- S21; compare Fig. 4B).
 A minor difference between monomorphic and `diverse' initialisation is that monomorphic populations reach stable activity budget equilibria by about generation 100, while this is reached somewhat earlier in our default implementation, at about generation 30.
-Overall, our results suggest that initialisation with a wide range of behavioural strategies already present is a defensible way of implementing evolutionary, individual-based simulations, at least concerning the robustness of ecological and evolutionary outcomes to starting conditions.
 
 ![**Evolution of movement strategies upon initialising all movement and competition preferences at 0.0.** Each panel shows 2,500 individuals from a single replicate.](figures/fig_rel_pref_sc_03_init_zero.png)
 
