@@ -1,0 +1,341 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={Supplementary Material for The Joint Evolution of Animal Movement and Competition Strategies},
+            pdfauthor={Pratik R. Gupte; Christoph F.G. Netz; Franz J. Weissing},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[left=3cm, right=3cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{longtable,booktabs}
+% Fix footnotes in tables (requires footnote package)
+\IfFileExists{footnote.sty}{\usepackage{footnote}\makesavenoteenv{longtable}}{}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{2}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+% \usepackage{fontspec}
+% use nice fonts if available else use boring defaults
+
+\usepackage{lineno}
+% \KOMAoption{fontsize}{10pt}
+\renewcommand{\figurename}{Figure S}
+\makeatletter
+\def\fnum@figure{\figurename\thefigure}
+\makeatother
+
+% \IfFontExistsTF{Palatino}{\setmainfont[]{Palatino}}{} 
+\usepackage{mathpazo}
+% \usepackage{helvet}
+\usepackage{inconsolata}
+% \IfFontExistsTF{Arial}{\setsansfont[]{Arial}}{}
+% \IfFontExistsTF{Fira Code}{\setmonofont{Fira Code}}
+\usepackage[labelfont=bf,format=plain]{caption}
+\usepackage{setspace} 
+\onehalfspacing
+
+\linenumbers
+
+\title{Supplementary Material for \emph{The Joint Evolution of Animal Movement and Competition Strategies}}
+\author{Pratik R. Gupte \and Christoph F.G. Netz \and Franz J. Weissing}
+\date{2022-06-06}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\newpage
+
+\hypertarget{evolutionary-ecology-of-random-movement}{%
+\section{Evolutionary Ecology of Random Movement}\label{evolutionary-ecology-of-random-movement}}
+
+We ran our model on a fourth scenario: random movement.
+In this scenario, the landscape is set up as in our first three scenarios (see Figure panel A).
+The prey-item handling dynamics are the same as well, and if individuals, which can choose their competition strategy depending on environmental conditions (as in scenario 3), ever encounter a handler and choose to steal from it, they can do so.
+Individuals have heritable, evolving preferences for environmental cues, as in all our previous scenarios.
+The major change in this scenario is that individuals cannot actually perceive any environmental cues, and are essentially then, moving to random locations in their neighbourhood.
+This scenario serves as a useful null model for what one should expect when directed movement is not possible, or has no bearing on fitness.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  In contrast to scenario 1, the resource landscape regenerates much more strongly, suggesting that despite the paucity of movement cues in scenario 1, foragers are still capable of finding their way to isolated prey-items, and consuming them (panel \textbf{A}).
+\item
+  This scenario reveals that directed movement is, understandably, absolutely key to kleptoparasitism.
+  When individuals cannot move towards handlers, the low density of foragers on the landscape, only some of which will be handling an item at any one time, means that encountering a handler is essentially impossible.
+  As expected then, the number of stealing attempts drops to zero within only three generations, and all individuals thereon are foragers (panel \textbf{B}).
+\item
+  Despite being unable to move towards resources, the population's mean intake is comparable to scenarios 1 and 3, and actually higher than in scenario 2.
+  This highlights the cost that fixed-strategy kleptoparasitism imposes at a population wide level (panel \textbf{C}).
+\item
+  The near-zero correlation between consumer abundance and resource productivity is unsurprising (panel \textbf{D}).
+  Nonetheless, it shows that regardless of whether individuals are moving with (relatively) sophisticated movement strategies, or at random, they are very far from following the ideal free distribution's input matching rule.
+  This also confirms the true cost of resource landscape depletion in scenario 1: the loss of prey-item gradients with which to orient movement leaves individuals navigating a clueless landscape, on which they simply cannot find the way to areas of high productivity.
+\item
+  Finally, the evolution of movement strategies, when they are not actually under selection, supports our findings of strong selection on movement in the first three scenarios (panel \textbf{E}).
+\end{enumerate}
+
+\begin{figure}
+\centering
+\includegraphics{"figures/fig_0random.png"}
+\caption{\textbf{The evolutionary ecology of random movement serves as a useful baseline against which to compare other scenarios}. \textbf{(A)} Individuals deplete the landscape (\(r_{max}\) = 0.01) at random, allowing it to regenerate more than scenario 1, yet less than scenario 2. \textbf{(B)} Kleptoparasitism as a strategy very rapidly goes extinct, as individuals cannot move towards handlers, and encountering a handler at random is very unlikely. \textbf{(C)} Surprisingly, moving at random yields a similar mean per-capita intake as in scenarios 1 and 3, and actually better than scenario 2. \textbf{(D)} Random movement leads, unsurprisingly, to no correlation with landscape productivity. \textbf{(E)} When movement strategies are not under selection, individuals occupy a large area of the potential strategy space, including negative values of \(s_P\) (which is not shown here).}
+\end{figure}
+
+\newpage
+
+\hypertarget{evolution-of-movement-strategies-across-replicates}{%
+\section{Evolution of Movement Strategies Across Replicates}\label{evolution-of-movement-strategies-across-replicates}}
+
+\hypertarget{frequencies-of-relative-cue-preferences}{%
+\subsection{Frequencies of Relative Cue Preferences}\label{frequencies-of-relative-cue-preferences}}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.99\textwidth,height=\textheight]{"figures/fig_rel_pref_evo_sc_foragers.png"}
+\caption{\textbf{Evolution of relative cue preferences in scenario 1}. Across simulation replicates (\(r_{max}\) = 0.01), populations of foragers consistently evolve a wide range of relative preferences, largely to move towards prey items (\(s_P\)), to largely move towards successful foragers (handlers; \(s_H\)), and to mostly avoid unsuccessful foragers (non-handlers; \(s_N\)).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.99\textwidth,height=\textheight]{"figures/fig_rel_pref_evo_sc_obligate.png"}
+\caption{\textbf{Evolution of relative cue preferences in scenario 2}. Across simulation replicates (\(r_{max}\) = 0.01), in populations with fixed forager or kleptoparasite strategies, populations of foragers consistently evolve a very small relative preference to move towards prey items (\(s_P\)), and a range of preferences to move away from unsuccessful foragers (non-handlers; \(s_N\)). However, individuals show a strongly bimodal response to successful foragers, with both strong preferences and avoidances evolved. These preferences are correlated with individuals' competition strategies (see below; handlers; \(s_H\)).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.99\textwidth,height=\textheight]{"figures/fig_rel_pref_evo_sc_facultative.png"}
+\caption{\textbf{Evolution of movement strategies in scenario 3}. Across simulation replicates (\(r_{max}\) = 0.01), populations of consumers that choose their competition strategy using inherited preferences, individual movement strategies are mostly driven by a preference for handlers (\(s_H\)), a moderate avoidance for non-handlers(\(s_N\)), and are mostly neutral to prey items (\(s_P\)).}
+\end{figure}
+
+\newpage
+
+\hypertarget{correlation-of-relative-preferences-forms-movement-strategies}{%
+\subsection{Correlation of Relative Preferences forms Movement Strategies}\label{correlation-of-relative-preferences-forms-movement-strategies}}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_rel_pref_corr_obligate.png"}
+\caption{\textbf{Evolution of movement strategies in scenario 2}. Across simulation replicates (\(r_{max}\) = 0.01), in populations with fixed forager or kleptoparasite strategies, the two competition strategies consistently undergo rapid evolutionary divergence in movement strategies. Kleptoparasites evolve within 10 generations to primarily track handlers, and maintain this preference across hundreds of generations. Foragers are slower to converge upon a single movement strategy, but eventually (G = 300) mostly avoid handlers and non-handlers alike. A small fraction of both kleptoparasites and foragers have the strategy correlated with the opposite competition strategy, likely due to mutation in the competition strategy.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_rel_pref_corr_foragers.png"}
+\caption{\textbf{Evolution of movement strategies in scenario 1}. Across simulation replicates (\(r_{max}\) = 0.01), populations of foragers consistently evolve a wide range of movement strategies to move towards prey items, largely move towards successful foragers (handlers), and avoid unsuccessful foragers (non-handlers).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight]{"figures/fig_rel_pref_corr_facultative.png"}
+\caption{\textbf{Evolution of movement strategies in scenario 3}. Across simulation replicates (\(r_{max}\) = 0.01), populations of consumers that choose their competition strategy using inherited preferences, consistently evolve to move primarily towards handlers, a strategy that facilitates kleptoparasitism.}
+\end{figure}
+
+\newpage
+
+\hypertarget{individual-differences-in-movement-strategies-in-scenarios-2-3}{%
+\section{Individual Differences in Movement Strategies in Scenarios 2 -- 3}\label{individual-differences-in-movement-strategies-in-scenarios-2-3}}
+
+\begin{figure}
+\centering
+\includegraphics{"figures/fig_small_scale_variation.png"}
+\caption{\textbf{Small-scale individual variation may be hidden by primary drivers of behaviour}. Across simulation replicates (\(r_{max}\) = 0.01), populations in scenarios 2 and 3 do show small-scale individual variation in preference for prey density cues (\(s_P\)). This variation is unlikely, in our model, to lead to functional differences in movement paths, but may cause very small emergent differences in model implementations of movement over a continuous space. It is key therefore to measure variation, and the relative contribution of such variation, along multiple axes of behaviour when studying the functional consequences of individual differences.}
+\end{figure}
+
+\newpage
+
+\hypertarget{evolution-of-competition-strategies-in-scenario-3}{%
+\section{Evolution of Competition Strategies in Scenario 3}\label{evolution-of-competition-strategies-in-scenario-3}}
+
+\begin{figure}
+\centering
+\includegraphics{"figures/fig_sc3_comp_evol.png"}
+\caption{\textbf{Evolution of conditional kleptoparasitic behaviour in scenario 3.} Across replicates in scenario 3, individuals rapidly evolve conditional competition strategies that lead them to attempt to steal across a wide range of ecological conditions. Mainly, within 100 generations (and in some cases, only 30 generations), all individuals choose a kleptoparasitic strategy when handlers are available, even if there are multiple food items also available. Only when there are no handlers, do most individuals choose to forage for prey, with more individuals choosing to forage as prey density increases. Surprisingly, when there is no information, most individuals in later generations adopt a kleptoparasitic strategy by default. Replicate 2 shows why this is an incomplete assessment of individuals' competitive choices: all individuals appear to choose to steal regardless of ecological cues, with this strategy apparently persisting across many generations. This would lead to no intake at all, and no such drop is seen in mean per-capita intake. This points to the likely role of unsuccessful consumers, non-handlers, in determining competition strategy in this scenario.}
+\end{figure}
+
+\newpage
+
+\hypertarget{effect-of-landscape-productivity-r_max-on-resource-landscape-depletion}{%
+\section{\texorpdfstring{Effect of Landscape Productivity (\(r_{max}\)) on Resource Landscape Depletion}{Effect of Landscape Productivity (r\_\{max\}) on Resource Landscape Depletion}}\label{effect-of-landscape-productivity-r_max-on-resource-landscape-depletion}}
+
+\begin{figure}
+
+{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-18-1} 
+
+}
+
+\caption{In scenario 1, foragers completely deplete the resource landscape within 10 generations at low $r_{max}$ (A, B). However, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated until most cells carry 5 items, the maximum allowed in our model.}\label{fig:unnamed-chunk-18}
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-19-1} 
+
+}
+
+\caption{In scenario 2, foragers can only deplete the resource landscape at very low $r_{max}$ (A): 1 prey item generated per 1,000 timesteps, or 2.5 generations. At all $r_{max} \geq$ 0.05 (B, C, D), prey item regeneration matches or exceeds depletion and the resource landscape either shows strong spatial structure, or is entirely saturated with prey items.}\label{fig:unnamed-chunk-19}
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=\textwidth]{supplementary_material_files/figure-latex/unnamed-chunk-20-1} 
+
+}
+
+\caption{Scenario 3 is similar to scenario 1 at low $r_{max}$ (A, B), where foragers completely deplete the resource landscape). Similarly, at $r_{max} >$ 0.01 (C, D), prey item regeneration exceeds depletion and the resource landscape is rapidly saturated to a carrying capacity of 5 prey items per cell.}\label{fig:unnamed-chunk-20}
+\end{figure}
+
+\newpage
+
+\hypertarget{effect-of-local-dispersal}{%
+\section{Effect of local dispersal}\label{effect-of-local-dispersal}}
+
+In order to focus on adaptive movement strategies, we chose to implement large dispersal distances in our default simulation setup, which we refer to as `global' natal dispersal.
+Under global dispersal, offspring are homogeneously distributed over the entire landscape (dispersal radius = 512).
+Our results are not changed in any way when dispersal is much more strongly localised, which we refer to as simply `local' natal dispersal.
+In this implementation, the natal dispersal distance is comparable in magnitude as the distance between resource peaks.
+If offspring dispersal is more local, the spatial population dynamics may become more intricate, and kin competition or local adaptation may become influential. We therefore ran the simulations presented in the main text also under local dispersal (dispersal radius = 2).
+
+In summary, scenarios 1 and 3 yield similar results under local as under global dispersal, while scenario 2 shows some interesting dynamics typical of reaction-diffusion systems.
+In scenario 1 (see Fig. S13), the resource landscape plots A, the activity budget and intake plots B and C, as well as the evolved movement strategies E exactly match the simulation results shown in Figure 1 of the main text. Only the correlations between number of foragers and cell productivity are higher under local dispersal than under global dispersal (panel D).
+This is a straightforward consequence of local dispersal, where individuals occurring on more productive cells have a higher intake rate and therefore produce more offspring than individuals on less productive cells. Thus, under local dispersal many agents already start out on more productive cells. This does not seem to impact movement strategies.
+The same is true for scenario 3 (Fig. S14): After the initial depletion of the landscape, kleptoparasitic behavior spreads, and the landscape is somewhat replenished again. Also here, the landscape snapshots, the activity budget, as well as the intake plot and the evolved movement strategies match the global dispersal case. The difference in competition strategy (panel F) corresponds to the observed bistability (compare \emph{Main Text} Fig. 6). Again, the correlation between number of foragers and cell productivity is higher under local dispersal than under global dispersal, in the latter averaging in late generations around 0.1, and in the former around 0.2.
+
+Scenario 2 is the only one where we observed a marked difference between local and global dispersal (see Fig. S15). As soon as kleptoparasites occur, they spread and become locally abundant, driving foragers to local extinction. The kleptoparasites themselves then wither away due to a lack of foragers to steal from, after which foragers may colonize the area once again. This spatial instability repeats itself over wide parts of the landscape, driven by the extinction, recolonization and diffusion of foragers and kleptoparasites. Kleptoparasites and foragers here effectively form a reaction-diffusion system. Snapshots of this dynamic pattern can be seen in Fig. S15A. As a consequence, the proportions of kleptoparasites and foragers, as well as the total per capita intake of the population fluctuate widely (panels B and C). The correlations between individual densities and cell quality lie around zero and are therefore not much different from the results observed under global dispersal (\emph{Main Text} Fig. 2D). An interesting contrast with global dispersal is to be found in the movement strategies. While kleptoparasites have similar preferences under global and local dispersal, foragers have much stronger item preferences under local dispersal. Due to the pattern of extinction and recolonization under local dispersal, there are parts of the landscape not only rich in food items, but also free from kleptoparasites, and thus a strong preference for items becomes beneficial.
+
+\begin{figure}
+\centering
+\includegraphics{figures/fig_local_dispersal_sc_01.png}
+\caption{\textbf{The effect of strongly localised dispersal in scenario 1}. \textbf{(A)} Foragers swiftly deplete the resource landscape and maintain item scarcity throughout the rest of the simulation, just like under global dispersal. Items and agents are distributed in proportion to cell productivity, \(r\). The population quickly reaches an equilibrium in its \textbf{(B)} activity budget and \textbf{(C)} mean per-capita intake, that is identical to global dispersal. \textbf{(D)} The number of foragers per cell is more positively correlated with cell productivity under strongly localised (`local') dispersal, compared with global dispersal. \textbf{(E)} The same wide range of movement strategies observed under global dispersal exists under local dispersal as well.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{figures/fig_local_dispersal_sc_03.png}
+\caption{\textbf{The effect of strongly localised dispersal in scenario 3}. \textbf{(A)} Individuals swiftly deplete the resource landscape, but prey abundances recover with the rise of kleptoparasitism, as is observed under global dispersal. Items and agents are distributed in proportion to cell productivity, \(r\). \textbf{(B)} By generation 30, the proportion of time spent searching (blue line), handling (green line), and stealing prey (red line) reach values in the range of the ones observed under global dispersal. \textbf{(C)} The mean per-capita intake drops after the initial peak, and then recovers slightly, identically to global dispersal. \textbf{(D)} The number of foragers per cell is more positively correlated with cell productivity under local than under global dispersal. \textbf{(E)} Movement strategies concentrate around a strong preference for handlers, and \textbf{(F)} individuals tend to steal even when there are no handlers and less than 3 prey items available. This falls into the range of variation observed between replicates under global dispersal.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{figures/fig_local_dispersal_sc_02.png}
+\caption{\textbf{The effect of strongly localised dispersal in scenario 2}. \textbf{(A)} Foragers initially deplete prey items, but with the rise of kleptoparasistism, the resource landscape becomes very heterogeneous, with some areas densely populated and scarce in prey items, and others without consumers and fully stocked with items. This pattern is produced by the local dynamics of kleptoparasites and foragers: Kleptoparasites become more common where foragers are common, until the latter go locally extinct. Thereupon also the kleptoparasites vanish, and prey items replenish until foragers are reintroduced via diffusion. \textbf{(B)} Proportions of kleptoparasitses and foragers, as well as \textbf{(C)} mean per-capita intake fluctuate greatly. \textbf{(D)} Cell quality and number of individuals are uncorrelated as the spatial dynamics between kleptoparasites and foragers dominate over any interaction between cell quality and number of individuals. \textbf{(E)} Kleptoparasites evolve the same preferences under local dispersal as under global dispersal, but foragers have a much stronger preference for prey-items, caused by the abundance of deserted, fully-stocked parts of the landscape.}
+\end{figure}
+
+\newpage
+
+\hypertarget{effect-of-initialisation-of-cue-preferences}{%
+\section{Effect of initialisation of cue preferences}\label{effect-of-initialisation-of-cue-preferences}}
+
+In our default implementation, the initial populations harbour a broad range of movement strategies. In other words, our simulations are not mutation-limited in the initial phase of evolution.
+In our default implementation, our model's population always begins with a broad range of movement strategies already present upon initialisation (G = 1).
+This speeds up adaptive evolution (and our simulations), but it is not self-evident that a monomorphic initialisation, where adaptive evolution requires the occurrence of `suitable' new mutations, will lead to the same evolutionary outcome.
+This makes it unclear whether the movement strategies seen once ecological equilibrium is reached (at about G = 50) and beyond, have simply persisted since initialisation, or whether they would actually evolve from rather different strategies.
+Our model population could be suffering from a steady weathering away of standing variation, which leaves viable movement strategies, or whether the evolutionary process we model can actually generate variation, and specifically, the movement strategies we observe in our default implementation.
+Thus, it is not clear whether a similar degree of genetic polymorphism is achieved as in the default implementation of our model.
+
+Here we demonstrate \emph{(1)} that our model's ecological and evolutionary setup does generate variation, and \emph{(2)} that this process leads to the same strategies we observed in the results presented in the \emph{Main Text}.
+We focus on our most complex scenario, Scenario 3, in which individuals can choose both their next move, as well as their competition strategy at their destination, in each timestep.
+We initialised \emph{all} individuals' cue preferences for movement decisions (\(s_P, s_H, s_N\)), and for competition decisions (\(w_0, w_P, w_H, w_N\)) at three identical values: 0.0, +0.01, and -0.01.
+This makes the population perfectly monomorphic for both movement and competition strategies.
+We ran the simulation as before, with 1,000 generations, 10,000 individuals on a landscape of \(512^2\) cells, with global natal dispersal, and implementing the same mutational process (\(p_\text{mut} = 0.001\), mutational step size drawn from a Cauchy distribution with scale = 0.001).
+
+In the figures that follow, we focus on the movement strategy trait space.
+We show that regardless of where in the movement and competition strategy trait space the population is initialised, within 30 generations, considerable functional variation is generated, and the population is no longer monomorphic in its movement strategy (Figs. S16 -- S18; panel G = 30).
+Furthermore, in each case, the population always evolves to occupy a small range of of the strategy space: \emph{(1)} nearly neutral to food items (normalised \(s_P \approx 0.0\)), \emph{(2)} strongly attracted to handlers (mormalised \(s_H > 0.75\)), and \emph{(3)} avoiding or neutral to non-handlers (normalied \(s_N \leq 0.0\)) (Figs. S16 -- S18; compare Fig. 4E).
+We conclude that the results concerning movement strategies presented in the \emph{Main Text} are robust to choices regarding initialisation of the cue preferences.
+
+Since the evolved movement strategies converge upon our main results, it is not surprising that the main ecological outcomes of the activity budget --- the time each generation spends on searching for prey, in handling prey, and in attempts to steal prey --- also closely resemble findings from our default implementation (Figs. S19 -- S21; compare Fig. 4B).
+A minor difference between monomorphic and `diverse' initialisation is that monomorphic populations reach stable activity budget equilibria by about generation 100, while this is reached somewhat earlier in our default implementation, at about generation 30.
+
+\begin{figure}
+\centering
+\includegraphics{figures/fig_rel_pref_sc_03_init_zero.png}
+\caption{\textbf{Evolution of movement strategies upon initialising all movement and competition preferences at 0.0.} Each panel shows 2,500 individuals from a single replicate.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{figures/fig_rel_pref_sc_03_init_neg.png}
+\caption{\textbf{Evolution of movement strategies upon initialising all movement and competition preferences at -0.001.} Each panel shows 2,500 individuals from a single replicate.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{figures/fig_rel_pref_sc_03_init_pos.png}
+\caption{\textbf{Evolution of movement strategies upon initialising all movement and competition preferences at 0.001.} Each panel shows 2,500 individuals from a single replicate.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{figures/fig_activity_sc_03_init_zero.png}
+\caption{\textbf{Ecological equilibria in population activity budget upon initialising all movement and competition preferences at 0.0.} Panel shows the outcome of 3 replicates simulations.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{figures/fig_activity_sc_03_init_neg.png}
+\caption{\textbf{Ecological equilibria in population activity budget upon initialising all movement and competition preferences at -0.001.} Panel shows the outcome of 3 replicates simulations.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{figures/fig_activity_sc_03_init_pos.png}
+\caption{\textbf{Ecological equilibria in population activity budget upon initialising all movement and competition preferences at 0.001.} Panel shows the outcome of 3 replicates simulations.}
+\end{figure}
+
+\end{document}
