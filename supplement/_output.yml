@@ -1,14 +1,14 @@
 bookdown::pdf_document2:
   keep_tex: false
-  fontsize: 10pt
-  toc: true
+  fontsize: 11pt
+  toc: false
   papersize: a4
   highlight: haddock
+  number_sections: false
   includes:
     in_header: latex/preamble.tex
 toc-depth: 2
 secnumdepth: 1
 lof: True
 lot: True
-documentclass: book
 geometry: "left=4cm, right=3cm, top=2.5cm, bottom=2.5cm"

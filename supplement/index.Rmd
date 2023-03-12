@@ -1,21 +1,32 @@
 --- 
 knit: "bookdown::render_book"
-title: "Supplementary Material for _The Joint Evolution of Animal Movement and Competition Strategies_"
+title: |
+    | Online Supplement:
+    | The Joint Evolution of Animal Movement and Competition Strategies
+    | _The American Naturalist_
 author:
-    - Pratik R. Gupte
-    - Christoph F.G. Netz
-    - Franz J. Weissing
-date: "`r Sys.Date()`"
+    - Pratik R. Gupte\textsuperscript{1,$\alpha$}
+    - Christoph F. G. Netz\textsuperscript{1,$\alpha$}
+    - Franz J. Weissing\textsuperscript{1}
+# date: "`r Sys.Date()`"
 output: 
     bookdown::pdf_document2:
-        toc: true
+        toc: false
 documentclass: article
+classoption:
+  - fontsize=11pt
 toc-depth: 2
-secnumdepth: 2
+secnumdepth: 0
 geometry: "left=3cm, right=3cm, top=2.5cm, bottom=2.5cm"
 link-citations: yes
 github-repo: pratikunterwegs/klepto-move-evol
 description: "Supplementary Material for _The Joint Evolution of Animal Movement and Competition Strategies_"
 ---
+
+\noindent{} 1. Groningen Institute for Evolutionary Life Sciences, University of Groningen, Groningen 9747 AG, The Netherlands.
+
+\noindent{} $\ast$ Corresponding authors; e-mail: p.r.gupte@rug.nl or f.j.weissing@rug.nl
+
+\noindent{} $\alpha$ Both authors contributed equally to this study.
 
 \newpage

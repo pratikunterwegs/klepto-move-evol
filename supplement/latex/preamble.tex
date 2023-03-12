@@ -1,22 +1,32 @@
-
-% \usepackage{fontspec}
-% use nice fonts if available else use boring defaults
-
-\usepackage{lineno}
+\usepackage[sc]{mathpazo} %Like Palatino with extensive math support
+% \usepackage{lineno}
 % \KOMAoption{fontsize}{10pt}
 \renewcommand{\figurename}{Figure S}
 \makeatletter
 \def\fnum@figure{\figurename\thefigure}
 \makeatother
 
-% \IfFontExistsTF{Palatino}{\setmainfont[]{Palatino}}{} 
-\usepackage{mathpazo}
-% \usepackage{helvet}
-\usepackage{inconsolata}
-% \IfFontExistsTF{Arial}{\setsansfont[]{Arial}}{}
-% \IfFontExistsTF{Fira Code}{\setmonofont{Fira Code}}
+% Header formatting as required by AmNat: https://www.journals.uchicago.edu/journals/an/instruct
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\rhead{Supplement to Gupte et al., ``Joint Evolution of Movement and Competition,'' \textit{Am.~Nat.}}
+\setlength{\headsep}{0.3in}  
+\lhead{} 
+
+% Section title formatting
+% Resolve incompatibility with {bookdown}
+\let\paragraph\oldparagraph
+\let\subparagraph\oldsubparagraph
+
+\usepackage{titlesec}
+\titleformat{\section}[block]{\Large\bfseries\filcenter}{\thesection}{1em}{}
+\titleformat{\subsection}[block]{\Large\itshape\filcenter}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}[block]{\large\itshape}{\thesubsubsection}{1em}{}
+\titleformat{\paragraph}[runin]{\itshape}{\theparagraph}{1em}{}[. ]
+
 \usepackage[labelfont=bf,format=plain]{caption}
 \usepackage{setspace} 
 \onehalfspacing
 
-\linenumbers
+% \linenumbers

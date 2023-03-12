@@ -5,7 +5,7 @@ editor_options:
  chunk_output_type: console
 ---
 
-# Effect of initialisation of cue preferences
+# Effect of Initialisation of Cue Preferences
 
 In our default implementation, the initial populations harbour a broad range of movement strategies. In other words, our simulations are not mutation-limited in the initial phase of evolution. 
 In our default implementation, our model's population always begins with a broad range of movement strategies already present upon initialisation (G = 1).
